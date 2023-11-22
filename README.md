@@ -2,82 +2,73 @@
 以下、管理者権限ユーザーで実施する。
 
 ## 1.開発環境構築
-### Chocolatey
-パッケージ管理アプリ
 
-#### インストール手順
-デスクトップのスタートボタンをクリックし、
-``` powershell ```
-と入力する。
-
-最も一致する検索結果にWindows PowerShellが表示される。
-「管理者として実行する」をクリックする。
-
-以下のコマンドを実行して、Chocolateyをインストールする。
-```ps
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-```
-
-cf. 上記コマンドは下記のURLに記載されている。
-> https://chocolatey.org/install#installing-chocolatey
-> **run the following command**と記載された直下にあるコマンドをPowerShellで実行する。
-
-Chocolateyのインストール確認のため、
-以下のコマンドを実行する。
-```ps
-choco list -localonly
-```
-
-実行結果でChocolateyが表示されていることを確認する。
-```ps
-Chocolatey v1.1.0
-chocolatey 1.1.0
-1 packages installed.
-```
-
-引き続き、Chocolatey GUIをインストールする。
-```choco install ChocolateyGUI -y```
-
-インストールが正常終了していれば、
-処理結果が標準出力(PowerShellの画面)に以下のように表示される。
-```
-The install of chocolateygui was successful.
-```
-
-### JDK(Java Development Kit)
+### Oracle JDK(Oracle Java Development Kit)
 Javaの開発・動作に必要な開発キット
+Javaには様々なディストリビューションがあり、Oracle JDKはいわばJavaの本家という位置付けである。
+
 #### インストール手順
-デスクトップからスタートボタンをクリックし、Chocolatey GUIを起動する。
-左のメニューからchocolateyをクリックして画面を切り替える。
-次のとおりに操作して検索する。
+* [Oracle JDK公式サイト](https://www.oracle.com/jp/java/technologies/downloads/#jdk17-windows)から
+`x64 installer` のリンクをクリックし、インストーラーをダウンロードする。
+* ダウンロードしたファイル `jdk-17_windows-x64_bin.exe` をダブルクリックする。
+* ユーザーアカウント制限のダイアログが表示される。 `はいボタン` をクリックする。
+* インストール手順は基本的に `次へボタン` をクリックしていくのみだが、ボタンクリック2回目で表示されるインストール先フォルダを確認しておく。
+* インストール完了のダイアログで `閉じるボタン` をクリックする。
 
-* SearchにJava SEと入力し、Enterキーを押下する。
-* 検索結果にjavaの各バージョンが表示される。その中からJava SE 8.0.211ををダブルクリックして、画面右下のinstallボタンをクリックする。
-インストールが完了すると、
-```C:\Program Files```
-フォルダ配下にJavaフォルダが作成されていて、
-Chocolatey GUIからjdk 1.8.0_211がインストールされている。
+#### インストールしたOracle JDKの設定
+* Windowsのスタートボタンを右クリックして、 `システム` をクリックする。
+* 設定の検索欄に `システム環境変数` を入力して、表示される候補をクリックする。
+* システムのプロパティウィンドウで `環境変数ボタン` をクリックする。
+* 環境変数ウィンドウで `システム環境変数` で `新規ボタン` をクリックする。
+* 新しいシステム変数ウィンドウで変数名、変数値を設定して `OKボタン` をクリックする。
+```
+変数名 = JAVA_HOME
+変数値 = (Oracle JDKをインストールしたディレクトリ、デフォルトでは C:\Program Files\Java\jdk-17 )
+```
+* 環境変数ウィンドウで `システム環境変数` 一覧から変数名 `Path` をダブルクリックする。
+* 環境変数名の編集ウィンドウの `新規ボタン` をクリックし、 `$JAVA_HOME\bin` を入力する。
+* 環境変数ウィンドウとシステムのプロパティウィンドウでそれぞれ `OKボタン` をクリックして閉じる。
 
-インストール確認のため、新しくPowerShellを管理者権限で起動し、
-```java -version```
-と入力、Enterキー押下する。jdk 1.8.0_211をインストールした場合、
-以下のように標準出力に表示される。
+#### Oracle JDKの動作確認
+* 新しくPowerShellを管理者権限で起動し、以下のコマンドを入力、Enterキーを押下する。
 ```ps
-java version "1.8.0_211"
-Java(TM) SE Runtime Environment (build 1.8.0_211-b12)
-Java HotSpot(TM) 64-Bit Server VM (build 25.211-b12, mixed mode)
+java -version
 ```
 
-<!--
-メンター用備忘録
-Chocolatey GUI経由でJDK各種をインストールした場合、
-環境変数JAVA_HOMEの追加及びpathへの追記も併せて実施される。
--->
+* 以下のように標準出力に表示される。
+```ps
+java version "17.0.9" 2023-10-17 LTS
+Java(TM) SE Runtime Environment (build 17.0.9+11-LTS-201)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.9+11-LTS-201, mixed mode, sharing)
+```
 
 ### Pleiades All in One Eclipse
 Java等の統合開発環境
 * [公式サイト](https://mergedoc.osdn.jp/)
-`Windows x64`  >  `Full Edition`  >  `Java`のダウンロードボタンをクリックしてダウンロードしてください。
+`Windows x64`  >  `Full Edition`  >  `Java`のダウンロードボタンをクリックしてダウンロードする。
+* ダウンロードしたファイルをダブルクリックする。
+* Pleiades All in One (年-月)自己解凍書庫のウィンドウで `解凍ボタン` をクリックする。
+  * 解凍先はデフォルトで `c:\pleiades\(年-月)` である。(年 - 月の例で2023年11月時点で2023-09が最新版である。)
+  * 解凍完了まで1分弱を要する(PCのスペックに依る)。
+* エクスプローラーから `c:\pleiades\(年-月)\eclipse` を開き、eclipse.exeを実行する。
+  * 研修での開発時にこの手順で開発、テストする。
+
+#### Mybatis Generator pluginの設定
+Mybatis GeneratorとはDBへのCRUDに必要な以下のソースを自動生成するツールである。
+* entity(DBテーブル1行分のデータ)
+* mapper(CRUDするクラス及び定義)
+
+Mybatis Generator pluginとはeclipseからMybatis Generatorを実行するplugin(ツール)である。
+
+* eclipse起動後、 `メニュー` -> `ヘルプ` -> `Eclipse マーケットプレイス` をクリックする。
+* Eclipseマーケットプレイスウィンドウで検索欄に `MyBatis Generator` と入力しEnterキーを押下する。
+* 検索結果 `Mybatis Generator i.j.k`(i.j.kはバージョン番号)の `インストールボタン`
+をクリックする。
+* ライセンスのレビューウィンドウで `使用条件の条項に同意します`
+を選択して、 `完了ボタン` をクリックする。
+* 信頼ウィンドウでUnsignedの✓を付け、 `選択項目を信頼ボタン` をクリックする。
+* ソフトウェア更新のダイアログが表示され、 `いいえボタン` をクリックした後、eclipseを終了する。
+
 <!--
 メンター用備忘録
 Windows x64 Full Edition Javaの場合、LombokやSTSプラグインも導入されているため、
@@ -117,19 +108,18 @@ git config --global user.email "yamada-t@company.co.jp"
 研修アプリを取得した後、自分の作業用リポジトリへプッシュを行う。
 ```bash
 # 研修用リポジトリをローカルにshoppingというディレクトリ名でクローン
-git clone https://github.com/hara-y-illmatics/java-shopping-template shopping
+git clone https://github.com/hara-y-illmatics/shopping-template-java-windows shopping
 以下、c:\gitディレクトリにshoppingをクローンしたものとして説明する。
 # shoppingへ移動
 cd shopping
+# ローカルリポジトリを安全なディレクトリとして設定
+git config --global --add safe.directory c:/git/shopping
 # originの再設定
-# <URL> は作成した自分のリポジトリの "HTTPS" を使用する
+# <URL> は作成した自分のリポジトリの "HTTPS" を使用
 git remote set-url origin <URL>
 # Githubにローカルリポジトリをプッシュ
 git push origin main
-# ローカルリポジトリを安全なディレクトリとして設定
-git config --global --add safe.directory c:/git/shopping
 ```
-
 
 ## 3. mainブランチのプロテクションルール設定
 Githubでmainへのマージをレビュー必須とする[設定](https://drive.google.com/drive/folders/1jwtMsaLBwvPpkmjvfqIdrkwqHWQXjq7k?usp=sharing)を行う。
@@ -141,7 +131,6 @@ Oracle XEのインストーラー(拡張子rpmのファイル)を `C:\Users\(ユ
 mv C:\Users\(ユーザー名)\Downloads\oracle-database-xe-21c-1.0-1.ol7.x86_64.rpm c:\git\shopping\docker\oracle\21.3.0\
 ```
 
-
 ## 5. dockerイメージのビルド
 ```
 cd c:\git\shopping\docker\oracle
@@ -149,22 +138,31 @@ cd c:\git\shopping\docker\oracle
 (別のコマンドプロンプトが開きビルドを実行、所要時間はPCの性能に依るが数分程度後、ビルド完了後に別プロンプトが閉じる)
 ```
 
-
 ## 6. Dockerコンテナ(DB)の起動
 ```bash
 cd bin
 ./up-d.sh
 ```
 
-
 ## 7. Oracleのセットアップ
 ```bash
-docker exec -it docker exec -it docker-dbserver-1 bash
+# DBサーバーに接続
+docker exec -it docker-dbserver-1 bash
+# DBサーバーでsqlplusをsysdbaとして起動
 sqlplus / as sysdba
+# PDB$SEEDを基にデータベースTESTを作成
 alter session set container=PDB$SEED;
+alter session set "_oracle_script"=true;
+alter pluggable database pdb$seed open read write force;
 create pluggable database test admin user tuser identified by tpassword file_name_convert = ('/opt/oracle/oradata/XE/pdbseed/', '/opt/oracle/oradata/XE/test/');
+# データベースTESTの状態を表示(MOUNTED)
 show pdbs
+# データベースTESTをオープンして、その状態を維持
 alter pluggable database TEST open;
+alter pluggable database TEST save state;
+# sqlplusを終了
+exit
+# DBサーバーでの作業終了
 exit
 ```
 
