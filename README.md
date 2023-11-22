@@ -23,19 +23,20 @@ Javaには様々なディストリビューションがあり、Oracle JDKはい
 * 新しいシステム変数ウィンドウで変数名、変数値を設定して `OKボタン` をクリックする。
 ```
 変数名 = JAVA_HOME
-変数値 = (Oracle JDKをインストールしたディレクトリ、デフォルトでは C:\Program Files\Java\jdk-17 )
+変数値 = (Oracle JDKをインストールしたディレクトリ、
+        デフォルトでは C:\Program Files\Java\jdk-17 )
 ```
 * 環境変数ウィンドウで `システム環境変数` 一覧から変数名 `Path` をダブルクリックする。
 * 環境変数名の編集ウィンドウの `新規ボタン` をクリックし、 `$JAVA_HOME\bin` を入力する。
 * 環境変数ウィンドウとシステムのプロパティウィンドウでそれぞれ `OKボタン` をクリックして閉じる。
 
-#### Oracle JDKの動作確認
-* 新しくPowerShellを管理者権限で起動し、以下のコマンドを入力、Enterキーを押下する。
+#### Oracle JDKのセットアップ確認
+* 新たにPowerShellを管理者権限で起動し、以下のコマンドを入力、Enterキーを押下する。
 ```ps
 java -version
 ```
 
-* 以下のように標準出力に表示される。
+* 以下のように標準出力に表示される。(javaのバージョンは2023/11/22時点の最新版である。)
 ```ps
 java version "17.0.9" 2023-10-17 LTS
 Java(TM) SE Runtime Environment (build 17.0.9+11-LTS-201)
@@ -49,31 +50,23 @@ Java等の統合開発環境
 * ダウンロードしたファイルをダブルクリックする。
 * Pleiades All in One (年-月)自己解凍書庫のウィンドウで `解凍ボタン` をクリックする。
   * 解凍先はデフォルトで `c:\pleiades\(年-月)` である。(年 - 月の例で2023年11月時点で2023-09が最新版である。)
-  * 解凍完了まで1分弱を要する(PCのスペックに依る)。
+  * 解凍完了まで数十秒程度を要する。
 * エクスプローラーから `c:\pleiades\(年-月)\eclipse` を開き、eclipse.exeを実行する。
   * 研修での開発時にこの手順で開発、テストする。
-
-#### Mybatis Generator pluginの設定
-Mybatis GeneratorとはDBへのCRUDに必要な以下のソースを自動生成するツールである。
-* entity(DBテーブル1行分のデータ)
-* mapper(CRUDするクラス及び定義)
-
-Mybatis Generator pluginとはeclipseからMybatis Generatorを実行するplugin(ツール)である。
-
-* eclipse起動後、 `メニュー` -> `ヘルプ` -> `Eclipse マーケットプレイス` をクリックする。
-* Eclipseマーケットプレイスウィンドウで検索欄に `MyBatis Generator` と入力しEnterキーを押下する。
-* 検索結果 `Mybatis Generator i.j.k`(i.j.kはバージョン番号)の `インストールボタン`
-をクリックする。
-* ライセンスのレビューウィンドウで `使用条件の条項に同意します`
-を選択して、 `完了ボタン` をクリックする。
-* 信頼ウィンドウでUnsignedの✓を付け、 `選択項目を信頼ボタン` をクリックする。
-* ソフトウェア更新のダイアログが表示され、 `いいえボタン` をクリックした後、eclipseを終了する。
 
 <!--
 メンター用備忘録
 Windows x64 Full Edition Javaの場合、LombokやSTSプラグインも導入されているため、
 上記EclipseのセットアップだけでSpring Bootアプリケーションを開発開始可能です。
 -->
+
+### Git for Windows
+[公式サイト](https://gitforwindows.org/)からインストーラーをダウンロード、実行する。
+* 以下の設定は変更してから`Nextボタン` をクリックする。
+  * Choosing the default editor used by git -> 研修者が利用するテキストエディタを選択(プルダウンに候補が無い場合は `Select other editor as Git's default editor` を選択して Location of editorを指定する。)
+  * Adjusting the name of the initial branch in new repository -> `Override the default branch name for new repository` を選択する。
+  * Checkout Windows-style, commit Unix-style line endings -> `Override the default branch name for new repository` を選択する。
+* 他の設定はデフォルトから変えずに `Nextボタン` をクリックする。
 
 ### Docker
 非常に軽量なコンテナ型のアプリケーション実行環境  
@@ -103,7 +96,6 @@ git config --global user.email "yamada-t@company.co.jp"
  * [Oracle Database 21cダウンロードサイト](https://www.oracle.com/jp/database/technologies/xe-downloads.html)
  * Oracle Database 21c Express Edition for Linux x64 ( OL7 )をダウンロードする。
 
-
 ## 2. 研修アプリの取得と作業用リポジトリへプッシュ
 研修アプリを取得した後、自分の作業用リポジトリへプッシュを行う。
 ```bash
@@ -115,7 +107,7 @@ cd shopping
 # ローカルリポジトリを安全なディレクトリとして設定
 git config --global --add safe.directory c:/git/shopping
 # originの再設定
-# <URL> は作成した自分のリポジトリの "HTTPS" を使用
+# <URL> には作成した自分のリポジトリの "HTTPS" を使用
 git remote set-url origin <URL>
 # Githubにローカルリポジトリをプッシュ
 git push origin main
@@ -128,19 +120,19 @@ Githubでmainへのマージをレビュー必須とする[設定](https://drive
 ## 4. ダウンロード済みのOracle XEの移動
 Oracle XEのインストーラー(拡張子rpmのファイル)を `C:\Users\(ユーザー名)\Downloads` フォルダにダウンロードした場合
 ```
-mv C:\Users\(ユーザー名)\Downloads\oracle-database-xe-21c-1.0-1.ol7.x86_64.rpm c:\git\shopping\docker\oracle\21.3.0\
+mv C:\Users\(ユーザー名)\Downloads\oracle-database-xe-21c-1.0-1.ol7.x86_64.rpm c:\git\shopping-template-java-windows\docker\oracle\21.3.0
 ```
 
 ## 5. dockerイメージのビルド
 ```
-cd c:\git\shopping\docker\oracle
+cd c:\git\shopping-template-java-windows\docker\oracle
 .\buildContainerImage.sh -v 21.3.0 -x -i
 (別のコマンドプロンプトが開きビルドを実行、所要時間はPCの性能に依るが数分程度後、ビルド完了後に別プロンプトが閉じる)
 ```
 
 ## 6. Dockerコンテナ(DB)の起動
 ```bash
-cd bin
+cd c:\git\shopping-template-java-windows\bin
 ./up-d.sh
 ```
 
@@ -152,10 +144,13 @@ docker exec -it docker-dbserver-1 bash
 sqlplus / as sysdba
 # PDB$SEEDを基にデータベースTESTを作成
 alter session set container=PDB$SEED;
+# pdb$seedをopenするため下記の設定が必要
 alter session set "_oracle_script"=true;
+# pdb$seedをopen
 alter pluggable database pdb$seed open read write force;
-create pluggable database test admin user tuser identified by tpassword file_name_convert = ('/opt/oracle/oradata/XE/pdbseed/', '/opt/oracle/oradata/XE/test/');
-# データベースTESTの状態を表示(MOUNTED)
+# pdb$seedを基にデータベースtestを作成
+create pluggable database TEST admin user tuser identified by tpassword file_name_convert = ('/opt/oracle/oradata/XE/pdbseed/', '/opt/oracle/oradata/XE/test/');
+# データベースTESTの状態がMOUNTEDであることを確認
 show pdbs
 # データベースTESTをオープンして、その状態を維持
 alter pluggable database TEST open;
@@ -173,8 +168,8 @@ TBD
 ### アプリのビルド
 ```bash
 ./clean-build.sh
-(実行完了に数分ほどかかる場合がある。)
 ```
+実行完了に数分ほどかかる場合がある。
 
 ### コンテナの起動
 ```bash
