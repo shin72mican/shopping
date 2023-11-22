@@ -147,7 +147,7 @@ sqlplus / as sysdba
 alter session set container=PDB$SEED;
 # pdb$seedをopenするため下記の設定が必要
 alter session set "_oracle_script"=true;
-# pdb$seedをopen
+# pdb$seedをopen(エラーが発生した場合、7. Oracleのセットアップを最初から実行、alter sessionをせずに手順を実行)
 alter pluggable database pdb$seed open read write force;
 # pdb$seedを基にデータベースtestを作成
 create pluggable database TEST admin user tuser identified by tpassword file_name_convert = ('/opt/oracle/oradata/XE/pdbseed/', '/opt/oracle/oradata/XE/test/');
