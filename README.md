@@ -67,6 +67,7 @@ Windows x64 Full Edition Javaの場合、LombokやSTSプラグインも導入さ
   * Adjusting the name of the initial branch in new repository -> `Override the default branch name for new repository` を選択する。
   * Checkout Windows-style, commit Unix-style line endings -> `Override the default branch name for new repository` を選択する。
 * 他の設定はデフォルトから変えずに `Nextボタン` をクリックする。
+dockerに関するコマンド実行後、同梱されているgit bashが起動する場合がある。
 
 ### Docker
 非常に軽量なコンテナ型のアプリケーション実行環境  
@@ -120,19 +121,19 @@ Githubでmainへのマージをレビュー必須とする[設定](https://drive
 ## 4. ダウンロード済みのOracle XEの移動
 Oracle XEのインストーラー(拡張子rpmのファイル)を `C:\Users\(ユーザー名)\Downloads` フォルダにダウンロードした場合
 ```
-mv C:\Users\(ユーザー名)\Downloads\oracle-database-xe-21c-1.0-1.ol7.x86_64.rpm c:\git\shopping-template-java-windows\docker\oracle\21.3.0
+mv C:\Users\(ユーザー名)\Downloads\oracle-database-xe-21c-1.0-1.ol7.x86_64.rpm c:\git\shopping\docker\oracle\21.3.0
 ```
 
 ## 5. dockerイメージのビルド
 ```
-cd c:\git\shopping-template-java-windows\docker\oracle
+cd c:\git\shopping\docker\oracle
 .\buildContainerImage.sh -v 21.3.0 -x -i
 (別のコマンドプロンプトが開きビルドを実行、所要時間はPCの性能に依るが数分程度後、ビルド完了後に別プロンプトが閉じる)
 ```
 
 ## 6. Dockerコンテナ(DB)の起動
 ```bash
-cd c:\git\shopping-template-java-windows\bin
+cd c:\git\shopping\bin
 ./up-d.sh
 ```
 
@@ -155,16 +156,19 @@ show pdbs
 # データベースTESTをオープンして、その状態を維持
 alter pluggable database TEST open;
 alter pluggable database TEST save state;
+# 初期データの投入 -> テーブル作成SQLを全てコピー、sqlplusのコンソールにペースト(SQLの内容は割愛)
+# テーブル作成SQLのパス -> c:\git\shopping\shopping-app\src\main\resources\sql\1-create-tables.sql
+
+# 初期データの投入 -> データ追加SQLを全てコピー、sqlplusのコンソールにペースト(SQLの内容は割愛)
+# データ追加SQLのパス -> c:\git\shopping\shopping-app\src\main\resources\sql\2-insert-user.sql
+
 # sqlplusを終了
 exit
 # DBサーバーでの作業終了
 exit
 ```
 
-## 8.DB初期データの投入
-TBD
-
-## 9. Dockerコンテナ(アプリ)の起動
+## 8. Dockerコンテナ(アプリ)の起動
 ### アプリのビルド
 ```bash
 ./clean-build.sh
@@ -176,7 +180,7 @@ TBD
 ./up.sh
 ```
 
-## 10. 動作確認
+## 9. 動作確認
 [http://localhost:8080](http://localhost:8080) にアクセスして画面が表示されれば完了。
 
 ## サービス起動/停止＋
@@ -206,10 +210,12 @@ Docker Desktopから停止する
 認証用テストユーザ
 |用いる画面|ユーザ名|パスワード|
 |---|---|---|
-|フロントサイド|user@a.com|pass|
+|フロントサイド|user1@a.com|pass|
+|フロントサイド|user2@a.com|pass|
+|フロントサイド|user3@a.com|pass|
 |管理サイド|admin@a.com|pass|
 
-上記の実装済み機能以外について [設計書](https://drive.google.com/drive/folders/1VRGeN6YdkE5EmyPEBiIkk0y2TneF3RH2?usp=sharing) を参考に実装を行う。
+上記の機能を含めて [設計書](https://drive.google.com/drive/folders/1VRGeN6YdkE5EmyPEBiIkk0y2TneF3RH2?usp=sharing) を参考に実装を行う。
 管理サイドから実装するのがおすすめ。
 ブランチモデルは [GitHub Flow](https://tracpath.com/bootcamp/learning_git_github_flow.html) を利用する。
 ブランチ名は `topic/product_management_20200101` のようにする。

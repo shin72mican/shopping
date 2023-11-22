@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 import lombok.Data;
 
 @Data
-public class Staff {
+public class Users {
 
 	private long id;
 
