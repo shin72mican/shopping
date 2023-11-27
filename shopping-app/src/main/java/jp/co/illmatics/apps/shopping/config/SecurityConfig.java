@@ -1,55 +1,55 @@
 package jp.co.illmatics.apps.shopping.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 
-@EnableWebSecurity
 @Configuration
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+@EnableWebSecurity
+@EnableMethodSecurity
+public class SecurityConfig {
 
-	@Autowired
-	private UserDetailsService userDetailsService;
-
+	/*	@Autowired
+		private UserDetailsService userDetailsService;
+	*/
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
-	@Override
-	public void configure(WebSecurity web)throws Exception {
-		web.ignoring()
-			.antMatchers("/webjars/**")
-			.antMatchers("/css/**")
-			.antMatchers("/js/**");
-	}
-
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.formLogin()
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.formLogin(login -> login
 			.loginProcessingUrl("/admin/login")
 			.loginPage("/admin/login")
 			.failureUrl("/error")
 			.usernameParameter("email")
 			.passwordParameter("password")
-			.defaultSuccessUrl("/admin/home", true);
-
-		http.logout()
+			.defaultSuccessUrl("/admin/home", true)
+		).logout(logout -> logout
 			.logoutUrl("/logout")
-			.logoutSuccessUrl("/login?logout");
+			.logoutSuccessUrl("/login?logout")
+		).authorizeHttpRequests(authz -> authz
+			.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+			.requestMatchers("/").permitAll()
+			.requestMatchers("/test").permitAll()
+			.requestMatchers("/test.html").permitAll()
+			.requestMatchers("/general").hasRole("GENERAL")
+			.requestMatchers("/admin").hasRole("ADMIN")
+			.anyRequest().authenticated()
+		);
+		return http.build();
 	}
 
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		PasswordEncoder encoder = passwordEncoder();
-		auth.userDetailsService(userDetailsService).passwordEncoder(encoder);
-	}
+//	@Override
+//	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//		PasswordEncoder encoder = passwordEncoder();
+//		auth.userDetailsService(userDetailsService).passwordEncoder(encoder);
+//	}
 }

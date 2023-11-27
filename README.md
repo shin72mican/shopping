@@ -43,23 +43,6 @@ Java(TM) SE Runtime Environment (build 17.0.9+11-LTS-201)
 Java HotSpot(TM) 64-Bit Server VM (build 17.0.9+11-LTS-201, mixed mode, sharing)
 ```
 
-### Pleiades All in One Eclipse
-Java等の統合開発環境
-* [公式サイト](https://mergedoc.osdn.jp/)
-`Windows x64`  >  `Full Edition`  >  `Java`のダウンロードボタンをクリックしてダウンロードする。
-* ダウンロードしたファイルをダブルクリックする。
-* Pleiades All in One (年-月)自己解凍書庫のウィンドウで `解凍ボタン` をクリックする。
-  * 解凍先はデフォルトで `c:\pleiades\(年-月)` である。(年 - 月の例で2023年11月時点で2023-09が最新版である。)
-  * 解凍完了まで数十秒程度を要する。
-* エクスプローラーから `c:\pleiades\(年-月)\eclipse` を開き、eclipse.exeを実行する。
-  * 研修での開発時にこの手順で開発、テストする。
-
-<!--
-メンター用備忘録
-Windows x64 Full Edition Javaの場合、LombokやSTSプラグインも導入されているため、
-上記EclipseのセットアップだけでSpring Bootアプリケーションを開発開始可能です。
--->
-
 ### Git for Windows
 [公式サイト](https://gitforwindows.org/)からインストーラーをダウンロード、実行する。
 * 以下の設定は変更してから`Nextボタン` をクリックする。
@@ -68,6 +51,21 @@ Windows x64 Full Edition Javaの場合、LombokやSTSプラグインも導入さ
   * Checkout Windows-style, commit Unix-style line endings -> `Override the default branch name for new repository` を選択する。
 * 他の設定はデフォルトから変えずに `Nextボタン` をクリックする。
 dockerに関するコマンド実行後、同梱されているgit bashが起動する場合がある。
+
+### Pleiades All in One Eclipse
+Java等の統合開発環境
+* [公式サイト](https://mergedoc.osdn.jp/)
+`Windows x64`  >  `Full Edition`  >  `Java`のダウンロードボタンをクリックしてダウンロードする。
+* ダウンロードしたファイルをダブルクリックする。
+* Pleiades All in One (年-月)自己解凍書庫のウィンドウで `解凍ボタン` をクリックする。
+  * 解凍先はデフォルトで `c:\pleiades\(年-月)` である。(年 - 月の例で2023年11月時点で2023-09が最新版である。)
+  * 解凍完了まで数十秒程度を要する。
+
+<!--
+メンター用備忘録
+Windows x64 Full Edition Javaの場合、LombokやSTSプラグインも導入されているため、
+上記EclipseのセットアップだけでSpring Bootアプリケーションを開発開始可能です。
+-->
 
 ### Docker
 非常に軽量なコンテナ型のアプリケーション実行環境  
@@ -156,6 +154,8 @@ show pdbs
 # データベースTESTをオープンして、その状態を維持
 alter pluggable database TEST open;
 alter pluggable database TEST save state;
+# 接続先DBをTESTに変更
+alter session set container=TEST;
 # 初期データの投入 -> テーブル作成SQLを全てコピー、sqlplusのコンソールにペースト(SQLの内容は割愛)
 # テーブル作成SQLのパス -> c:\git\shopping\shopping-app\src\main\resources\sql\1-create-tables.sql
 
@@ -168,7 +168,15 @@ exit
 exit
 ```
 
-## 8. Dockerコンテナ(アプリ)の起動
+## 8. eclipseのセットアップ
+* エクスプローラーから `c:\pleiades\(年-月)\eclipse` を開き、eclipse.exeを実行する。
+* eclipseのパッケージエクスプローラーから `プロジェクトのインポート` をクリックする。
+* インポートウィンドウで `Gradle` -> `既存のGradleプロジェクト` をクリックする。
+* Gradleプロジェクトのインポートウィンドウで `プロジェクト・ルート・ディレクトリー` の `参照ボタン` をクリックする。
+* プロジェクト・ルート・ディレクトリーウィンドウで `c:\git\shopping-template-java-windows\shopping-app` を選択する。
+* Gradleプロジェクトのインポートウィンドウで `完了ボタン` をクリックする。
+
+## 9. Dockerコンテナ(アプリ)の起動
 ### アプリのビルド
 ```bash
 ./clean-build.sh
@@ -180,7 +188,7 @@ exit
 ./up.sh
 ```
 
-## 9. 動作確認
+## 10. 動作確認
 [http://localhost:8080](http://localhost:8080) にアクセスして画面が表示されれば完了。
 
 ## サービス起動/停止＋

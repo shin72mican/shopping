@@ -1,0 +1,66 @@
+<!doctype html>
+<html xmlns:th='http://www.thymeleaf.org'>
+<head>
+	<!-- Required meta tags -->
+	<meta charset='utf-8'>
+	<meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
+
+	<!-- Bootstrap CSS -->
+	<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css' >
+
+	<!-- Bootstrap JS -->
+	<script src='https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js'></script>
+	<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js'></script>
+
+	<!-- JQuery -->
+	<script src='https://code.jquery.com/jquery-3.7.1.min.js'></script>
+
+	<!-- JQuery datatables -->
+	<link href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" rel="stylesheet"/> 
+	<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+
+	<title>This is a test page.</title>
+</head>
+<body>
+	<h1>This is a test page.</h1>
+
+	<button id='users'>一覧表示</button>
+	<div class='result'></div>
+
+	<!-- Optional JavaScript -->
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<!-- can't use ajax with jQuery slim -->
+	<script>
+		$( function(){
+			// 「表示」ボタンのクリックで実行
+			$('#list').on('click', function(){
+				$.ajax({
+					url : './test',
+					type : 'GET',
+					contentType : 'application/json',
+					dataType : 'json',
+					cache : false,
+				})
+				// Ajax成功時に実行
+				.done( (data) => {
+					var tableOptions = {
+						'data' : data,
+					};
+					$('.result').DataTable(tableOptions);
+				})
+				// Ajax失敗時に実行
+				.fail( (jqXHR, textStatus, errorThrown) => {
+					console.log('jqXHR.status : ' + jqXHR.status);
+					console.log('textStatus : ' + textStatus);
+					console.log('errorThrown.message : ' + errorThrown.message);
+				})
+				// Ajax成否問わず実行
+				.always( (data) => {
+					// 必要に応じて実装
+				});
+			});
+		});
+	</script>
+</body>
+</html>
