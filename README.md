@@ -188,12 +188,6 @@ grantコマンドで権限付与する。
 の7行目 `your-local-ip-address` をipconfigで確認したIPアドレスに書き換える。
 
 ## 9. Dockerコンテナ(アプリ)の起動
-### アプリのビルド
-```bash
-./clean-build.sh
-```
-実行完了に数分ほどかかる場合がある。
-
 ### コンテナの起動
 Docker Desktopを起動して、以下コマンドを実行する。
 ```bash
