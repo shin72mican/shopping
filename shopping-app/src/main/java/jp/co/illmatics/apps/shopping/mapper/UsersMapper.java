@@ -2,6 +2,7 @@ package jp.co.illmatics.apps.shopping.mapper;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.ibatis.annotations.DeleteProvider;
 import org.apache.ibatis.annotations.InsertProvider;
@@ -32,7 +33,10 @@ public interface UsersMapper {
 	void delete(Users users);
 	
 	@SelectProvider(UserSqlProvider.class)
-	long count(Users users);
+	Long count(Users users);
+
+	@SelectProvider(UserSqlProvider.class)
+	Optional<Users> findByName(String username);
 
 	public class UserSqlProvider implements ProviderMethodResolver {
 
@@ -139,5 +143,14 @@ public interface UsersMapper {
 				}
 			}}.toString();
 		}
+
+		public String findByName(String name) {
+			return new SQL() {{
+				SELECT("id", "name", "email", "email_verified_at", "password", "image_path", "create_at", "update_at");
+				FROM("users");
+				WHERE("name = #{name}");
+			}}.toString();
+		}
+
 	}
 }

@@ -13,11 +13,12 @@ import jp.co.illmatics.apps.shopping.mapper.UsersMapper;
 public class SampleApiController {
 
 	@Autowired
-	UsersMapper usersMapper;
+	public UsersMapper usersMapper;
 
 	@GetMapping("/api/sample")
 	public List<Users> sample() {
 		List<Users> users = usersMapper.findAll();
 		return users;
 	}
+
 }
