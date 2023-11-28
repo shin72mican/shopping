@@ -9,15 +9,18 @@
 	<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css' >
 
 	<!-- Bootstrap JS -->
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
 	<script src='https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js'></script>
 	<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js'></script>
 
 	<!-- JQuery -->
+	<!-- can't use ajax with jQuery slim -->
 	<script src='https://code.jquery.com/jquery-3.7.1.min.js'></script>
 
 	<!-- JQuery datatables -->
-	<link href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" rel="stylesheet"/> 
-	<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+	<!-- Optional JavaScript -->
+	<link href='https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css' rel='stylesheet'/> 
+	<script src='https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js'></script>
 
 
 	<title>This is a test page.</title>
@@ -26,28 +29,45 @@
 	<h1>This is a test page.</h1>
 
 	<button id='users'>一覧表示</button>
-	<div class='result'></div>
+	<table id="result">
+		<thead>
+			<tr>
+				<th>id</th>
+				<th>name</th>
+				<th>email</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
 
-	<!-- Optional JavaScript -->
-	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-	<!-- can't use ajax with jQuery slim -->
 	<script>
 		$( function(){
 			// 「表示」ボタンのクリックで実行
-			$('#list').on('click', function(){
+			$('#users').on('click', function(){
 				$.ajax({
-					url : './test',
+					url : './api/sample',
 					type : 'GET',
 					contentType : 'application/json',
 					dataType : 'json',
 					cache : false,
 				})
 				// Ajax成功時に実行
-				.done( (data) => {
-					var tableOptions = {
-						'data' : data,
-					};
-					$('.result').DataTable(tableOptions);
+				.done( (result) => {
+					$('#result').DataTable().destroy();
+					console.debug(result);
+					$('#result').DataTable({
+						data : result,
+						paging : false,
+						searching : false,
+						ordering : false,
+						info : false,
+						columns: [
+							{ data: 'id' },
+							{ data: 'name' },
+							{ data: 'email' }
+						]
+   					});
 				})
 				// Ajax失敗時に実行
 				.fail( (jqXHR, textStatus, errorThrown) => {

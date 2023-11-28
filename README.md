@@ -149,6 +149,8 @@ alter session set "_oracle_script"=true;
 alter pluggable database pdb$seed open read write force;
 # pdb$seedを基にデータベースtestを作成
 create pluggable database TEST admin user tuser identified by tpassword file_name_convert = ('/opt/oracle/oradata/XE/pdbseed/', '/opt/oracle/oradata/XE/test/');
+# ユーザーtuserに権限付与
+GRANT ALL PRIVILEGES to TUSER;
 # データベースTESTの状態がMOUNTEDであることを確認
 show pdbs
 # データベースTESTをオープンして、その状態を維持
@@ -167,6 +169,12 @@ exit
 # DBサーバーでの作業終了
 exit
 ```
+<!--
+メンター用備忘録
+create pluggable database TEST admin user tuser
+で作成するTUSERには権限が付与されていないため、
+grantコマンドで権限付与する。
+-->
 
 ## 8. eclipseのセットアップ
 * エクスプローラーから `c:\pleiades\(年-月)\eclipse` を開き、eclipse.exeを実行する。
@@ -175,6 +183,9 @@ exit
 * Gradleプロジェクトのインポートウィンドウで `プロジェクト・ルート・ディレクトリー` の `参照ボタン` をクリックする。
 * プロジェクト・ルート・ディレクトリーウィンドウで `c:\git\shopping-template-java-windows\shopping-app` を選択する。
 * Gradleプロジェクトのインポートウィンドウで `完了ボタン` をクリックする。
+* コマンド `ipconfig` でローカルIPアドレスを確認する。
+* shopping-app\src\main\resources/application.yml
+の7行目 `your-local-ip-address` をipconfigで確認したIPアドレスに書き換える。
 
 ## 9. Dockerコンテナ(アプリ)の起動
 ### アプリのビルド
@@ -184,26 +195,24 @@ exit
 実行完了に数分ほどかかる場合がある。
 
 ### コンテナの起動
+Docker Desktopを起動して、以下コマンドを実行する。
 ```bash
 ./up.sh
 ```
 
 ## 10. 動作確認
-[http://localhost:8080](http://localhost:8080) にアクセスして画面が表示されれば完了。
+[http://localhost:8080/sample](http://localhost:8080/sample) にアクセスして画面が表示されれば動作確認は完了である。
+
+表示するjsonデータは[http://localhost:8080/api/sample](http://localhost:8080/api/sample)で確認可能である。
 
 ## サービス起動/停止＋
-<!--
-# ビルド
-~/bin/clean-build.sh
-# 起動
-~/bin/up.sh
--->
 ```bash
 # DB停止
 Docker Desktopから停止する
 # DBアクセス
 ~/bin/sqlplus.sh
 ```
+
 # 課題
 * フロントサイド
   * 認証

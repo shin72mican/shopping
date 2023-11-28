@@ -2,12 +2,15 @@ package jp.co.illmatics.apps.shopping.entity;
 
 import java.sql.Timestamp;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.Data;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Users {
 
-	private long id;
+	private Long id;
 
 	private String name;
 
@@ -17,7 +20,7 @@ public class Users {
 
 	private String password;
 
-	private String imagePpath;
+	private String imagePath;
 
 	private Timestamp createAt;
 
