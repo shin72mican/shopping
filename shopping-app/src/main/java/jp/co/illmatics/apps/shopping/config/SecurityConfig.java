@@ -11,6 +11,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import jp.co.illmatics.apps.shopping.security.AdminAbstractUserDetailsAuthenticationProvider;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -20,36 +22,48 @@ public class SecurityConfig {
 		@Autowired
 		private UserDetailsService userDetailsService;
 	*/
-
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+	
+//	// パスワードハッシュ化
+//	@Bean	
+//	public PasswordEncoder passwordEncoder() {
+//		return new BCryptPasswordEncoder();
+//	}
+	
 
 	@Configuration
 	@Order(1)
 	public static class UsersConfig {
+		
+//		// パスワードハッシュ化
+		@Bean
+		public PasswordEncoder passwordEncoder() {
+			return new BCryptPasswordEncoder();
+		}
+		
+//		@Autowired
+//		private CustomerAbstractUserDetails
 
 		@Bean
 		public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.formLogin(login -> login
-				.loginProcessingUrl("/users/login")
-				.loginPage("/users/login")
-				.failureUrl("/users/login")
+		http.formLogin(login -> login // フォーム認証の設定記述開始
+				.loginProcessingUrl("/users/login") // ユーザー名・パスワードの送信先URL
+				.loginPage("/users/login") // ログイン画面のURL
+				.failureUrl("/users/login") // ログイン失敗後のリダイレクト先URL
 				.usernameParameter("email")
 				.passwordParameter("password")
-				.defaultSuccessUrl("/users/home", true)
-			).logout(logout -> logout
+				.defaultSuccessUrl("/users/home", true) // ログイン成功後のリダイレクト先URL
+			).logout(logout -> logout // ログアウトの設定記述開始
 				.logoutUrl("/logout")
-				.logoutSuccessUrl("/logout")
-			).authorizeHttpRequests(authz -> authz
+				.logoutSuccessUrl("/logout") // ログアウト成功後のリダイレクト先URL
+			).authorizeHttpRequests(authz -> authz // URLごとの認可設定記述開始
 				.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-				.requestMatchers("/").permitAll()
 				.requestMatchers("/sample").permitAll()
+				.requestMatchers("/").permitAll()
+				.requestMatchers("/admin/login").permitAll()
 				.requestMatchers("/api/sample").permitAll()
-				.requestMatchers("/users").hasRole("USERS")
-				.requestMatchers("/admin").hasRole("ADMIN")
-				.anyRequest().authenticated()
+				.requestMatchers("/users/**").hasRole("USERS")
+				.requestMatchers("/admin/**").hasRole("ADMIN")
+				.anyRequest().authenticated() // 他のURLはログイン後のみアクセス可能
 			);
 			return http.build();
 		}
@@ -58,6 +72,17 @@ public class SecurityConfig {
 	@Configuration
 	@Order(2)
 	public static class AdminConfig {
+		
+//		// パスワードハッシュ化
+		@Bean
+		public PasswordEncoder passwordEncoder() {
+			return new BCryptPasswordEncoder();
+		}
+		
+		@Bean
+		public AdminAbstractUserDetailsAuthenticationProvider getAuthenticationProvider() {
+		    return new AdminAbstractUserDetailsAuthenticationProvider();
+		}
 
 		@Bean
 		public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -76,8 +101,8 @@ public class SecurityConfig {
 				.requestMatchers("/").permitAll()
 				.requestMatchers("/sample").permitAll()
 				.requestMatchers("/api/sample").permitAll()
-				.requestMatchers("/users").hasRole("USER")
-				.requestMatchers("/admin").hasRole("ADMIN")
+				.requestMatchers("/users/**").hasRole("USER")
+				.requestMatchers("/admin/**").hasRole("ADMIN")
 				.anyRequest().authenticated()
 			);
 			return http.build();

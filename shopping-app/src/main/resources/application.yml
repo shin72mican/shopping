@@ -11,3 +11,10 @@ spring:
     username: tuser
     password: tpassword
     driverClassName: oracle.jdbc.driver.OracleDriver
+# schema.sqlとdata.sqlの自動実行
+  jpa:
+    show-sql: true
+  sql:
+    init:
+      mode: always
+  
