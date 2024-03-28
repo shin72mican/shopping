@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html xmlns:th='http://www.thymeleaf.org'>
 <head>
 	<!-- Required meta tags -->
 	<meta charset='utf-8'>
@@ -17,29 +16,36 @@
 	<!-- can't use ajax with jQuery slim -->
 	<script src='https://code.jquery.com/jquery-3.7.1.min.js'></script>
 
-	<title>admin product category index</title>
+	<title>admin product category create</title>
 </head>
 <body>
-	<h1>商品カテゴリー一覧</h1>
+	<h1>商品カテゴリー登録</h1>
 	
-	<a th:href="@{/admin/product_categories/create}">新規</a>
+	<span th:each="error:${errors}">
+		<p th:text="${error}"}></pth>
+	</span>
 	
-	<table border="1">
-		<thead>
-			<tr>
-				<th>ID</th>
-				<th>名称</th>
-				<th>並び順番号</th>
-			</tr>
-		</thead>
+	<form action="/admin/product_categories" method="post">
+		<div>
+			<label>名称</label>
+		</div>
+		<div>
+			<input type="text" name="name" placeholder="名称" />
+		</div>
 		
-		<tbody>
-			<tr th:each="category:${categories}">
-				<td th:text="${category.id}"></td>
-				<td th:text="${category.name}"></td>
-				<td th:text="${category.orderNo}"></td>
-			</tr>
-		</tbody>
-	</table>
+		<div>
+			<label>並び順番号</label>
+		</div>
+		<div>
+			<input type="text" name="orderNo" placeholder="並び順番号" />
+		</div>
+		
+		<a th:href="@{/admin/product_categories}">キャンセル</a>
+		<input type="submit" value="作成" />
+	</form>
 </body>
 </html>
+
+
+
+

@@ -10,6 +10,15 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Categories {
 	
+	public Categories() {
+		
+	}
+	
+	public Categories(String name, Long orderNo) {
+		this.name = name;
+		this.orderNo = orderNo;
+	}
+	
 	private Long id;
 	
 	private String name;

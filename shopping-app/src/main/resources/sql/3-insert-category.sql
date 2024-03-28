@@ -2,7 +2,7 @@ INSERT INTO product_categories (
  name,
  order_no
 ) VALUES (
- 'ゲーム',
+ 'game',
  1
 );
 
@@ -10,7 +10,7 @@ INSERT INTO product_categories (
  name,
  order_no
 ) VALUES (
- '本',
+ 'book',
  2
 );
 
@@ -18,7 +18,7 @@ INSERT INTO product_categories (
  name,
  order_no
 ) VALUES (
- 'DVD',
+ 'dvd',
  3
 );
 
