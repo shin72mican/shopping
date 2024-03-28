@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<head>
+	<!-- Required meta tags -->
+	<meta charset='utf-8'>
+	<meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
+
+	<!-- Bootstrap CSS -->
+	<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css' >
+
+	<!-- Bootstrap JS -->
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<script src='https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js'></script>
+	<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js'></script>
+
+	<!-- JQuery -->
+	<!-- can't use ajax with jQuery slim -->
+	<script src='https://code.jquery.com/jquery-3.7.1.min.js'></script>
+
+	<title>admin product category create</title>
+</head>
+<body>
+	<h1>商品カテゴリー登録</h1>
+	
+	<span th:each="error:${errors}">
+		<p th:text="${error}"}></pth>
+	</span>
+	
+	<form action="/admin/product_categories" method="post">
+		<div>
+			<label>名称</label>
+		</div>
+		<div>
+			<input type="text" name="name" placeholder="名称" />
+		</div>
+		
+		<div>
+			<label>並び順番号</label>
+		</div>
+		<div>
+			<input type="text" name="orderNo" placeholder="並び順番号" />
+		</div>
+		
+		<a th:href="@{/admin/product_categories}">キャンセル</a>
+		<input type="submit" value="作成" />
+	</form>
+</body>
+</html>
+
+
+
+

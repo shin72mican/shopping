@@ -73,7 +73,8 @@ public interface UsersMapper {
 
 		public String findAll() {
 			return new SQL() {{
-				SELECT("id", "name", "email", "email_verified_at", "password", "image_path", "create_at", "update_at");
+//				SELECT("id", "name", "email", "email_verified_at", "password", "image_path", "create_at", "update_at");
+				SELECT("id", "name", "email");
 				FROM("users");
 
 			}}.toString();
