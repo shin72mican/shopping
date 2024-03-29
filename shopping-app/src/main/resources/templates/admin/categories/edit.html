@@ -16,10 +16,10 @@
 	<!-- can't use ajax with jQuery slim -->
 	<script src='https://code.jquery.com/jquery-3.7.1.min.js'></script>
 
-	<title>admin product category create</title>
+	<title>admin product category edit</title>
 </head>
 <body>
-	<h1>商品カテゴリー登録</h1>
+	<h1>商品カテゴリー編集</h1>
 	
 	<span th:each="error:${errors}">
 		<p th:text="${error}"}></pth>
@@ -30,14 +30,14 @@
 			<label>名称</label>
 		</div>
 		<div>
-			<input type="text" name="name" placeholder="名称" />
+			<input type="text" name="name" th:value="${category.name}" placeholder="名称" />
 		</div>
 		
 		<div>
 			<label>並び順番号</label>
 		</div>
 		<div>
-			<input type="number" name="orderNo" placeholder="並び順番号" />
+			<input type="number" name="orderNo" th:value="${category.orderNo}" placeholder="並び順番号" />
 		</div>
 		
 		<a th:href="@{/admin/product_categories}">キャンセル</a>
@@ -45,7 +45,3 @@
 	</form>
 </body>
 </html>
-
-
-
-

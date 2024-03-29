@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jp.co.illmatics.apps.shopping.entity.Categories;
@@ -18,9 +20,6 @@ public class AdminCategoryController {
 	
 	@Autowired
 	private CategoriesMapper categoriesMapper;
-	
-//	@Autowired
-//	private UsersMapper categoriesMapper;
 	
 	@GetMapping("/admin/product_categories")
 	public String index(Model model) {
@@ -59,11 +58,54 @@ public class AdminCategoryController {
 			
 			// 並び順番号更新
 			categoriesMapper.incrementOrderNo(orderNo, count);
+			categoriesMapper.incrementSameOrderNo(orderNo);
 			// 新規登録
 			categoriesMapper.insert(category);
 			
-			return "redirect:/admin/product_categories";
+			String url = "/admin/product_categories";
+			return "redirect:" + url;
 		}
 		
 	}
+	
+	@GetMapping("/admin/product_categories/{id}")
+	public String show(
+			@PathVariable("id") Long id,
+			Model model) {
+		List<Categories> category = categoriesMapper.find(new Categories(id));
+		model.addAttribute("category", category.get(0));
+		return "admin/categories/show";
+	}
+	
+	@GetMapping("/admin/product_categories/{id}/edit")
+	public String edit(
+			@PathVariable("id") Long id,
+			Model model) {
+		List<Categories> category = categoriesMapper.find(new Categories(id));
+		model.addAttribute("category", category.get(0));
+		return "admin/categories/edit";
+	}
+	
+	@PutMapping("/admin/product_categories/{id}")
+	public String update(
+			@PathVariable("id") Long id,
+			@RequestParam(value = "name", defaultValue = "") String name,
+			@RequestParam(value = "orderNo", defaultValue = "") Long orderNo
+			) {
+		
+		List<Categories> category = categoriesMapper.find(new Categories(id));
+		
+		Long count = categoriesMapper.count();
+		
+		// 並び順番号更新
+		categoriesMapper.incrementOrderNo(orderNo, count);
+		categoriesMapper.incrementSameOrderNo(orderNo);
+		
+		categoriesMapper.update(category.get(0));
+		
+		String url = "/admin/product_categories/" + category.get(0).getId();
+		return "redirect:" + url;
+	}
+	
+	
 }

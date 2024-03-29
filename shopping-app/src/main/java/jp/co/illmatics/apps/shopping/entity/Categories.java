@@ -14,6 +14,10 @@ public class Categories {
 		
 	}
 	
+	public Categories(Long id) {
+		this.id = id;
+	}
+	
 	public Categories(String name, Long orderNo) {
 		this.name = name;
 		this.orderNo = orderNo;
