@@ -93,6 +93,7 @@ public class AdminCategoryController {
 			@RequestParam(value = "orderNo", defaultValue = "") Long orderNo
 			) {
 		
+		// 編集データの取得
 		List<Categories> category = categoriesMapper.find(new Categories(id));
 		
 		Long count = categoriesMapper.count();
@@ -101,7 +102,13 @@ public class AdminCategoryController {
 		categoriesMapper.incrementOrderNo(orderNo, count);
 		categoriesMapper.incrementSameOrderNo(orderNo);
 		
+		// 名前・並び順番号セッター
+		category.get(0).setName(name);
+		category.get(0).setOrderNo(orderNo);
+		
+		// 更新処理
 		categoriesMapper.update(category.get(0));
+		
 		
 		String url = "/admin/product_categories/" + category.get(0).getId();
 		return "redirect:" + url;
