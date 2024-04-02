@@ -11,6 +11,11 @@ spring:
     username: tuser
     password: tpassword
     driverClassName: oracle.jdbc.driver.OracleDriver
+  
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
     
 mybatis:
   configuration:

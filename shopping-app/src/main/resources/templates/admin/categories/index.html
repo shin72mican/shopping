@@ -30,14 +30,17 @@
 				<th>ID</th>
 				<th>名称</th>
 				<th>並び順番号</th>
+				<th colspan="2"></th>
 			</tr>
 		</thead>
 		
 		<tbody>
 			<tr th:each="category:${categories}">
 				<td th:text="${category.id}"></td>
-				<td th:text="${category.name}"></td>
+				<td><a th:href="@{/admin/product_categories/{id}(id=${category.id})}" th:text="${category.name}"></a></td>
 				<td th:text="${category.orderNo}"></td>
+				<td><a th:href="@{/admin/product_categories/{id}/edit(id=${category.id})}">編集</a></td>
+<!--				<td><a th:href="@{/}">削除</a></td>-->
 			</tr>
 		</tbody>
 	</table>

@@ -98,13 +98,10 @@ public class AdminCategoryController {
 		
 		Long count = categoriesMapper.count();
 		
-		// 並び順番号更新
-		categoriesMapper.incrementOrderNo(orderNo, count);
-		categoriesMapper.incrementSameOrderNo(orderNo);
-		
 		// 名前・並び順番号セッター
 		category.get(0).setName(name);
 		category.get(0).setOrderNo(orderNo);
+		System.out.println(category.get(0));
 		
 		// 更新処理
 		categoriesMapper.update(category.get(0));

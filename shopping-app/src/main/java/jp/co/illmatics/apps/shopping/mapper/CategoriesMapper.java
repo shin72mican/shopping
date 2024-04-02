@@ -108,11 +108,11 @@ public interface CategoriesMapper {
 		// 更新
 		public String update(Categories categories) {
 			return new SQL() {{
-				UPDATE("categories");
-				SET("name", "#{name}");
-				SET("order_no", "#{orderNo}");
-				SET("create_at", "#{createAt}");
-				SET("update_at", "CURRENT_TIMESTAMP");
+				UPDATE("product_categories");
+				SET("name = #{name}");
+				SET("order_no = #{orderNo}");
+				SET("create_at = #{createAt}");
+				SET("update_at = CURRENT_TIMESTAMP");
 				WHERE("id = #{id}");
 			}}.toString();
 		}

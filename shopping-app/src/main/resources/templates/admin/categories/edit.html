@@ -25,7 +25,7 @@
 		<p th:text="${error}"}></pth>
 	</span>
 	
-	<form th:action="@{/admin/product_categories/{id}/edit(id=${category.id})}" method="put">
+	<form th:action="@{/admin/product_categories/{id}(id=${category.id})}" th:method="put">
 		<div>
 			<label>名称</label>
 		</div>
