@@ -22,7 +22,7 @@
 <body>
 	<h1>商品カテゴリー詳細</h1>
 	
-<!--	<a th:href="@{/admin/product_categories/create}">新規</a>-->
+	<a th:href="@{/admin/product_categories/{id}/edit(id=${category.id})}">編集</a>
 	
 	<table>
 		<tbody>

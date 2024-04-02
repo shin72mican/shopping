@@ -3,6 +3,7 @@ package jp.co.illmatics.apps.shopping.mapper;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.ibatis.annotations.DeleteProvider;
 import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.SelectProvider;
@@ -34,6 +35,9 @@ public interface CategoriesMapper {
 	
 	@UpdateProvider(CategorySqlProvider.class)
 	void update(Categories categoreis);
+	
+	@DeleteProvider(CategorySqlProvider.class)
+	void delete(Categories categories);
 	
 	public class CategorySqlProvider implements ProviderMethodResolver {
 		// 一データ取得
@@ -113,6 +117,14 @@ public interface CategoriesMapper {
 				SET("order_no = #{orderNo}");
 				SET("create_at = #{createAt}");
 				SET("update_at = CURRENT_TIMESTAMP");
+				WHERE("id = #{id}");
+			}}.toString();
+		}
+		
+		// 削除
+		public String delete(Categories categories) {
+			return new SQL() {{
+				DELETE_FROM("product_categories");
 				WHERE("id = #{id}");
 			}}.toString();
 		}

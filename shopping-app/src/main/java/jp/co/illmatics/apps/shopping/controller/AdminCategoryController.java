@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -110,6 +111,18 @@ public class AdminCategoryController {
 		String url = "/admin/product_categories/" + category.get(0).getId();
 		return "redirect:" + url;
 	}
+	
+	@DeleteMapping("/admin/product_categories/{id}")
+	public String delete(@PathVariable("id") Long id) {
+		// 削除データの取得
+		List<Categories> category = categoriesMapper.find(new Categories(id));
+		
+		categoriesMapper.delete(category.get(0));
+		
+		String url = "/admin/product_categories";
+		return "redirect:" + url;
+	}
+	
 	
 	
 }
