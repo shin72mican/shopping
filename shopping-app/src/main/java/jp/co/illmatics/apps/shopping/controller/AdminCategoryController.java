@@ -23,8 +23,15 @@ public class AdminCategoryController {
 	private CategoriesMapper categoriesMapper;
 	
 	@GetMapping("/admin/product_categories")
-	public String index(Model model) {
-		model.addAttribute("categories", categoriesMapper.findAll());
+	public String index(
+			@RequestParam(name = "name", defaultValue = "") String name,
+			@RequestParam(name = "category_sort", defaultValue = "id") String categorySort,
+			@RequestParam(name = "sort_direction", defaultValue = "1") Long sortDirection,
+			@RequestParam(name = "display_count", defaultValue = "10") Long displayCount,
+			Model model) {
+		List<Categories> categories = new ArrayList<Categories>();
+		categories = categoriesMapper.findAll();
+		model.addAttribute("categories", categories);
 		return "admin/categories/index";
 	}
 	
@@ -39,7 +46,7 @@ public class AdminCategoryController {
 			@RequestParam(value = "orderNo", defaultValue = "") Long orderNo,
 			Model model) {
 		
-		List<String> errors = new ArrayList();
+		List<String> errors = new ArrayList<String>();
 		
 		if(name.equals("") || name.length() == 0){
 			errors.add("名前を入力してください");
@@ -73,8 +80,11 @@ public class AdminCategoryController {
 	public String show(
 			@PathVariable("id") Long id,
 			Model model) {
+		
+		
 		List<Categories> category = categoriesMapper.find(new Categories(id));
 		model.addAttribute("category", category.get(0));
+		
 		return "admin/categories/show";
 	}
 	
@@ -97,16 +107,14 @@ public class AdminCategoryController {
 		// 編集データの取得
 		List<Categories> category = categoriesMapper.find(new Categories(id));
 		
-		Long count = categoriesMapper.count();
+//		Long count = categoriesMapper.count();
 		
 		// 名前・並び順番号セッター
 		category.get(0).setName(name);
 		category.get(0).setOrderNo(orderNo);
-		System.out.println(category.get(0));
 		
 		// 更新処理
 		categoriesMapper.update(category.get(0));
-		
 		
 		String url = "/admin/product_categories/" + category.get(0).getId();
 		return "redirect:" + url;
