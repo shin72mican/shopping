@@ -79,22 +79,29 @@ public class AdminCategoryController {
 			
 		if (orderNo == null) {
 			errors.add("並び順番号を入力してください");
+		} else if(orderNo <= 0) {
+			errors.add("1以上の並び順番号を入力してください");
 		}
+		
 		
 		Categories category = new Categories(name, orderNo);
 		List<Categories> checkCategories = categoriesMapper.find(category);
-		if (checkCategories.size() > 0) {
+		if (checkCategories.size() > 0 && orderNo != null && orderNo >= 0) {
 			errors.add("指定された並び順番号は既に存在します");
 		}
 		
 		if (errors.size() > 0) {
 			model.addAttribute("errors", errors);
+			model.addAttribute("name", name);
+			model.addAttribute("orderNo", orderNo);
 			return "admin/categories/create";
 		} else {
 			// 新規登録
 			categoriesMapper.insert(category);
 			
-			String url = "/admin/product_categories";
+			List<Categories> categories = categoriesMapper.findLatest();
+			
+			String url = "/admin/product_categories/" + categories.get(0).getId();
 			return "redirect:" + url;
 		}
 		
@@ -125,21 +132,50 @@ public class AdminCategoryController {
 	public String update(
 			@PathVariable("id") Long id,
 			@RequestParam(value = "name", defaultValue = "") String name,
-			@RequestParam(value = "orderNo", defaultValue = "") Long orderNo
-			) {
+			@RequestParam(value = "orderNo", defaultValue = "") Long orderNo,
+			Model model) {
+		
+		List<String> errors = new ArrayList<String>();
+		
+		// エラーチェック
+		if (name.equals("") || name.length() == 0){
+			errors.add("名前を入力してください");
+		}
+			
+		if (orderNo == null) {
+			errors.add("並び順番号を入力してください");
+		} else if(orderNo <= 0) {
+			errors.add("1以上の並び順番号を入力してください");
+		}
+		
+//		if(orderNo <= 0) {
+//			errors.add("0以下の並び順番号は登録することができません");
+//		}
+		
+		Categories category = new Categories(name, orderNo);
+		List<Categories> checkCategories = categoriesMapper.find(category);
+		if (checkCategories.size() > 0 && orderNo != null && orderNo >= 0) {
+			errors.add("指定された並び順番号は既に存在します");
+		}
 		
 		// 編集データの取得
-		List<Categories> category = categoriesMapper.find(new Categories(id));
+		List<Categories> categories = categoriesMapper.find(new Categories(id));
 		
 		// 名前・並び順番号セッター
-		category.get(0).setName(name);
-		category.get(0).setOrderNo(orderNo);
+		categories.get(0).setName(name);
+		categories.get(0).setOrderNo(orderNo);
 		
-		// 更新処理
-		categoriesMapper.update(category.get(0));
-		
-		String url = "/admin/product_categories/" + category.get(0).getId();
-		return "redirect:" + url;
+		if (errors.size() > 0) {
+			model.addAttribute("errors", errors);
+			model.addAttribute("category", categories.get(0));
+			return "admin/categories/edit";
+		} else {
+			// 更新処理
+			categoriesMapper.update(categories.get(0));
+			
+			String url = "/admin/product_categories/" + categories.get(0).getId();
+			return "redirect:" + url;
+		}
 	}
 	
 	@DeleteMapping("/admin/product_categories/{id}")

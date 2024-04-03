@@ -20,25 +20,43 @@
 	<title>admin product category index</title>
 </head>
 <body>
-	<h1>商品カテゴリー詳細</h1>
 	
-	<a th:href="@{/admin/product_categories/{id}/edit(id=${category.id})}">編集</a>
+	<div class="container">
+		<div class="row mt-3">
+			<div class="col-lg-2"></div>
+			
+			<div class="col-lg-10">
+				<table>
+					<tr>
+						<td width="60">一覧</td>
+						<td width="70"><a class="btn btn-success" th:href="@{/admin/product_categories/{id}/edit(id=${category.id})}">編集</a></td>
+						<td width="60">
+							<form th:action="@{/admin/product_categories/{id}(id = ${category.id})}" th:method="delete">
+								<input type="submit" value="削除" class="btn btn-danger" />
+							</form>
+						</td>
+					</tr>
+				</table>
+				
+				<table class="table">
+					<tbody>
+						<tr>
+							<th>ID</th>
+							<td th:text="${category.id}"></td>
+						</tr>
+						<tr>
+							<th>名称</th>
+							<td th:text="${category.name}"></td>
+						</tr>
+						<tr>
+							<th>並び順番号</th>
+							<td th:text="${category.orderNo}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
 	
-	<table>
-		<tbody>
-			<tr>
-				<th>ID</th>
-				<td th:text="${category.id}"></td>
-			</tr>
-			<tr>
-				<th>名称</th>
-				<td th:text="${category.name}"></td>
-			</tr>
-			<tr>
-				<th>並び順番号</th>
-				<td th:text="${category.orderNo}"></td>
-			</tr>
-		</tbody>
-	</table>
 </body>
 </html>

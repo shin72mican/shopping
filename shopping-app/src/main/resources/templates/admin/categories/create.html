@@ -31,12 +31,12 @@
 				<form action="/admin/product_categories" method="post">
 					<div class="mt-2 mb-2">
 						<label class="form-label">名称</label>
-						<input class="form-control" type="text" name="name" placeholder="名称" />
+						<input class="form-control" type="text" name="name" th:value="${name}" placeholder="名称" />
 					</div>
 					
 					<div class="mt-2 mb-2">
 						<label class="form-label">並び順番号</label>
-						<input class="form-control" type="number" name="orderNo" placeholder="並び順番号" />
+						<input class="form-control" type="number" name="orderNo" th:value="${orderNo}" placeholder="並び順番号" />
 					</div>
 					
 					<hr />

@@ -25,25 +25,25 @@
 			
 			<div class="col-lg-10">
 				<span th:each="error:${errors}">
-				<p th:text="${error}"}></pth>
-			</span>
-			
-			<form th:action="@{/admin/product_categories/{id}(id=${category.id})}" th:method="put">
-				<div class="mt-2 mb-2">
-					<label class="form-label">名称</label>
-					<input class="form-control" type="text" name="name" th:value="${category.name}" placeholder="名称" />
-				</div>
+					<p class="text-danger" th:text="${error}"}></p>
+				</span>
 				
-				<div>
-					<label class="form-label">並び順番号</label>
-					<input class="form-control" type="number" name="orderNo" th:value="${category.orderNo}" placeholder="並び順番号" />
-				</div>
-				
-				<hr />
-				
-				<a class="btn btn-secondary me-2" th:href="@{/admin/product_categories}">キャンセル</a>
-				<input class="btn btn-primary" type="submit" value="更新" />
-			</form>
+				<form th:action="@{/admin/product_categories/{id}(id=${category.id})}" th:method="put">
+					<div class="mt-2 mb-2">
+						<label class="form-label">名称</label>
+						<input class="form-control" type="text" name="name" th:value="${category.name}" placeholder="名称" />
+					</div>
+					
+					<div>
+						<label class="form-label">並び順番号</label>
+						<input class="form-control" type="number" name="orderNo" th:value="${category.orderNo}" placeholder="並び順番号" />
+					</div>
+					
+					<hr />
+					
+					<a class="btn btn-secondary me-2" th:href="@{/admin/product_categories}">キャンセル</a>
+					<input class="btn btn-primary" type="submit" value="更新" />
+				</form>
 			</div>
 		</div>
 	</div>

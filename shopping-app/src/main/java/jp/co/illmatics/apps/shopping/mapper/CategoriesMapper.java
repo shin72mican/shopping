@@ -21,6 +21,9 @@ public interface CategoriesMapper {
 	@SelectProvider(CategorySqlProvider.class)
 	List<Categories> findAll(String name, String sortType, String sortDirection, Integer displayCount, Integer currentPage);
 	
+	@SelectProvider(CategorySqlProvider.class)
+	List<Categories> findLatest();
+	
 	@InsertProvider(CategorySqlProvider.class)
 	void insert(Categories categories);
 	
@@ -68,6 +71,15 @@ public interface CategoriesMapper {
 					ORDER_BY(sortType + " DESC");
 				}
 				OFFSET(displayCount * (currentPage - 1) + "ROWS FETCH FIRST " +  displayCount  + " ROWS ONLY");
+			}}.toString();
+		}
+		
+		public String findLatest() {
+			return new SQL() {{
+				SELECT("id", "name", "order_no", "create_at", "update_at");
+				FROM("product_categories");
+				WHERE("ROWNUM <= 10");
+				ORDER_BY("id DESC");
 			}}.toString();
 		}
 		
