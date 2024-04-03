@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+	<!-- Required meta tags -->
+	<meta charset='utf-8'>
+	<meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
+
+	<!-- Bootstrap CSS -->
+	<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css' >
+
+	<!-- Bootstrap JS -->
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<script src='https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js'></script>
+	<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js'></script>
+
+	<!-- JQuery -->
+	<!-- can't use ajax with jQuery slim -->
+	<script src='https://code.jquery.com/jquery-3.7.1.min.js'></script>
+
+	<title>admin layout</title>
+</head>
+<body>
+	<!-- ヘッダー -->
+	<div>
+		<div layout:replace="~{admin/layout/header::admin-header}"></div>
+	</div>
+
+	<!-- メニュー -->
+	<div>
+		<nav class="menu col-sm-2">
+			<div layout:replace="~{admin/layout/sidebar::admin-sidebar}"></div>
+		</nav>
+	</div>
+
+	<!-- コンテンツ -->
+	<div>
+		<nav class="main col-sm-10 offset-sm-2">
+			<div layout:fragment="admin-content"></div>
+		</nav>
+	</div>
+
+	<!-- フッター -->
+	<div>
+		<div layout:replace="~{admin/layout/footer::admin-footer}"></div>
+	</div>
+</body>
+</html>

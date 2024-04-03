@@ -11,4 +11,9 @@ public class SampleController {
 	public String sample(Model model) {
 		return "sample";
 	}
+	
+	@GetMapping("/test")
+	public String test() {
+		return "admin/layout/content";
+	}
 }
