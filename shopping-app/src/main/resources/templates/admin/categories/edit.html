@@ -19,29 +19,34 @@
 	<title>admin product category edit</title>
 </head>
 <body>
-	<h1>商品カテゴリー編集</h1>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-2"></div>
+			
+			<div class="col-lg-10">
+				<span th:each="error:${errors}">
+				<p th:text="${error}"}></pth>
+			</span>
+			
+			<form th:action="@{/admin/product_categories/{id}(id=${category.id})}" th:method="put">
+				<div class="mt-2 mb-2">
+					<label class="form-label">名称</label>
+					<input class="form-control" type="text" name="name" th:value="${category.name}" placeholder="名称" />
+				</div>
+				
+				<div>
+					<label class="form-label">並び順番号</label>
+					<input class="form-control" type="number" name="orderNo" th:value="${category.orderNo}" placeholder="並び順番号" />
+				</div>
+				
+				<hr />
+				
+				<a class="btn btn-secondary me-2" th:href="@{/admin/product_categories}">キャンセル</a>
+				<input class="btn btn-primary" type="submit" value="更新" />
+			</form>
+			</div>
+		</div>
+	</div>
 	
-	<span th:each="error:${errors}">
-		<p th:text="${error}"}></pth>
-	</span>
-	
-	<form th:action="@{/admin/product_categories/{id}(id=${category.id})}" th:method="put">
-		<div>
-			<label>名称</label>
-		</div>
-		<div>
-			<input type="text" name="name" th:value="${category.name}" placeholder="名称" />
-		</div>
-		
-		<div>
-			<label>並び順番号</label>
-		</div>
-		<div>
-			<input type="number" name="orderNo" th:value="${category.orderNo}" placeholder="並び順番号" />
-		</div>
-		
-		<a th:href="@{/admin/product_categories}">キャンセル</a>
-		<input type="submit" value="更新" />
-	</form>
 </body>
 </html>
