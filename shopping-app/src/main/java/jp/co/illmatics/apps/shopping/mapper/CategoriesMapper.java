@@ -19,16 +19,7 @@ public interface CategoriesMapper {
 	List<Categories> find(Categories categories);
 	
 	@SelectProvider(CategorySqlProvider.class)
-	List<Categories> findAll();
-	
-	@SelectProvider(CategorySqlProvider.class)
-	Long count();
-	
-	@UpdateProvider(CategorySqlProvider.class)
-	void incrementOrderNo(Long orderNo, Long count);
-	
-	@UpdateProvider(CategorySqlProvider.class)
-	void incrementSameOrderNo(Long orderNo);
+	List<Categories> findAll(String name, String sortType, String sortDirection, Integer displayCount, Integer currentPage);
 	
 	@InsertProvider(CategorySqlProvider.class)
 	void insert(Categories categories);
@@ -64,37 +55,19 @@ public interface CategoriesMapper {
 		}
 		
 		// 全データ取得
-		public String findAll() {
+		public String findAll(String name, String sortType, String sortDirection, Integer displayCount, Integer currentPage) {
 			return new SQL() {{
 				SELECT("id", "name", "order_no", "create_at", "update_at");
 				FROM("product_categories");
-				ORDER_BY("id");
-			}}.toString();
-		}
-		
-		public String count() {
-			return new SQL() {{
-				SELECT("count(*)");
-				FROM("product_categories");
-			}}.toString();
-		}
-		
-		// order_no並び順に更新
-		// order_noと一致するデータ以降 1 加算
-		public String incrementOrderNo(Long orderNo, Long count) {
-			return new SQL() {{
-				UPDATE("product_categories");
-				SET("order_no = order_no + 1");
-				WHERE("order_no >= #{orderNo}");
-				WHERE("order_no <= #{count}");
-			}}.toString();
-		}
-		
-		public String incrementSameOrderNo(Long orderNo) {
-			return new SQL() {{
-				UPDATE("product_categories");
-				SET("order_no = order_no + 1");
-				WHERE("order_no = #{orderNo}");
+				if(!name.equals("")) {
+					WHERE("name LIKE '%" + name + "%'");
+				}
+				if (sortDirection.equals("asc")) {
+					ORDER_BY(sortType);
+				} else if (sortDirection.equals("desc")) {
+					ORDER_BY(sortType + " DESC");
+				}
+				OFFSET(displayCount * (currentPage - 1) + "ROWS FETCH FIRST " +  displayCount  + " ROWS ONLY");
 			}}.toString();
 		}
 		

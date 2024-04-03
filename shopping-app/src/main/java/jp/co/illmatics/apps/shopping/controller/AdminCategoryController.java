@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jp.co.illmatics.apps.shopping.entity.Categories;
 import jp.co.illmatics.apps.shopping.mapper.CategoriesMapper;
 
@@ -25,13 +26,36 @@ public class AdminCategoryController {
 	@GetMapping("/admin/product_categories")
 	public String index(
 			@RequestParam(name = "name", defaultValue = "") String name,
-			@RequestParam(name = "category_sort", defaultValue = "id") String categorySort,
-			@RequestParam(name = "sort_direction", defaultValue = "1") Long sortDirection,
-			@RequestParam(name = "display_count", defaultValue = "10") Long displayCount,
+			@RequestParam(name = "sort_type", defaultValue = "id") String sortType,
+			@RequestParam(name = "sort_direction", defaultValue = "asc") String sortDirection,
+			@RequestParam(name = "display_count", defaultValue = "10") Integer displayCount,
+			@RequestParam(name = "page", defaultValue="1") Integer currentPage,
+			HttpServletRequest request,
 			Model model) {
+		final Integer showPage = 3;
+		
 		List<Categories> categories = new ArrayList<Categories>();
-		categories = categoriesMapper.findAll();
+		categories = categoriesMapper.findAll(name, sortType, sortDirection, displayCount, currentPage);
+		
+		String url = request.getRequestURL().toString() + "?name=" + name + "&sort_type=" + sortType + "&sort_direction=" + sortDirection + "&display_count=" + displayCount;
+		
+		model.addAttribute("name", name);
+		model.addAttribute("sortType", sortType);
+		model.addAttribute("sortDirection", sortDirection);
+		model.addAttribute("displayCount", displayCount);
+		
+		model.addAttribute("url", url);
 		model.addAttribute("categories", categories);
+		
+		int totalPage = categories.size() / displayCount + 1;
+		int startPage = currentPage - (currentPage - 1) % showPage;
+		int endPage = (currentPage + showPage - 1 > totalPage) ? totalPage : (currentPage + showPage -1);
+		
+        model.addAttribute("page", currentPage);
+        model.addAttribute("totalPage", totalPage);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+		
 		return "admin/categories/index";
 	}
 	
@@ -48,25 +72,25 @@ public class AdminCategoryController {
 		
 		List<String> errors = new ArrayList<String>();
 		
-		if(name.equals("") || name.length() == 0){
+		// エラーチェック
+		if (name.equals("") || name.length() == 0){
 			errors.add("名前を入力してください");
 		}
 			
-		if(orderNo == null) {
+		if (orderNo == null) {
 			errors.add("並び順番号を入力してください");
 		}
 		
-		if(errors.size() > 0) {
+		Categories category = new Categories(name, orderNo);
+		List<Categories> checkCategories = categoriesMapper.find(category);
+		if (checkCategories.size() > 0) {
+			errors.add("指定された並び順番号は既に存在します");
+		}
+		
+		if (errors.size() > 0) {
 			model.addAttribute("errors", errors);
 			return "admin/categories/create";
 		} else {
-			Categories category = new Categories(name, orderNo);
-			
-			Long count = categoriesMapper.count();
-			
-			// 並び順番号更新
-			categoriesMapper.incrementOrderNo(orderNo, count);
-			categoriesMapper.incrementSameOrderNo(orderNo);
 			// 新規登録
 			categoriesMapper.insert(category);
 			
@@ -106,8 +130,6 @@ public class AdminCategoryController {
 		
 		// 編集データの取得
 		List<Categories> category = categoriesMapper.find(new Categories(id));
-		
-//		Long count = categoriesMapper.count();
 		
 		// 名前・並び順番号セッター
 		category.get(0).setName(name);
