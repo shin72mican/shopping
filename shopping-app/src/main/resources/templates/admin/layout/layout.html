@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	class="h-100">
 <head>
 	<!-- Required meta tags -->
 	<meta charset='utf-8'>
@@ -26,7 +27,7 @@
 
 	<title>admin layout</title>
 </head>
-<body>
+<body class="h-100">
 	<!-- ヘッダー -->
 	<div>
 		<div layout:replace="~{admin/layout/header::admin-header}"></div>
@@ -34,9 +35,9 @@
 	
 	<div></div>
 	
-	<div class="container-fluid">
-		<div class="row">
-			<nav class="col-md-2 d-none d-md-block bg-light sidebar">
+	<div class="container-fluid h-100">
+		<div class="row h-100">
+			<nav class="col-md-2 d-none d-md-block bg-light sidebar h-500">
 				<!-- メニュー -->
 				<div layout:replace="~{admin/layout/sidebar::admin-sidebar}"></div>
 			</nav>

@@ -32,6 +32,7 @@ public class AdminCategoryController {
 			@RequestParam(name = "page", defaultValue="1") Integer currentPage,
 			HttpServletRequest request,
 			Model model) {
+		
 		final Integer showPage = 3;
 		
 		List<Categories> categories = new ArrayList<Categories>();
@@ -112,11 +113,16 @@ public class AdminCategoryController {
 			@PathVariable("id") Long id,
 			Model model) {
 		
-		
 		List<Categories> category = categoriesMapper.find(new Categories(id));
-		model.addAttribute("category", category.get(0));
 		
-		return "admin/categories/show";
+		if (category.size() > 0) {
+			Integer itemCount = categoriesMapper.itemCount(category.get(0).getOrderNo());
+			model.addAttribute("itemCount", itemCount);
+			model.addAttribute("category", category.get(0));
+			return "admin/categories/show";
+		} else {
+			return "error/403";
+		}
 	}
 	
 	@GetMapping("/admin/product_categories/{id}/edit")
@@ -132,10 +138,14 @@ public class AdminCategoryController {
 	public String update(
 			@PathVariable("id") Long id,
 			@RequestParam(value = "name", defaultValue = "") String name,
-			@RequestParam(value = "orderNo", defaultValue = "") Long orderNo,
+			@RequestParam(value = "orderNo", defaultValue = "0", required = true) Long orderNo,
 			Model model) {
 		
+		System.out.println(orderNo);
+		
 		List<String> errors = new ArrayList<String>();
+		
+		System.out.println(orderNo);
 		
 		// エラーチェック
 		if (name.equals("") || name.length() == 0){
@@ -147,10 +157,6 @@ public class AdminCategoryController {
 		} else if(orderNo <= 0) {
 			errors.add("1以上の並び順番号を入力してください");
 		}
-		
-//		if(orderNo <= 0) {
-//			errors.add("0以下の並び順番号は登録することができません");
-//		}
 		
 		Categories category = new Categories(name, orderNo);
 		List<Categories> checkCategories = categoriesMapper.find(category);

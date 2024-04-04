@@ -24,6 +24,9 @@ public interface CategoriesMapper {
 	@SelectProvider(CategorySqlProvider.class)
 	List<Categories> findLatest();
 	
+	@SelectProvider(CategorySqlProvider.class)
+	Integer itemCount(Long orderNo);
+	
 	@InsertProvider(CategorySqlProvider.class)
 	void insert(Categories categories);
 	
@@ -74,12 +77,22 @@ public interface CategoriesMapper {
 			}}.toString();
 		}
 		
+		// 最近投稿
 		public String findLatest() {
 			return new SQL() {{
 				SELECT("id", "name", "order_no", "create_at", "update_at");
 				FROM("product_categories");
 				WHERE("ROWNUM <= 10");
 				ORDER_BY("id DESC");
+			}}.toString();
+		}
+		
+		// 商品個数
+		public String itemCount(Long orderNo) {
+			return new SQL() {{
+				SELECT("COUNT (*)");
+				FROM("products");
+				WHERE("product_category_id = " + orderNo);
 			}}.toString();
 		}
 		
