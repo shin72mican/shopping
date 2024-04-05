@@ -7,7 +7,8 @@ spring:
 #    allow-bean-definition-overriding: true
   datasource:
 #    url: jdbc:oracle:thin:@//your-local-ip-address:1521/TEST
-    url: jdbc:oracle:thin:@//192.168.0.182:1521/TEST
+#    url: jdbc:oracle:thin:@//192.168.0.182:1521/TEST
+    url: jdbc:oracle:thin:@//192.168.56.1:1521/TEST
     username: tuser
     password: tpassword
     driverClassName: oracle.jdbc.driver.OracleDriver

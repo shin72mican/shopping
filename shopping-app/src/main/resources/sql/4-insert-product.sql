@@ -37,7 +37,7 @@ image_path
 'Gitの始め方',
 2000,
 'git初心者対象解説書',
-''
+'/products/git.png'
 );
 
 INSERT INTO products (
@@ -51,7 +51,7 @@ image_path
 '初心者のためのSQL',
 1500,
 'slq初心者対象解説書',
-''
+'/products/sql.png'
 );
 
 INSERT INTO products (
@@ -65,7 +65,7 @@ image_path
 'ピノキオ',
 3500,
 '童話シリーズ',
-''
+'/products/pinokio.png'
 );
 
 INSERT INTO products (
@@ -79,6 +79,6 @@ image_path
 'かぐや姫',
 2500,
 '日本昔話シリーズ',
-''
+'/products/kaguyahime.png'
 );
 

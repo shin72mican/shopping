@@ -22,8 +22,8 @@
 		<table class="table">
 			<tbody>
 				<tr>
-					<th width="40">ID</th>
-					<td width="60" th:text="${product.id}"></td>
+					<th width="80">ID</th>
+					<td width="200" th:text="${product.id}"></td>
 				</tr>
 				<tr>
 					<th>商品カテゴリー</th>
@@ -35,7 +35,7 @@
 				</tr>
 				<tr>
 					<th>価格</th>
-					<td th:text="${product.price}"></td>
+					<td th:text="${'￥' + T(java.lang.String).format('%,d', product.price)}"></td>
 				</tr>
 				<tr>
 					<th>説明</th>
@@ -43,7 +43,7 @@
 				</tr>
 				<tr>
 					<th>イメージ</th>
-					<td></td>
+					<td><img th:src="${product.imagePath}" onerror="this.src='/images/no_image.png'"></td>
 				</tr>
 			</tbody>
 		</table>
