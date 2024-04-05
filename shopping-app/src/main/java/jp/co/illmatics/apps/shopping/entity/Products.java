@@ -14,6 +14,10 @@ public class Products {
 		
 	}
 	
+	public Products(Long id) {
+		this.id = id;
+	}
+	
 	private Long id;
 	
 	private Long productCategoryId;

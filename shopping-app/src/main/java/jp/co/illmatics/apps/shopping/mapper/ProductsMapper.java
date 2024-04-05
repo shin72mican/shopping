@@ -1,6 +1,7 @@
 package jp.co.illmatics.apps.shopping.mapper;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.SelectProvider;
@@ -12,12 +13,27 @@ import jp.co.illmatics.apps.shopping.entity.Products;
 @Mapper
 public interface ProductsMapper {
 	@SelectProvider(ProductSqlProvider.class)
+	List<Products> find(Products product);
+	
+	@SelectProvider(ProductSqlProvider.class)
 	List<Products> findAll();
 	
 	@SelectProvider(ProductSqlProvider.class)
 	List<Products> findSearch(Long categoryId, String name, Long price, String standard, String sortType, String sortDirection, int displayCount, Integer currentPage);
 	
 	public class ProductSqlProvider implements ProviderMethodResolver {
+		// 単一データの取得
+		public String find(Products product) {
+			return new SQL() {{
+				SELECT("p.id", "p.product_category_id", "c.name AS category_name", "p.name", "p.price", "p.description", "p.image_path", "p.create_at", "p.update_at");
+				FROM("products p");
+				INNER_JOIN("product_categories c ON p.product_category_id = c.id");
+				if(Objects.nonNull(product.getId())) {
+					WHERE("p.id = #{id}");
+				}
+			}}.toString();
+		}
+		
 		// データ取得
 		public String findAll() {
 			return new SQL() {{
