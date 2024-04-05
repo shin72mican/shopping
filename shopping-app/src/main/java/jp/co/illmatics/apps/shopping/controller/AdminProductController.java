@@ -101,6 +101,7 @@ public class AdminProductController {
 			@RequestParam(name = "category_id", defaultValue = "0") Long categoryId,
 			@RequestParam(name = "name", defaultValue = "") String name,
 			@RequestParam(name = "price", defaultValue = "0") Long price,
+			@RequestParam(name = "description", defaultValue = "") String description,
 			@RequestParam(name = "product_image", defaultValue="") MultipartFile productImage,
 			Model model) throws IOException {
 		
@@ -121,6 +122,8 @@ public class AdminProductController {
 		
 		model.addAttribute("errors", errors);
 		
+		Products product = new Products(categoryId, name, price, description);
+		
 		if(!productImage.isEmpty()) {
 			// 一意な画像ファイル名の作成
 			// ファイル名取得
@@ -135,9 +138,23 @@ public class AdminProductController {
 			Path filePath=Paths.get("static/products/" + fileName);
 			// 保存
 			Files.copy(productImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+			
+			product.setImagePath("/products/" + fileName);
 		}
 		
-		return "redirect:/admin/products";
+		if (errors.size() > 0) {
+			List<Categories> categories = categoriesMapper.findAll();
+			model.addAttribute("errors", errors);
+			model.addAttribute("categories", categories);
+			model.addAttribute("categoryId", categoryId);
+			model.addAttribute("name", name);
+			model.addAttribute("price", price);
+			model.addAttribute("description", description);
+			return "/admin/products/create";
+		} else {
+//			productsMapper.insert(product);
+			return "redirect:/admin/products";
+		}
 	}
 }
 

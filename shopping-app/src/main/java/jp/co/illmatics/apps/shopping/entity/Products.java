@@ -18,6 +18,13 @@ public class Products {
 		this.id = id;
 	}
 	
+	public Products(Long categoryId, String name, Long price, String description) {
+		this.productCategoryId = categoryId;
+		this.name = name;
+		this.price = price;
+		this.description = description;
+	}
+	
 	private Long id;
 	
 	private Long productCategoryId;

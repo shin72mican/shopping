@@ -3,6 +3,7 @@ package jp.co.illmatics.apps.shopping.mapper;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.builder.annotation.ProviderMethodResolver;
@@ -20,6 +21,9 @@ public interface ProductsMapper {
 	
 	@SelectProvider(ProductSqlProvider.class)
 	List<Products> findSearch(Long categoryId, String name, Long price, String standard, String sortType, String sortDirection, int displayCount, Integer currentPage);
+	
+	@InsertProvider(ProductSqlProvider.class)
+	void insert(Products products);
 	
 	public class ProductSqlProvider implements ProviderMethodResolver {
 		// 単一データの取得
@@ -70,5 +74,35 @@ public interface ProductsMapper {
 				OFFSET(displayCount * (currentPage - 1) + "ROWS FETCH FIRST " +  displayCount  + " ROWS ONLY");
 			}}.toString();
 		}
+		
+		// データの挿入
+		public String insert(Products products) {
+			System.out.println(
+					new SQL() {{
+						INSERT_INTO("products");
+						VALUES("product_category_id", "#{productCategoryId}");
+						VALUES("name", "#{name}");
+						VALUES("price", "#{price");
+						VALUES("description", "#{description}");
+						VALUES("image_path", "#{imagePath}");
+						VALUES("create_at", "CURRENT_TIMESTAMP");
+						VALUES("update_at", "CURRENT_TIMESTAMP");
+					}}.toString()
+					);
+			return new SQL() {{
+				INSERT_INTO("products");
+				VALUES("product_category_id", "#{productCategoryId}");
+				VALUES("name", "#{name}");
+				VALUES("price", "#{price");
+				VALUES("description", "#{description}");
+				VALUES("image_path", "#{imagePath}");
+				VALUES("create_at", "CURRENT_TIMESTAMP");
+				VALUES("update_at", "CURRENT_TIMESTAMP");
+			}}.toString();
+		}
 	}
 }
+
+
+
+
