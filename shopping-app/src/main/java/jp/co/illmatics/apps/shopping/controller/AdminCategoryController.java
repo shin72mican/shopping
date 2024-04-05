@@ -36,7 +36,7 @@ public class AdminCategoryController {
 		final Integer showPage = 3;
 		
 		List<Categories> categories = new ArrayList<Categories>();
-		categories = categoriesMapper.findAll(name, sortType, sortDirection, displayCount, currentPage);
+		categories = categoriesMapper.findSearch(name, sortType, sortDirection, displayCount, currentPage);
 		
 		String url = request.getRequestURL().toString() + "?name=" + name + "&sort_type=" + sortType + "&sort_direction=" + sortDirection + "&display_count=" + displayCount;
 		
