@@ -12,6 +12,13 @@ spring:
     username: tuser
     password: tpassword
     driverClassName: oracle.jdbc.driver.OracleDriver
+    
+    # ファイルサイズの合計の最大値
+    # リクエストサイズの最大値
+    # servlet:
+    #   multipart: 
+    #     max-file-size=1MB
+    #     max-request-size=10MB
   
   mvc:
     hiddenmethod:
