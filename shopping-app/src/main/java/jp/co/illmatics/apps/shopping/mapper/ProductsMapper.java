@@ -77,28 +77,17 @@ public interface ProductsMapper {
 		
 		// データの挿入
 		public String insert(Products products) {
-			System.out.println(
-					new SQL() {{
-						INSERT_INTO("products");
-						VALUES("product_category_id", "#{productCategoryId}");
-						VALUES("name", "#{name}");
-						VALUES("price", "#{price");
-						VALUES("description", "#{description}");
-						VALUES("image_path", "#{imagePath}");
-						VALUES("create_at", "CURRENT_TIMESTAMP");
-						VALUES("update_at", "CURRENT_TIMESTAMP");
-					}}.toString()
-					);
 			return new SQL() {{
 				INSERT_INTO("products");
 				VALUES("product_category_id", "#{productCategoryId}");
 				VALUES("name", "#{name}");
-				VALUES("price", "#{price");
+				VALUES("price", "#{price}");
 				VALUES("description", "#{description}");
 				VALUES("image_path", "#{imagePath}");
 				VALUES("create_at", "CURRENT_TIMESTAMP");
 				VALUES("update_at", "CURRENT_TIMESTAMP");
 			}}.toString();
+			
 		}
 	}
 }

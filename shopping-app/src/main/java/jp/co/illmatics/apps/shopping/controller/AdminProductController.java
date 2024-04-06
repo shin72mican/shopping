@@ -152,7 +152,8 @@ public class AdminProductController {
 			model.addAttribute("description", description);
 			return "/admin/products/create";
 		} else {
-//			productsMapper.insert(product);
+			System.out.println(product);
+			productsMapper.insert(product);
 			return "redirect:/admin/products";
 		}
 	}
