@@ -13,7 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import jp.co.illmatics.apps.shopping.entity.Admins;
 import jp.co.illmatics.apps.shopping.mapper.AdminsMapper;
 
-public class AdminAbstractUserDetailsAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
+public class AdminAbstractUserDetailsAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {	
 	@Autowired
 	public AdminsMapper adminsMapper;
 	

@@ -17,11 +17,12 @@ public class AdminUserDetails implements UserDetails {
 	
 	public AdminUserDetails(Admins admin) {
 		super();
-		String[] array = {"ADMIN"};
+		String[] array = {"ROLE_ADMIN"};
 		this.admin = admin;
 		this.authorities = Arrays.stream(array)
 			.map(role -> new SimpleGrantedAuthority(role))
 			.toList();
+		System.out.println(this.authorities);
 	}
 
 	public Admins getAdmin() {

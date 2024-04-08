@@ -11,7 +11,7 @@ public class LoginController {
 	@GetMapping("/admin/login")
 	public String loginAsAdmin(Model model) {
 		BCryptPasswordEncoder password = new BCryptPasswordEncoder();
-		model.addAttribute("pass", password.encode("general"));
+		model.addAttribute("pass", password.encode("pass"));
 		return "/admin/login";
 	}
 

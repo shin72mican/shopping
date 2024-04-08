@@ -23,57 +23,57 @@ public class SecurityConfig {
 		private UserDetailsService userDetailsService;
 	*/
 	
-//	// パスワードハッシュ化
-//	@Bean	
-//	public PasswordEncoder passwordEncoder() {
-//		return new BCryptPasswordEncoder();
-//	}
+	// パスワードハッシュ化
+	@Bean	
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 	
+
+//	@Configuration
+//	@Order(1)
+//	public static class UsersConfig {
+//		
+////		// パスワードハッシュ化
+//		@Bean
+//		public PasswordEncoder passwordEncoder() {
+//			return new BCryptPasswordEncoder();
+//		}
+//		
+////		@Autowired
+////		private CustomerAbstractUserDetails
+//
+//		@Bean
+//		public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//		http.formLogin(login -> login // フォーム認証の設定記述開始
+//				.loginProcessingUrl("/users/login") // ユーザー名・パスワードの送信先URL
+//				.loginPage("/users/login") // ログイン画面のURL
+//				.failureUrl("/users/login") // ログイン失敗後のリダイレクト先URL
+//				.usernameParameter("email")
+//				.passwordParameter("password")
+//				.defaultSuccessUrl("/users/home", true) // ログイン成功後のリダイレクト先URL
+//			).logout(logout -> logout // ログアウトの設定記述開始
+//				.logoutUrl("/logout")
+//				.logoutSuccessUrl("/logout") // ログアウト成功後のリダイレクト先URL
+//			).authorizeHttpRequests(authz -> authz // URLごとの認可設定記述開始
+//				.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+//				.requestMatchers("/sample").permitAll()
+//				.requestMatchers("/").permitAll()
+//				.requestMatchers("/admin/login").permitAll()
+//				.requestMatchers("/api/sample").permitAll()
+//				.requestMatchers("/users/**").hasRole("USERS")
+//				.requestMatchers("/admin/**").hasRole("ADMIN")
+//				.anyRequest().authenticated() // 他のURLはログイン後のみアクセス可能
+//			);
+//			return http.build();
+//		}
+//	}
 
 	@Configuration
 	@Order(1)
-	public static class UsersConfig {
-		
-//		// パスワードハッシュ化
-		@Bean
-		public PasswordEncoder passwordEncoder() {
-			return new BCryptPasswordEncoder();
-		}
-		
-//		@Autowired
-//		private CustomerAbstractUserDetails
-
-		@Bean
-		public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.formLogin(login -> login // フォーム認証の設定記述開始
-				.loginProcessingUrl("/users/login") // ユーザー名・パスワードの送信先URL
-				.loginPage("/users/login") // ログイン画面のURL
-				.failureUrl("/users/login") // ログイン失敗後のリダイレクト先URL
-				.usernameParameter("email")
-				.passwordParameter("password")
-				.defaultSuccessUrl("/users/home", true) // ログイン成功後のリダイレクト先URL
-			).logout(logout -> logout // ログアウトの設定記述開始
-				.logoutUrl("/logout")
-				.logoutSuccessUrl("/logout") // ログアウト成功後のリダイレクト先URL
-			).authorizeHttpRequests(authz -> authz // URLごとの認可設定記述開始
-				.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-				.requestMatchers("/sample").permitAll()
-				.requestMatchers("/").permitAll()
-				.requestMatchers("/admin/login").permitAll()
-				.requestMatchers("/api/sample").permitAll()
-				.requestMatchers("/users/**").hasRole("USERS")
-				.requestMatchers("/admin/**").hasRole("ADMIN")
-				.anyRequest().authenticated() // 他のURLはログイン後のみアクセス可能
-			);
-			return http.build();
-		}
-	}
-
-	@Configuration
-	@Order(2)
 	public static class AdminConfig {
 		
-//		// パスワードハッシュ化
+		// パスワードハッシュ化
 		@Bean
 		public PasswordEncoder passwordEncoder() {
 			return new BCryptPasswordEncoder();
@@ -83,7 +83,17 @@ public class SecurityConfig {
 		public AdminAbstractUserDetailsAuthenticationProvider getAuthenticationProvider() {
 		    return new AdminAbstractUserDetailsAuthenticationProvider();
 		}
-
+		
+//		@Bean
+//		InMemoryUserDetailsManager userDetailsService() {
+//		    UserDetails admin = User
+//		        .withUsername("admin")
+//		        .password(passwordEncoder().encode("admin1234"))
+//		        .roles("ADMIN")
+//		        .build();
+//		    return new InMemoryUserDetailsManager(admin);
+//		}
+		
 		@Bean
 		public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.formLogin(login -> login
@@ -99,6 +109,7 @@ public class SecurityConfig {
 			).authorizeHttpRequests(authz -> authz
 				.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
 				.requestMatchers("/").permitAll()
+				.requestMatchers("/admin/login").permitAll()
 				.requestMatchers("/sample").permitAll()
 				.requestMatchers("/api/sample").permitAll()
 				.requestMatchers("/users/**").hasRole("USER")

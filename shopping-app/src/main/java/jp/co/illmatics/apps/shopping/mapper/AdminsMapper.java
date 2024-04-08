@@ -51,7 +51,7 @@ public interface AdminsMapper {
 			return new SQL() {{
 				SELECT("id", "name", "email", "password", "create_at", "update_at");
 				FROM("admin_users");
-				WHERE("name = #{name}");
+				WHERE("email = #{name}");
 			}}.toString();
 		}
 	}
