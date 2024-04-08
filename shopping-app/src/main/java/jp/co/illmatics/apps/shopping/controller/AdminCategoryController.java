@@ -141,11 +141,7 @@ public class AdminCategoryController {
 			@RequestParam(value = "orderNo", defaultValue = "0", required = true) Long orderNo,
 			Model model) {
 		
-		System.out.println(orderNo);
-		
 		List<String> errors = new ArrayList<String>();
-		
-		System.out.println(orderNo);
 		
 		// エラーチェック
 		if (name.equals("") || name.length() == 0){
