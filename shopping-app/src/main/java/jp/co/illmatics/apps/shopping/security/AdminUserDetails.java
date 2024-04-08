@@ -22,7 +22,6 @@ public class AdminUserDetails implements UserDetails {
 		this.authorities = Arrays.stream(array)
 			.map(role -> new SimpleGrantedAuthority(role))
 			.toList();
-		System.out.println(this.authorities);
 	}
 
 	public Admins getAdmin() {

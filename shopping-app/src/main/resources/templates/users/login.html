@@ -20,6 +20,10 @@
 	<title>users login</title>
 </head>
 <body>
-
+	<form method="post" th:action="@{/admin/login}">
+		email: <input type="text" name="email">
+		password: <input type="password" name="password">
+		<button type="submit">ログイン</button>
+	</form>
 </body>
 </html>

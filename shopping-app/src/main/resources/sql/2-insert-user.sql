@@ -1,3 +1,4 @@
+// パスワード: pass
 INSERT INTO admin_users (
  name,
  email,
@@ -6,7 +7,7 @@ INSERT INTO admin_users (
 ) VALUES (
  'admin@a.com',
  'admin@a.com',
- 'pass',
+ '$2a$10$PBkA9nJQG46OPikJMHvUu.IHxY0UVm.mHPa07N0xwvp67dGnP.cY.',
  1
 );
 
