@@ -16,6 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpServletRequest;
 import jp.co.illmatics.apps.shopping.entity.Categories;
 import jp.co.illmatics.apps.shopping.mapper.CategoriesMapper;
+import jp.co.illmatics.apps.shopping.values.Page;
+import jp.co.illmatics.apps.shopping.values.form.Display;
+import jp.co.illmatics.apps.shopping.values.form.SortDirection;
+import jp.co.illmatics.apps.shopping.values.form.categories.SortType;
 
 @Controller
 public class AdminCategoryController {
@@ -32,9 +36,6 @@ public class AdminCategoryController {
 			@RequestParam(name = "page", defaultValue="1") Integer currentPage,
 			HttpServletRequest request,
 			Model model) {
-		
-		final Integer showPage = 3;
-		
 		List<Categories> categories = new ArrayList<Categories>();
 		categories = categoriesMapper.findAll(name, sortType, sortDirection, displayCount, currentPage);
 		
@@ -45,12 +46,17 @@ public class AdminCategoryController {
 		model.addAttribute("sortDirection", sortDirection);
 		model.addAttribute("displayCount", displayCount);
 		
+		// 検索
+		model.addAttribute("typeList", SortType.values());
+		model.addAttribute("sortList", SortDirection.values());
+		model.addAttribute("countList", Display.values());
+		
 		model.addAttribute("url", url);
 		model.addAttribute("categories", categories);
 		
 		int totalPage = categories.size() / displayCount + 1;
-		int startPage = currentPage - (currentPage - 1) % showPage;
-		int endPage = (currentPage + showPage - 1 > totalPage) ? totalPage : (currentPage + showPage -1);
+		int startPage = currentPage - (currentPage - 1) % Page.COUNT.getValue();
+		int endPage = (currentPage + Page.COUNT.getValue() - 1 > totalPage) ? totalPage : (currentPage + Page.COUNT.getValue() -1);
 		
         model.addAttribute("page", currentPage);
         model.addAttribute("totalPage", totalPage);

@@ -21,25 +21,28 @@
 					<div class="row">
 						<div class="col-lg-4">
 							<select class="form-select" name="sort_type">
-								<option value="id" th:selected="${sortType == 'id'}">並び替え:ID</option>
-								<option value="name" th:selected="${sortType == 'name'}">並び替え:名称</option>
-								<option value="order_no" th:selected="${sortType == 'order_no'}">並び替え:並び順番号</option>
+								<option th:each="type : ${typeList}"
+								        th:value="${type.value}" th:text="${type.viewType}"
+								        th:selected="${sortType == type.value}">
+								</option>
 							</select>
 						</div>
 						
 						<div class="col-lg-4">
 							<select class="form-select" name="sort_direction">
-								<option value="asc" th:selected="${sortDirection == 'asc'}">並び替え方向:昇順</option>
-								<option value="desc" th:selected="${sortDirection == 'desc'}">並び替え方向:降順</option>
+								<option th:each="sort : ${sortList}"
+								        th:value="${sort.value}" th:text="${sort.viewDirection}"
+								        th:selected="${sortDirection == sort.value}">
+								</option>
 							</select>
 						</div>
 						
 						<div class="col-lg-2">
 							<select class="form-select" name="display_count">
-								<option value="10" th:selected="${displayCount == 10}">表示:10件</option>
-								<option value="20" th:selected="${displayCount == 20}">表示:20件</option>
-								<option value="50" th:selected="${displayCount == 50}">表示:50件</option>
-								<option value="100" th:selected="${displayCount == 100}">表示:100件</option>
+							    <option th:each="count : ${countList}" 
+							            th:value="${count.value}" th:text="${count.viewCount}"
+							            th:selected="${displayCount == count.value}">
+							    </option>
 							</select>
 						</div>
 						
