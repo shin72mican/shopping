@@ -21,25 +21,28 @@
 					<div class="row">
 						<div class="col-lg-4">
 							<select class="form-select" name="sort_type">
-								<option value="id" th:selected="${sortType == 'id'}">並び替え:ID</option>
-								<option value="name" th:selected="${sortType == 'name'}">並び替え:名称</option>
-								<option value="order_no" th:selected="${sortType == 'order_no'}">並び替え:並び順番号</option>
+								<option th:each="type : ${typeList}"
+								        th:value="${type.value}" th:text="${type.viewType}"
+								        th:selected="${sortType == type.value}">
+								</option>
 							</select>
 						</div>
 						
 						<div class="col-lg-4">
 							<select class="form-select" name="sort_direction">
-								<option value="asc" th:selected="${sortDirection == 'asc'}">並び替え方向:昇順</option>
-								<option value="desc" th:selected="${sortDirection == 'desc'}">並び替え方向:降順</option>
+								<option th:each="sort : ${sortList}"
+								        th:value="${sort.value}" th:text="${sort.viewDirection}"
+								        th:selected="${sortDirection == sort.value}">
+								</option>
 							</select>
 						</div>
 						
 						<div class="col-lg-2">
 							<select class="form-select" name="display_count">
-								<option value="10" th:selected="${displayCount == 10}">表示:10件</option>
-								<option value="20" th:selected="${displayCount == 20}">表示:20件</option>
-								<option value="50" th:selected="${displayCount == 50}">表示:50件</option>
-								<option value="100" th:selected="${displayCount == 100}">表示:100件</option>
+							    <option th:each="count : ${countList}" 
+							            th:value="${count.value}" th:text="${count.viewCount}"
+							            th:selected="${displayCount == count.value}">
+							    </option>
 							</select>
 						</div>
 						
@@ -54,59 +57,66 @@
 		</div>
 		
 		<a class="mb-3 btn btn-success" th:href="@{/admin/product_categories/create}">新規</a>
-
-		<table class="table table-striped">
-			<thead>
-				<tr class="border-top border-bottom">
-					<th>ID</th>
-					<th>名称</th>
-					<th>並び順番号</th>
-<!--					<th colspan="2"></th>-->
-				</tr>
-			</thead>
-			
-			<tbody>
-				<tr th:each="category:${categories}">
-					<td width="20" th:text="${category.id}"></td>
-					<td width="100"><a th:href="@{/admin/product_categories/{id}(id=${category.id})}" th:text="${category.name}"></a></td>
-					<td width="110" th:text="${category.orderNo}"></td>
-<!--					<td width="70"><a class="btn btn-success" th:href="@{/admin/product_categories/{id}/edit(id=${category.id})}">編集</a></td>-->
-<!--					<td width="70">-->
-<!--						<form th:action="@{/admin/product_categories/{id}(id = ${category.id})}" th:method="delete">-->
-<!--							<input type="submit" value="削除" class="btn btn-danger" />-->
-<!--						</form>-->
-<!--					</td>-->
-				</tr>
-			</tbody>
-		</table>
 		
-		<nav>
-	    <ul class="pagination pg-blue justify-content-center">
-	        <li th:if="${startPage} > 1" class="page-item ">
-	            <a class="page-link" th:href="@{${url} + '&page=1'}" tabindex="-2">最初</a>
-	        </li>
-	        <li th:if="${page} > 1" class="page-item ">
-	            <a class="page-link" th:href="@{${url} + '&page=' + ${page-1}}" tabindex="-1">前へ</a>
-	        </li>
-	        <th:block th:if="${endPage}<=0">
-	            <li class="page-item " th:classappend="${i == page} ? active" th:each="i : ${startPage}">
-	                <a class="page-link" th:href="@{${url} + '&page=' + ${i}}" th:text="${i}"></a>
-	            </li>
-	        </th:block>
-	        <!-- StartPageからEndPageまでのページ数を表示する -->
-	        <th:block th:if="${endPage}>0">
-	            <li class="page-item " th:classappend="${i == page} ? active" th:each="i : ${#numbers.sequence(startPage, endPage)}">
-	                <a class="page-link" th:href="@{${url} + '&page=' + ${i}}" th:text="${i}"></a>
-	            </li>
-	        </th:block>
-	        <li th:if="${page} < ${totalPage}" class="page-item ">
-	            <a class="page-link" th:href="@{${url} + '&page=' + ${page+1}}">次へ</a>
-	        </li>
-	        <li th:if="${endPage} < ${totalPage}" class="page-item ">
-	            <a class="page-link" th:href="@{${url} + '&page=' + ${totalPage}}">最後</a>
-	        </li>
-	    </ul>
-		</nav>
+		<th:block th:if="${ categories.size() == 0 }">
+			<p>検索結果に一致するデータが存在しません</p>
+		</th:block> 
+		
+		<th:block th:if="${ categories.size() > 0 }">
+			<table class="table table-striped">
+				<thead>
+					<tr class="border-top border-bottom">
+						<th>ID</th>
+						<th>名称</th>
+						<th>並び順番号</th>
+	<!--					<th colspan="2"></th>-->
+					</tr>
+				</thead>
+				
+				<tbody>
+					<tr th:each="category:${categories}">
+						<td style="width: 20px;" th:text="${category.id}"></td>
+						<td style="width: 100px;"><a th:href="@{/admin/product_categories/{id}(id=${category.id})}" th:text="${category.name}"></a></td>
+						<td style="width: 110px;" th:text="${category.orderNo}"></td>
+	<!--					<td width="70"><a class="btn btn-success" th:href="@{/admin/product_categories/{id}/edit(id=${category.id})}">編集</a></td>-->
+	<!--					<td width="70">-->
+	<!--						<form th:action="@{/admin/product_categories/{id}(id = ${category.id})}" th:method="delete">-->
+	<!--							<input type="submit" value="削除" class="btn btn-danger" />-->
+	<!--						</form>-->
+	<!--					</td>-->
+					</tr>
+				</tbody>
+			</table>
+			
+			<nav>
+		    <ul class="pagination pg-blue justify-content-center">
+		        <li th:if="${startPage} > 1" class="page-item ">
+		            <a class="page-link" th:href="@{${url} + '&page=1'}" tabindex="-2">最初</a>
+		        </li>
+		        <li th:if="${page} > 1" class="page-item ">
+		            <a class="page-link" th:href="@{${url} + '&page=' + ${page-1}}" tabindex="-1">前へ</a>
+		        </li>
+		        <th:block th:if="${endPage}<=0">
+		            <li class="page-item " th:classappend="${i == page} ? active" th:each="i : ${startPage}">
+		                <a class="page-link" th:href="@{${url} + '&page=' + ${i}}" th:text="${i}"></a>
+		            </li>
+		        </th:block>
+		        <!-- StartPageからEndPageまでのページ数を表示する -->
+		        <th:block th:if="${endPage}>0">
+		            <li class="page-item " th:classappend="${i == page} ? active" th:each="i : ${#numbers.sequence(startPage, endPage)}">
+		                <a class="page-link" th:href="@{${url} + '&page=' + ${i}}" th:text="${i}"></a>
+		            </li>
+		        </th:block>
+		        <li th:if="${page} < ${totalPage}" class="page-item ">
+		            <a class="page-link" th:href="@{${url} + '&page=' + ${page+1}}">次へ</a>
+		        </li>
+		        <li th:if="${endPage} < ${totalPage}" class="page-item ">
+		            <a class="page-link" th:href="@{${url} + '&page=' + ${totalPage}}">最後</a>
+		        </li>
+		    </ul>
+			</nav>
+		
+		</th:block>
 				
 	</div>
 	

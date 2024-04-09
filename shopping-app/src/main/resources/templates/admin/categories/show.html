@@ -11,9 +11,9 @@
 		
 		<table class="mt-5">
 			<tr>
-				<td width="60"><a th:href="@{/admin/product_categories}">一覧</a></td>
-				<td width="70"><a class="btn btn-success" th:href="@{/admin/product_categories/{id}/edit(id=${category.id})}">編集</a></td>
-				<td width="60" th:if="${itemCount == 0}">
+				<td style="width: 60px;"><a th:href="@{/admin/product_categories}">一覧</a></td>
+				<td style="width: 70px;"><a class="btn btn-success" th:href="@{/admin/product_categories/{id}/edit(id=${category.id})}">編集</a></td>
+				<td style="width: 60px;" th:if="${itemCount == 0}">
 					<form th:action="@{/admin/product_categories/{id}(id = ${category.id})}" th:method="delete">
 						<input type="submit" value="削除" class="btn btn-danger" />
 					</form>
@@ -24,8 +24,8 @@
 		<table class="table">
 			<tbody>
 				<tr>
-					<th width="40">ID</th>
-					<td width="60" th:text="${category.id}"></td>
+					<th style="width: 40px;">ID</th>
+					<td style="width: 60px;" th:text="${category.id}"></td>
 				</tr>
 				<tr>
 					<th>名称</th>
