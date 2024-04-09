@@ -9,9 +9,9 @@
 	<div layout:fragment="admin-content">
 		<table class="mt-5">
 			<tr>
-				<td width="60"><a th:href="@{/admin/products}">一覧</a></td>
-				<td width="70"><a class="btn btn-success" th:href="@{/admin/products/{id}/edit(id=${product.id})}">編集</a></td>
-				<td width="60">
+				<td style="width: 60px;"><a th:href="@{/admin/products}">一覧</a></td>
+				<td style="width: 70px;"><a class="btn btn-success" th:href="@{/admin/products/{id}/edit(id=${product.id})}">編集</a></td>
+				<td style="width: 60px;">
 					<form th:action="@{/admin/products/{id}(id = ${product.id})}" th:method="delete">
 						<input type="submit" value="削除" class="btn btn-danger" />
 					</form>
@@ -22,8 +22,8 @@
 		<table class="table">
 			<tbody>
 				<tr>
-					<th width="80">ID</th>
-					<td width="200" th:text="${product.id}"></td>
+					<th style="width: 80px;">ID</th>
+					<td style="width: 200px;" th:text="${product.id}"></td>
 				</tr>
 				<tr>
 					<th>商品カテゴリー</th>
