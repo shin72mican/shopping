@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -107,29 +108,30 @@ public class AdminProductController {
 	public String store(
 			@RequestParam(name = "category_id", defaultValue = "0") Long categoryId,
 			@RequestParam(name = "name", defaultValue = "") String name,
-			@RequestParam(name = "price", defaultValue = "0") Long price,
+			@RequestParam(name = "price", defaultValue = "") Long price,
 			@RequestParam(name = "description", defaultValue = "") String description,
 			@RequestParam(name = "product_image", defaultValue="") MultipartFile productImage,
 			Model model) throws IOException {
 		
+		Products product = new Products();
+		
 		// エラーチェック
 		List<String> errors = new ArrayList<String>();
 		
-		if (name.equals("")) {
+		if (!StringUtils.hasLength(name)) {
 			errors.add("名前を入力してください");
 		}
 		
 		if (price == null) {
 			errors.add("価格を入力してください");
-		}
-		
-		if (price < 0) {
-			errors.add("0以上で価格を入力して下さい");
+		} else {
+			product = new Products(categoryId, name, price, description);
+			if (price < 0) {
+				errors.add("0以上で価格を入力して下さい");
+			}
 		}
 		
 		model.addAttribute("errors", errors);
-		
-		Products product = new Products(categoryId, name, price, description);
 		
 		if(!productImage.isEmpty()) {
 			// 一意な画像ファイル名の作成
@@ -147,6 +149,8 @@ public class AdminProductController {
 			Files.copy(productImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 			
 			product.setImagePath("/products/" + fileName);
+		} else {
+			product.setImagePath("");
 		}
 		
 		if (errors.size() > 0) {
@@ -159,7 +163,6 @@ public class AdminProductController {
 			model.addAttribute("description", description);
 			return "/admin/products/create";
 		} else {
-			System.out.println(product);
 			productsMapper.insert(product);
 			return "redirect:/admin/products";
 		}
