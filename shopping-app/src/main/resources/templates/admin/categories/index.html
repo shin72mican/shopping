@@ -75,9 +75,9 @@
 				
 				<tbody>
 					<tr th:each="category:${categories}">
-						<td width="20" th:text="${category.id}"></td>
-						<td width="100"><a th:href="@{/admin/product_categories/{id}(id=${category.id})}" th:text="${category.name}"></a></td>
-						<td width="110" th:text="${category.orderNo}"></td>
+						<td style="width: 20px;" th:text="${category.id}"></td>
+						<td style="width: 100px;"><a th:href="@{/admin/product_categories/{id}(id=${category.id})}" th:text="${category.name}"></a></td>
+						<td style="width: 110px;" th:text="${category.orderNo}"></td>
 	<!--					<td width="70"><a class="btn btn-success" th:href="@{/admin/product_categories/{id}/edit(id=${category.id})}">編集</a></td>-->
 	<!--					<td width="70">-->
 	<!--						<form th:action="@{/admin/product_categories/{id}(id = ${category.id})}" th:method="delete">-->
