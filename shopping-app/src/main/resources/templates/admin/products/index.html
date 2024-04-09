@@ -95,10 +95,10 @@
 				
 				<tbody>
 					<tr th:each="product:${products}">
-						<td width="10" th:text="${product.id}"></td>
-						<td width="100" th:text="${product.categoryName}"></td>
-						<td width="200"><a th:href="@{/admin/products/{id}(id=${product.id})}" th:text="${product.name}"></a></td>
-						<td width="20" th:text="${'￥' + T(java.lang.String).format('%,d', product.price)}"></td>
+						<td style="width: 10px;" th:text="${product.id}"></td>
+						<td style="width: 100px;" th:text="${product.categoryName}"></td>
+						<td style="width: 200px;"><a th:href="@{/admin/products/{id}(id=${product.id})}" th:text="${product.name}"></a></td>
+						<td style="width: 200px;" th:text="${'￥' + T(java.lang.String).format('%,d', product.price)}"></td>
 					</tr>
 				</tbody>
 			</table>
