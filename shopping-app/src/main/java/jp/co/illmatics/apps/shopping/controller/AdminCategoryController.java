@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -73,14 +74,14 @@ public class AdminCategoryController {
 	
 	@PostMapping("/admin/product_categories")
 	public String store(
-			@RequestParam(value = "name", defaultValue = "") String name,
+			@RequestParam(value = "name", required = false) String name,
 			@RequestParam(value = "orderNo", defaultValue = "") Long orderNo,
 			Model model) {
 		
 		List<String> errors = new ArrayList<String>();
 		
 		// エラーチェック
-		if (name.equals("") || name.length() == 0){
+		if (!StringUtils.hasLength(name)){
 			errors.add("名前を入力してください");
 		}
 			
@@ -150,7 +151,7 @@ public class AdminCategoryController {
 		List<String> errors = new ArrayList<String>();
 		
 		// エラーチェック
-		if (name.equals("") || name.length() == 0){
+		if (!StringUtils.hasLength(name)){
 			errors.add("名前を入力してください");
 		}
 			
