@@ -13,6 +13,7 @@ import jp.co.illmatics.apps.shopping.entity.Categories;
 import jp.co.illmatics.apps.shopping.entity.Products;
 import jp.co.illmatics.apps.shopping.mapper.CategoriesMapper;
 import jp.co.illmatics.apps.shopping.mapper.ProductsMapper;
+import jp.co.illmatics.apps.shopping.service.admin.url.ProductUrlService;
 import jp.co.illmatics.apps.shopping.values.Page;
 import jp.co.illmatics.apps.shopping.values.form.Display;
 import jp.co.illmatics.apps.shopping.values.form.SortDirection;
@@ -20,6 +21,9 @@ import jp.co.illmatics.apps.shopping.values.form.products.SortType;
 
 @Controller
 public class AdminProductController {
+	@Autowired
+	ProductUrlService urlService;
+	
 	@Autowired
 	private ProductsMapper productsMapper;
 	
@@ -58,7 +62,7 @@ public class AdminProductController {
 		model.addAttribute("products", products);
 		model.addAttribute("categories", categories);
 		
-		String url = request.getRequestURL().toString() + "?category_id=" + categoryId + "&name=" + name + "&price=" + price + "&standard=" + standard + "&sort_type=" + sortType + "&sort_direction=" + sortDirection + "&display_count=" + displayCount;
+		String url = urlService.searchUrl(categoryId, name, price, standard, sortType, sortDirection, displayCount);
 		
 		int totalPage = categories.size() / displayCount + 1;
 		int startPage = currentPage - (currentPage - 1) % Page.COUNT.getValue();
