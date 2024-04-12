@@ -13,6 +13,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -258,6 +259,30 @@ public class AdminProductController {
 			productsMapper.update(products.get(0));
 			return "redirect:/admin/products";
 		}
+	}
+	
+	@DeleteMapping("/admin/products/{id}")
+	public String delete(@PathVariable("id") Long id) {
+		
+		Products product = new Products(id);
+		List<Products> products = productsMapper.find(product);
+		
+		// 画像の削除
+		// fileパスの作成
+		String staticDirPath = "static";
+		Path deleteFilePath = Paths.get(staticDirPath, products.get(0).getImagePath());
+		File fileToDelete = deleteFilePath.toFile();
+		// ファイルを削除
+        boolean isDeleted = fileToDelete.delete();
+        if (isDeleted) {
+            System.out.println(products.get(0).getImagePath() + " を削除しました。");
+        } else {
+            System.out.println(products.get(0).getImagePath() + " の削除に失敗しました。");
+        }
+        
+        productsMapper.delete(products.get(0));
+		
+		return "redirect:/admin/products";
 	}
 }
 

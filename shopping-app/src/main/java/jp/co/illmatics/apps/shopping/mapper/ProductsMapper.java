@@ -3,6 +3,7 @@ package jp.co.illmatics.apps.shopping.mapper;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.ibatis.annotations.DeleteProvider;
 import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.SelectProvider;
@@ -28,6 +29,9 @@ public interface ProductsMapper {
 	
 	@UpdateProvider(ProductSqlProvider.class)
 	void update(Products products);
+	
+	@DeleteProvider(ProductSqlProvider.class)
+	void delete(Products products);
 	
 	public class ProductSqlProvider implements ProviderMethodResolver {
 		// 単一データの取得
@@ -104,6 +108,14 @@ public interface ProductsMapper {
 				SET("description = #{description}");
 				SET("image_path = #{imagePath}");
 				SET("update_at = CURRENT_TIMESTAMP");
+				WHERE("id = #{id}");
+			}}.toString();
+		}
+		
+		// 削除
+		public String delete(Products products) {
+			return new SQL() {{
+				DELETE_FROM("products");
 				WHERE("id = #{id}");
 			}}.toString();
 		}
