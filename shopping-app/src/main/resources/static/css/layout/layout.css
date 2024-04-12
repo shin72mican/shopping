@@ -1,0 +1,29 @@
+/*@charset "UTF-8";*/
+
+.header{
+	border:2px solid;
+}
+
+.menu{
+	position:fixed;
+	display:block;
+	top:58px;
+	bottom:0;
+	left:0;
+	border:2px solid;
+	margin-bottom:58px;
+}
+	
+.main{
+	position:fixed;
+	display:block;
+	bottom:0;
+	top:58px;
+	margin-bottom:58px;
+	padding-left:20px;
+	border:2px solid;
+}
+
+.footer{
+	border:2px solid;
+}

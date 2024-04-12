@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{admin/layout/layout}">
+<head>
+	<title>admin product category edit</title>
+</head>
+<body>
+	<div layout:fragment="admin-content">
+		<div class="mt-4 mb-3">
+			<span th:each="error:${errors}">
+				<p class="text-danger" th:text="${error}"}></p>
+			</span>
+			
+			<form th:action="@{/admin/product_categories/{id}(id=${category.id})}" th:method="put">
+				<div class="mt-2 mb-2">
+					<label class="form-label">名称</label>
+					<input class="form-control" type="text" name="name" th:value="${category.name}" placeholder="名称" />
+				</div>
+				
+				<div>
+					<label class="form-label">並び順番号</label>
+					<input class="form-control" type="number" name="orderNo" th:value="${category.orderNo}" placeholder="並び順番号" />
+				</div>
+				
+				<hr />
+				
+				<a class="btn btn-secondary me-2" th:href="@{/admin/product_categories}">キャンセル</a>
+				<input class="btn btn-primary" type="submit" value="更新" />
+			</form>
+		</div>
+		
+	</div>
+	
+</body>
+</html>
