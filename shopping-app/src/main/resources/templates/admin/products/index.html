@@ -42,26 +42,28 @@
 					<div class="row mt-2">
 						<div class="col-lg-4">
 							<select class="form-select" name="sort_type">
-								<option value="id" th:selected="${sortType == 'id'}">並び替え:ID</option>
-								<option value="category_name" th:selected="${sortType == 'category_name'}">並び替え:商品カテゴリー</option>
-								<option value="name" th:selected="${sortType == 'name'}">並び替え:名称</option>
-								<option value="price" th:selected="${sortType == 'price'}">並び替え:価格</option>
+								<option th:each="type : ${typeList}"
+								        th:value="${type.value}" th:text="${type.viewType}"
+								        th:selected="${sortType == type.value}">
+								</option>
 							</select>
 						</div>
 						
 						<div class="col-lg-4">
 							<select class="form-select" name="sort_direction">
-								<option value="asc" th:selected="${sortDirection == 'asc'}">並び替え方向:昇順</option>
-								<option value="desc" th:selected="${sortDirection == 'desc'}">並び替え方向:降順</option>
+								<option th:each="sort : ${sortList}"
+								        th:value="${sort.value}" th:text="${sort.viewDirection}"
+								        th:selected="${sortDirection == sort.value}">
+								</option>
 							</select>
 						</div>
 						
 						<div class="col-lg-2">
 							<select class="form-select" name="display_count">
-								<option value="10" th:selected="${displayCount == 10}">表示:10件</option>
-								<option value="20" th:selected="${displayCount == 20}">表示:20件</option>
-								<option value="50" th:selected="${displayCount == 50}">表示:50件</option>
-								<option value="100" th:selected="${displayCount == 100}">表示:100件</option>
+								<option th:each="count : ${countList}" 
+						            th:value="${count.value}" th:text="${count.viewCount}"
+						            th:selected="${displayCount == count.value}">
+						    </option>
 							</select>
 						</div>
 						
@@ -76,53 +78,59 @@
 		
 		<a class="mb-3 btn btn-success" th:href="@{/admin/products/create}">新規</a>
 		
-		<table class="table table-striped">
-			<thead>
-				<tr class="border-top border-bottom">
-					<th>ID</th>
-					<th>商品カテゴリー</th>
-					<th>名称</th>
-					<th>価格</th>
-				</tr>
-			</thead>
-			
-			<tbody>
-				<tr th:each="product:${products}">
-					<td width="10" th:text="${product.id}"></td>
-					<td width="100" th:text="${product.categoryName}"></td>
-					<td width="200"><a th:href="@{/admin/products/{id}(id=${product.id})}" th:text="${product.name}"></td>
-					<td width="20" th:text="${'￥' + T(java.lang.String).format('%,d', product.price)}"></td>
-				</tr>
-			</tbody>
-		</table>
+		<th:block th:if="${products.size() == 0}">
+			<p>検索結果に一致するデータが存在しません</p>
+		</th:block>
 		
-		<nav>
-	    <ul class="pagination pg-blue justify-content-center">
-	        <li th:if="${startPage} > 1" class="page-item ">
-	            <a class="page-link" th:href="@{${url} + '&page=1'}" tabindex="-2">最初</a>
-	        </li>
-	        <li th:if="${page} > 1" class="page-item ">
-	            <a class="page-link" th:href="@{${url} + '&page=' + ${page-1}}" tabindex="-1">前へ</a>
-	        </li>
-	        <th:block th:if="${endPage}<=0">
-	            <li class="page-item " th:classappend="${i == page} ? active" th:each="i : ${startPage}">
-	                <a class="page-link" th:href="@{${url} + '&page=' + ${i}}" th:text="${i}"></a>
-	            </li>
-	        </th:block>
-	        <!-- StartPageからEndPageまでのページ数を表示する -->
-	        <th:block th:if="${endPage}>0">
-	            <li class="page-item " th:classappend="${i == page} ? active" th:each="i : ${#numbers.sequence(startPage, endPage)}">
-	                <a class="page-link" th:href="@{${url} + '&page=' + ${i}}" th:text="${i}"></a>
-	            </li>
-	        </th:block>
-	        <li th:if="${page} < ${totalPage}" class="page-item ">
-	            <a class="page-link" th:href="@{${url} + '&page=' + ${page+1}}">次へ</a>
-	        </li>
-	        <li th:if="${endPage} < ${totalPage}" class="page-item ">
-	            <a class="page-link" th:href="@{${url} + '&page=' + ${totalPage}}">最後</a>
-	        </li>
-	    </ul>
-		</nav>
+		<th:block th:if="${ products.size() > 0 }">
+			<table class="table table-striped">
+				<thead>
+					<tr class="border-top border-bottom">
+						<th>ID</th>
+						<th>商品カテゴリー</th>
+						<th>名称</th>
+						<th>価格</th>
+					</tr>
+				</thead>
+				
+				<tbody>
+					<tr th:each="product:${products}">
+						<td style="width: 10px;" th:text="${product.id}"></td>
+						<td style="width: 100px;" th:text="${product.categoryName}"></td>
+						<td style="width: 200px;"><a th:href="@{/admin/products/{id}(id=${product.id})}" th:text="${product.name}"></a></td>
+						<td style="width: 200px;" th:text="${'￥' + T(java.lang.String).format('%,d', product.price)}"></td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<nav>
+		    <ul class="pagination pg-blue justify-content-center">
+		        <li th:if="${startPage} > 1" class="page-item ">
+		            <a class="page-link" th:href="@{${url} + '&page=1'}" tabindex="-2">最初</a>
+		        </li>
+		        <li th:if="${page} > 1" class="page-item ">
+		            <a class="page-link" th:href="@{${url} + '&page=' + ${page-1}}" tabindex="-1">前へ</a>
+		        </li>
+		        <th:block th:if="${endPage}<=0">
+		            <li class="page-item " th:classappend="${i == page} ? active" th:each="i : ${startPage}">
+		                <a class="page-link" th:href="@{${url} + '&page=' + ${i}}" th:text="${i}"></a>
+		            </li>
+		        </th:block>
+		        <!-- StartPageからEndPageまでのページ数を表示する -->
+		        <th:block th:if="${endPage}>0">
+		            <li class="page-item " th:classappend="${i == page} ? active" th:each="i : ${#numbers.sequence(startPage, endPage)}">
+		                <a class="page-link" th:href="@{${url} + '&page=' + ${i}}" th:text="${i}"></a>
+		            </li>
+		        </th:block>
+		        <li th:if="${page} < ${totalPage}" class="page-item ">
+		            <a class="page-link" th:href="@{${url} + '&page=' + ${page+1}}">次へ</a>
+		        </li>
+		        <li th:if="${endPage} < ${totalPage}" class="page-item ">
+		            <a class="page-link" th:href="@{${url} + '&page=' + ${totalPage}}">最後</a>
+		        </li>
+		    </ul>
+			</nav>
+		</th:block>
 		
 	</div>
 </body>
