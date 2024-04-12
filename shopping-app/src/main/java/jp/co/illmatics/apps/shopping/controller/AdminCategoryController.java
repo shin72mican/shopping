@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpServletRequest;
 import jp.co.illmatics.apps.shopping.entity.Categories;
 import jp.co.illmatics.apps.shopping.mapper.CategoriesMapper;
+import jp.co.illmatics.apps.shopping.service.admin.url.CategoryUrlService;
 import jp.co.illmatics.apps.shopping.values.Page;
 import jp.co.illmatics.apps.shopping.values.form.Display;
 import jp.co.illmatics.apps.shopping.values.form.SortDirection;
@@ -24,6 +25,8 @@ import jp.co.illmatics.apps.shopping.values.form.categories.SortType;
 
 @Controller
 public class AdminCategoryController {
+	@Autowired
+	CategoryUrlService categoryUrlService;
 	
 	@Autowired
 	private CategoriesMapper categoriesMapper;
@@ -40,7 +43,7 @@ public class AdminCategoryController {
 		List<Categories> categories = new ArrayList<Categories>();
 		categories = categoriesMapper.findAll(name, sortType, sortDirection, displayCount, currentPage);
 		
-		String url = request.getRequestURL().toString() + "?name=" + name + "&sort_type=" + sortType + "&sort_direction=" + sortDirection + "&display_count=" + displayCount;
+		String url = categoryUrlService.searchUrl(name, sortType, sortDirection, displayCount);
 		
 		model.addAttribute("name", name);
 		model.addAttribute("sortType", sortType);
@@ -109,7 +112,7 @@ public class AdminCategoryController {
 			
 			List<Categories> categories = categoriesMapper.findLatest();
 			
-			String url = "/admin/product_categories/" + categories.get(0).getId();
+			String url = categoryUrlService.idUrl(categories.get(0).getId());
 			return "redirect:" + url;
 		}
 		
@@ -182,7 +185,7 @@ public class AdminCategoryController {
 			// 更新処理
 			categoriesMapper.update(categories.get(0));
 			
-			String url = "/admin/product_categories/" + categories.get(0).getId();
+			String url = categoryUrlService.idUrl(categories.get(0).getId());
 			return "redirect:" + url;
 		}
 	}
