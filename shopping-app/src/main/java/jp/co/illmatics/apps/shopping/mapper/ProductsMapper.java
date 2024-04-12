@@ -6,6 +6,7 @@ import java.util.Objects;
 import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.SelectProvider;
+import org.apache.ibatis.annotations.UpdateProvider;
 import org.apache.ibatis.builder.annotation.ProviderMethodResolver;
 import org.apache.ibatis.jdbc.SQL;
 
@@ -24,6 +25,9 @@ public interface ProductsMapper {
 	
 	@InsertProvider(ProductSqlProvider.class)
 	void insert(Products products);
+	
+	@UpdateProvider(ProductSqlProvider.class)
+	void update(Products products);
 	
 	public class ProductSqlProvider implements ProviderMethodResolver {
 		// 単一データの取得
@@ -88,6 +92,20 @@ public interface ProductsMapper {
 				VALUES("update_at", "CURRENT_TIMESTAMP");
 			}}.toString();
 			
+		}
+		
+		// データの更新
+		public String update(Products products) {
+			return new SQL() {{
+				UPDATE("products");
+				SET("product_category_id = #{productCategoryId}");
+				SET("name = #{name}");
+				SET("price = #{price}");
+				SET("description = #{description}");
+				SET("image_path = #{imagePath}");
+				SET("update_at = CURRENT_TIMESTAMP");
+				WHERE("id = #{id}");
+			}}.toString();
 		}
 	}
 }

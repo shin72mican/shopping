@@ -1,5 +1,6 @@
 package jp.co.illmatics.apps.shopping.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -119,12 +121,16 @@ public class AdminProductController {
 		// エラーチェック
 		List<String> errors = new ArrayList<String>();
 		
+		Products product = new Products(categoryId, name, description);
+		
 		if (name.equals("")) {
 			errors.add("名前を入力してください");
 		}
 		
 		if (price == null) {
 			errors.add("価格を入力してください");
+		} else {
+			product.setPrice(price);
 		}
 		
 		if (price < 0) {
@@ -132,8 +138,6 @@ public class AdminProductController {
 		}
 		
 		model.addAttribute("errors", errors);
-		
-		Products product = new Products(categoryId, name, price, description);
 		
 		if(!productImage.isEmpty()) {
 			// 一意な画像ファイル名の作成
@@ -163,8 +167,95 @@ public class AdminProductController {
 			model.addAttribute("description", description);
 			return "/admin/products/create";
 		} else {
-			System.out.println(product);
 			productsMapper.insert(product);
+			return "redirect:/admin/products";
+		}
+	}
+	
+	@GetMapping("/admin/products/{id}/edit")
+	public String edit(
+			@PathVariable(name = "id") Long id,
+			Model model) {
+		Products product = new Products(id);
+		List<String> errors = new ArrayList<String>();
+		List<Categories> categories = categoriesMapper.findAll();
+		List<Products> products = productsMapper.find(product);
+		
+		model.addAttribute("errors", errors);
+		model.addAttribute("categories", categories);
+		model.addAttribute("product", products.get(0));
+		return "/admin/products/edit";
+	}
+	
+	@PutMapping("/admin/products/{id}")
+	public String update(
+			@PathVariable("id") Long id,
+			@RequestParam(name = "category_id", defaultValue = "0") Long categoryId,
+			@RequestParam(name = "name", defaultValue = "") String name,
+			@RequestParam(name = "price", required = false) Long price,
+			@RequestParam(name = "description", defaultValue = "") String description,
+			@RequestParam(name = "product_image", defaultValue="") MultipartFile productImage,
+			@RequestParam(name = "delete_check", defaultValue = "false") Boolean deleteCheck,
+			Model model) throws IOException {
+		Products product = new Products(id, categoryId, name, description);
+		List<Products> products = productsMapper.find(product);
+		
+		// エラーチェック
+		List<String> errors = new ArrayList<String>();
+		
+		if (name.equals("")) {
+			errors.add("名前を入力してください");
+		}
+		
+		if (price == null) {
+			errors.add("価格を入力してください");
+		} else {
+			if (price < 0) {
+				errors.add("0以上で価格を入力して下さい");
+			} else {
+				product.setPrice(price);
+			}
+		}
+		
+		if(!productImage.isEmpty() && deleteCheck) {
+			// 画像の削除
+			// fileパスの作成
+			String staticDirPath = "static";
+			Path deleteFilePath = Paths.get(staticDirPath, products.get(0).getImagePath());
+			File fileToDelete = deleteFilePath.toFile();
+			// ファイルを削除
+            boolean isDeleted = fileToDelete.delete();
+            if (isDeleted) {
+                System.out.println(products.get(0).getImagePath() + " を削除しました。");
+            } else {
+                System.out.println(products.get(0).getImagePath() + " の削除に失敗しました。");
+            }
+			
+			// 一意な画像ファイル名の作成
+			// ファイル名取得
+			String originalFileName = productImage.getOriginalFilename();
+			// ファイル拡張子取得
+			String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+			// 一意な文字列取得
+			UUID uuid = UUID.randomUUID();
+			// 新しいファイル名
+			String fileName = uuid.toString() + extension;
+			// 保存先
+			Path filePath=Paths.get("static/products/" + fileName);
+			// 保存
+			Files.copy(productImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+			
+			products.get(0).setImagePath("/products/" + fileName);
+		}
+		
+		if(errors.size() > 0) {
+			List<Categories> categories = categoriesMapper.findAll();
+			model.addAttribute("errors", errors);
+			model.addAttribute("categories", categories);
+			model.addAttribute("product", product);
+			return "admin/products/edit";
+		} else {
+			productsMapper.update(products.get(0));
 			return "redirect:/admin/products";
 		}
 	}

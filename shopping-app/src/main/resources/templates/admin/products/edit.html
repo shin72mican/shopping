@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{admin/layout/layout}">
+<head>
+<title>admin product edit</title>
+</head>
+<body>
+	<div layout:fragment="admin-content">
+		<div class="mt-4 mb-3">
+			<span th:each="error:${errors}">
+				<p class="text-danger" th:text="${error}"}></p>
+			</span>
+			
+			<form th:action="@{/admin/products/{id}(id=${product.id})}" th:method="put" enctype="multipart/form-data">
+				<div class="mt-2 mb-2">
+					<label class="form-label">商品カテゴリー</label>
+					<select class="form-select" name="category_id">
+						<option th:each="category:${categories}" th:value="${category.id}" th:selected="${category.id == categoryId}" th:text="${category.name}"></option>
+					</select>
+				</div>
+			
+				<div class="mt-2 mb-2">
+					<label class="form-label">名称</label>
+					<input class="form-control" type="text" name="name" th:value="${product.name}" placeholder="名称" />
+				</div>
+				
+				<div>
+					<label class="form-label">価格</label>
+					<input class="form-control" type="number" name="price" th:value="${product.price}" placeholder="価格" />
+				</div>
+				
+				<div class="mt-2 mb-2">
+					<label class="form-label">説明</label>
+					<textarea class="form-control" name="description" placeholder="説明"></textarea>
+				</div>
+				
+				<div class="mt-2 mb-2">
+					<label class="form-label">イメージ</label></br>
+					<input class="form-cotrol" type="file" name="product_image" />
+				</div>
+				
+				<div>
+					<input class="form-check-input" type="checkbox" name="delete_check" value="true" />
+					<label class="form-check-label">
+						削除
+					</label>
+				</div>
+				
+				<div>
+					<img th:src="${product.imagePath}" onerror="this.src='/images/no_image.png'">
+				</div>
+				
+				<hr />
+				
+				<a class="btn btn-secondary me-2" th:href="@{/admin/products}">キャンセル</a>
+				<input class="btn btn-primary" type="submit" value="更新" />
+			</form>
+		</div>
+	</div>
+</body>
+</html>
