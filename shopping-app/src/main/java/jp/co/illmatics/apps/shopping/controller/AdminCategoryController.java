@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpServletRequest;
 import jp.co.illmatics.apps.shopping.entity.Categories;
 import jp.co.illmatics.apps.shopping.mapper.CategoriesMapper;
+import jp.co.illmatics.apps.shopping.service.admin.error.CategoryErrorCheckService;
+import jp.co.illmatics.apps.shopping.service.admin.url.CategoryUrlService;
 import jp.co.illmatics.apps.shopping.values.Page;
 import jp.co.illmatics.apps.shopping.values.form.Display;
 import jp.co.illmatics.apps.shopping.values.form.SortDirection;
@@ -24,6 +25,11 @@ import jp.co.illmatics.apps.shopping.values.form.categories.SortType;
 
 @Controller
 public class AdminCategoryController {
+	@Autowired
+	CategoryUrlService urlService;
+	
+	@Autowired
+	CategoryErrorCheckService errorCheckService;
 	
 	@Autowired
 	private CategoriesMapper categoriesMapper;
@@ -40,7 +46,7 @@ public class AdminCategoryController {
 		List<Categories> categories = new ArrayList<Categories>();
 		categories = categoriesMapper.findSearch(name, sortType, sortDirection, displayCount, currentPage);
 		
-		String url = request.getRequestURL().toString() + "?name=" + name + "&sort_type=" + sortType + "&sort_direction=" + sortDirection + "&display_count=" + displayCount;
+		String url = urlService.searchUrl(name, sortType, sortDirection, displayCount);
 		
 		model.addAttribute("name", name);
 		model.addAttribute("sortType", sortType);
@@ -81,16 +87,7 @@ public class AdminCategoryController {
 		List<String> errors = new ArrayList<String>();
 		
 		// エラーチェック
-		if (!StringUtils.hasLength(name)){
-			errors.add("名前を入力してください");
-		}
-			
-		if (orderNo == null) {
-			errors.add("並び順番号を入力してください");
-		} else if(orderNo <= 0) {
-			errors.add("1以上の並び順番号を入力してください");
-		}
-		
+		errors = errorCheckService.errorCheck(name, orderNo);
 		
 		Categories category = new Categories(name, orderNo);
 		List<Categories> checkCategories = categoriesMapper.find(category);
@@ -109,7 +106,7 @@ public class AdminCategoryController {
 			
 			List<Categories> categories = categoriesMapper.findLatest();
 			
-			String url = "/admin/product_categories/" + categories.get(0).getId();
+			String url = urlService.idUrl(categories.get(0).getId());
 			return "redirect:" + url;
 		}
 		
@@ -151,15 +148,7 @@ public class AdminCategoryController {
 		List<String> errors = new ArrayList<String>();
 		
 		// エラーチェック
-		if (!StringUtils.hasLength(name)){
-			errors.add("名前を入力してください");
-		}
-			
-		if (orderNo == null) {
-			errors.add("並び順番号を入力してください");
-		} else if(orderNo <= 0) {
-			errors.add("1以上の並び順番号を入力してください");
-		}
+		errors = errorCheckService.errorCheck(name, orderNo);
 		
 		Categories category = new Categories(name, orderNo);
 		List<Categories> checkCategories = categoriesMapper.find(category);
@@ -182,7 +171,7 @@ public class AdminCategoryController {
 			// 更新処理
 			categoriesMapper.update(categories.get(0));
 			
-			String url = "/admin/product_categories/" + categories.get(0).getId();
+			String url = urlService.idUrl(categories.get(0).getId());
 			return "redirect:" + url;
 		}
 	}
@@ -197,7 +186,5 @@ public class AdminCategoryController {
 		String url = "/admin/product_categories";
 		return "redirect:" + url;
 	}
-	
-	
 	
 }
