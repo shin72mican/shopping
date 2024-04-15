@@ -24,7 +24,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jp.co.illmatics.apps.shopping.entity.Categories;
 import jp.co.illmatics.apps.shopping.entity.Products;
 import jp.co.illmatics.apps.shopping.mapper.CategoriesMapper;
+import jp.co.illmatics.apps.shopping.mapper.ProductReviewsMapper;
 import jp.co.illmatics.apps.shopping.mapper.ProductsMapper;
+import jp.co.illmatics.apps.shopping.mapper.WishProductsMapper;
 import jp.co.illmatics.apps.shopping.service.admin.image.ProductImageService;
 import jp.co.illmatics.apps.shopping.service.admin.url.ProductUrlService;
 import jp.co.illmatics.apps.shopping.values.Page;
@@ -45,6 +47,12 @@ public class AdminProductController {
 	
 	@Autowired
 	private CategoriesMapper categoriesMapper;
+	
+	@Autowired
+	private ProductReviewsMapper productReviewsMapper;
+	
+	@Autowired
+	private WishProductsMapper wishProductsMapper;
 	
 	@GetMapping("/admin/products")
 	public String index(
@@ -267,18 +275,13 @@ public class AdminProductController {
 		List<Products> products = productsMapper.find(product);
 		
 		// 画像の削除
-		// fileパスの作成
-		String staticDirPath = "static";
-		Path deleteFilePath = Paths.get(staticDirPath, products.get(0).getImagePath());
-		File fileToDelete = deleteFilePath.toFile();
-		// ファイルを削除
-        boolean isDeleted = fileToDelete.delete();
-        if (isDeleted) {
-            System.out.println(products.get(0).getImagePath() + " を削除しました。");
-        } else {
-            System.out.println(products.get(0).getImagePath() + " の削除に失敗しました。");
-        }
+		imageService.delete(products.get(0));
         
+        // 関連レビュー削除
+        productReviewsMapper.productsDelete(products.get(0));
+        // 関連ほしいもの削除
+        wishProductsMapper.productsDelete(products.get(0));
+        // 商品削除
         productsMapper.delete(products.get(0));
 		
 		return "redirect:/admin/products";
