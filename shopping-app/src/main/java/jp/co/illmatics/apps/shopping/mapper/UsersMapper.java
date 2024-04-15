@@ -22,6 +22,9 @@ public interface UsersMapper {
 
 	@SelectProvider(UserSqlProvider.class)
 	List<Users> findAll();
+	
+	@SelectProvider(UserSqlProvider.class)
+	List<Users> findSearch(String name, String email, String sortType, String sortDirection, Integer displayCount);
 
 	@InsertProvider(UserSqlProvider.class)
 	void insert(Users users);
@@ -77,6 +80,16 @@ public interface UsersMapper {
 				SELECT("id", "name", "email");
 				FROM("users");
 
+			}}.toString();
+		}
+		
+		public String findSearch(String name, String email, String sortType, String sortDirection, Integer displayCount) {
+			return new SQL() {{
+				SELECT("id", "name", "email", "create_at", "update_at");
+				FROM("users");
+				if(!name.equals("")) {
+					WHERE("p.name LIKE '%" + name + "%'");
+				}
 			}}.toString();
 		}
 
