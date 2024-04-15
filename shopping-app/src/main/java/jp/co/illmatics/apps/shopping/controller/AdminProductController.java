@@ -1,6 +1,5 @@
 package jp.co.illmatics.apps.shopping.controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,6 +24,7 @@ import jp.co.illmatics.apps.shopping.entity.Categories;
 import jp.co.illmatics.apps.shopping.entity.Products;
 import jp.co.illmatics.apps.shopping.mapper.CategoriesMapper;
 import jp.co.illmatics.apps.shopping.mapper.ProductsMapper;
+import jp.co.illmatics.apps.shopping.service.admin.image.ProductImageService;
 import jp.co.illmatics.apps.shopping.service.admin.url.ProductUrlService;
 import jp.co.illmatics.apps.shopping.values.Page;
 import jp.co.illmatics.apps.shopping.values.form.Display;
@@ -35,6 +35,9 @@ import jp.co.illmatics.apps.shopping.values.form.products.SortType;
 public class AdminProductController {
 	@Autowired
 	ProductUrlService urlService;
+	
+	@Autowired
+	ProductImageService imageService;
 	
 	@Autowired
 	private ProductsMapper productsMapper;
@@ -155,6 +158,8 @@ public class AdminProductController {
 			Files.copy(productImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 			
 			product.setImagePath("/products/" + fileName);
+		} else {
+			product.setImagePath("");
 		}
 		
 		if (errors.size() > 0) {
@@ -217,19 +222,9 @@ public class AdminProductController {
 			}
 		}
 		
-		if(!productImage.isEmpty() && deleteCheck) {
+		if(!productImage.isEmpty() && errors.size() == 0) {
 			// 画像の削除
-			// fileパスの作成
-			String staticDirPath = "static";
-			Path deleteFilePath = Paths.get(staticDirPath, products.get(0).getImagePath());
-			File fileToDelete = deleteFilePath.toFile();
-			// ファイルを削除
-            boolean isDeleted = fileToDelete.delete();
-            if (isDeleted) {
-                System.out.println(products.get(0).getImagePath() + " を削除しました。");
-            } else {
-                System.out.println(products.get(0).getImagePath() + " の削除に失敗しました。");
-            }
+			imageService.delete(products.get(0));
 			
 			// 一意な画像ファイル名の作成
 			// ファイル名取得
@@ -246,6 +241,10 @@ public class AdminProductController {
 			Files.copy(productImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 			
 			products.get(0).setImagePath("/products/" + fileName);
+		} else if(deleteCheck) {
+			// 画像の削除
+			imageService.delete(products.get(0));
+            products.get(0).setImagePath("");
 		}
 		
 		if(errors.size() > 0) {
