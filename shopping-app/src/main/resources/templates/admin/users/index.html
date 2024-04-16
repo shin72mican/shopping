@@ -63,7 +63,7 @@
 			<p>検索結果に一致するデータが存在しません</p>
 		</th:block>
 		
-		<th:block th:id="${ users.size() > 0}">
+		<th:block th:if="${ users.size() > 0}">
 			<table class="table table-striped">
 				<thead>
 					<tr>

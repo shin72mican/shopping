@@ -24,7 +24,7 @@ public interface UsersMapper {
 	List<Users> findAll();
 	
 	@SelectProvider(UserSqlProvider.class)
-	List<Users> findSearch(String name, String email, String sortType, String sortDirection, Integer displayCount);
+	List<Users> findSearch(String name, String email, String sortType, String sortDirection, Integer displayCount, Integer currentPage);
 
 	@InsertProvider(UserSqlProvider.class)
 	void insert(Users users);
@@ -83,13 +83,22 @@ public interface UsersMapper {
 			}}.toString();
 		}
 		
-		public String findSearch(String name, String email, String sortType, String sortDirection, Integer displayCount) {
+		public String findSearch(String name, String email, String sortType, String sortDirection, Integer displayCount, Integer currentPage) {
 			return new SQL() {{
 				SELECT("id", "name", "email", "create_at", "update_at");
 				FROM("users");
 				if(!name.equals("")) {
-					WHERE("p.name LIKE '%" + name + "%'");
+					WHERE("name LIKE '%" + name + "%'");
 				}
+				if(!email.equals("")) {
+					WHERE("email LIKE '%" + email + "%'");
+				}
+				if (sortDirection.equals("asc")) {
+					ORDER_BY(sortType);
+				} else if (sortDirection.equals("desc")) {
+					ORDER_BY(sortType + " DESC");
+				}
+				OFFSET(displayCount * (currentPage - 1) + "ROWS FETCH FIRST " +  displayCount  + " ROWS ONLY");
 			}}.toString();
 		}
 

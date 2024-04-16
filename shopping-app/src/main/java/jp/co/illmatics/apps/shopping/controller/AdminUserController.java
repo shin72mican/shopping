@@ -14,7 +14,7 @@ import jp.co.illmatics.apps.shopping.service.admin.url.UserUrlService;
 import jp.co.illmatics.apps.shopping.values.Page;
 import jp.co.illmatics.apps.shopping.values.form.Display;
 import jp.co.illmatics.apps.shopping.values.form.SortDirection;
-import jp.co.illmatics.apps.shopping.values.form.categories.SortType;
+import jp.co.illmatics.apps.shopping.values.form.users.SortType;
 
 @Controller
 public class AdminUserController {
@@ -33,7 +33,13 @@ public class AdminUserController {
 			@RequestParam(name = "display_count", defaultValue = "10") Integer displayCount,
 			@RequestParam(name = "page", defaultValue="1") Integer currentPage,
 			Model model) {
-		List<Users> users = usersMapper.findAll();
+		List<Users> users = usersMapper.findSearch(name, email, sortType, sortDirection, displayCount, currentPage);
+		
+		model.addAttribute("name", name);
+		model.addAttribute("email", email);
+		model.addAttribute("sortType", sortType);
+		model.addAttribute("sortDirection", sortDirection);
+		model.addAttribute("displayCount", displayCount);
 		
 		// 検索
 		model.addAttribute("typeList", SortType.values());
