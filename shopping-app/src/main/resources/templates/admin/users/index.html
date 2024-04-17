@@ -3,7 +3,7 @@
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{admin/layout/layout}">
 <head>
-	<title>admin product category index</title>
+	<title>admin users index</title>
 </head>
 <body>
 	<div layout:fragment="admin-content">
@@ -76,7 +76,7 @@
 				<tbody>
 					<tr th:each="user: ${users}">
 						<td style="width: 20px;" th:text="${user.id}"></td>
-						<td style="width: 30px;" th:text="${user.name}"></td>
+						<td style="width: 30px;"><a th:href="@{/admin/users/{id}(id=${user.id})}" th:text="${user.name}"></a></td>
 						<td style="width: 30px;" th:text="${user.email}"></td>
 					</tr>
 				</tbody>

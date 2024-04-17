@@ -9,6 +9,10 @@ import lombok.Data;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Users {
+	
+	public Users(Long id) {
+		this.id = id;
+	}
 
 	private Long id;
 

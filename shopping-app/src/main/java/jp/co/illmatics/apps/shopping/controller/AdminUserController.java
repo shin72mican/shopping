@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jp.co.illmatics.apps.shopping.entity.Users;
@@ -51,7 +52,7 @@ public class AdminUserController {
 		String url = urlService.searchUrl(name, email, sortType, sortDirection, displayCount);
 		model.addAttribute("url", url);
 		
-		int totalPage = users.size() / displayCount + 1;
+		int totalPage = Integer.valueOf(usersMapper.countAll(name, email).toString()) / displayCount + 1;
 		int startPage = currentPage - (currentPage - 1) % Page.COUNT.getValue();
 		int endPage = (currentPage + Page.COUNT.getValue() - 1 > totalPage) ? totalPage : (currentPage + Page.COUNT.getValue() -1);
 		
@@ -61,5 +62,17 @@ public class AdminUserController {
         model.addAttribute("endPage", endPage);
 		
 		return "admin/users/index";
+	}
+	
+	@GetMapping("/admin/users/{id}")
+	public String show(
+			@PathVariable("id") Long id,
+			Model model) {
+		
+		Users user = new Users(id);
+		List<Users> users = usersMapper.find(user);
+		model.addAttribute("user", users.get(0));
+		
+		return "/admin/users/show";
 	}
 }

@@ -37,6 +37,9 @@ public interface UsersMapper {
 	
 	@SelectProvider(UserSqlProvider.class)
 	Long count(Users users);
+	
+	@SelectProvider(UserSqlProvider.class)
+	Long countAll(String name, String email);
 
 	@SelectProvider(UserSqlProvider.class)
 	Optional<Users> findByName(String username);
@@ -163,6 +166,19 @@ public interface UsersMapper {
 				}
 				if (Objects.nonNull(users.getUpdateAt())) {
 					 WHERE("update_at = #{updateAt}");
+				}
+			}}.toString();
+		}
+		
+		public String countAll(String name, String email) {
+			return new SQL() {{
+				SELECT("COUNT(*)");
+				FROM("users");
+				if(!name.equals("")) {
+					WHERE("name LIKE '%" + name + "%'");
+				}
+				if(!email.equals("")) {
+					WHERE("email LIKE '%" + email + "%'");
 				}
 			}}.toString();
 		}
