@@ -15,12 +15,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import jp.co.illmatics.apps.shopping.entity.Users;
 import jp.co.illmatics.apps.shopping.mapper.UsersMapper;
 import jp.co.illmatics.apps.shopping.service.admin.error.UserErrorCheckService;
+import jp.co.illmatics.apps.shopping.service.admin.image.UserImageService;
 import jp.co.illmatics.apps.shopping.service.admin.url.UserUrlService;
 import jp.co.illmatics.apps.shopping.values.Page;
 import jp.co.illmatics.apps.shopping.values.form.Display;
@@ -38,9 +40,11 @@ public class AdminUserController {
 	@Autowired
 	UserErrorCheckService errorCheckService;
 	
+	@Autowired
+	UserImageService imageService;
+	
 	private final PasswordEncoder passwordEncoder;
 
-    @Autowired
     public AdminUserController(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
@@ -113,7 +117,7 @@ public class AdminUserController {
 		
 		Users user = new Users(name, email, password);
 		
-		List<String> errors = errorCheckService.errorCheck(user, confirmPassword);
+		List<String> errors = errorCheckService.createErrorCheck(user, confirmPassword);
 		
 		if(!userImage.isEmpty() && errors.size() == 0) {
 			// 一意な画像ファイル名の作成
@@ -146,6 +150,75 @@ public class AdminUserController {
 			user.setPassword(passwordEncoder.encode("password"));
 			usersMapper.insert(user);
 			return "redirect:/admin/users";
+		}
+	}
+	
+	// 編集ページ
+	@GetMapping("/admin/users/{id}/edit")
+	public String edit(
+			@PathVariable("id") Long id,
+			Model model) {
+		
+		Users user = new Users(id);
+		List<Users> users = usersMapper.find(user);
+		
+		model.addAttribute("user", users.get(0));
+		
+		return "admin/users/edit";
+	}
+	
+	// データ更新
+	@PutMapping("/admin/users/{id}")
+	public String update(
+			@PathVariable("id") Long id,
+			@RequestParam(name = "name", defaultValue = "") String name,
+			@RequestParam(name = "email", defaultValue = "") String email,
+			@RequestParam(name = "password", defaultValue = "") String password,
+			@RequestParam(name = "confirm_password", defaultValue = "") String confirmPassword,
+			@RequestParam(name = "user_image", defaultValue= "") MultipartFile userImage,
+			@RequestParam(name = "delete_check", defaultValue= "false") Boolean deleteCheck,
+			Model model) throws IOException {
+		Users user = new Users(id, name, email, password);
+		List<Users> users = usersMapper.find(user);
+		List<String> errors = errorCheckService.editErrorCheck(user, confirmPassword);
+		
+		if(!userImage.isEmpty() && errors.size() == 0) {
+			// 画像の削除
+			imageService.delete(users.get(0));
+			
+			// 一意な画像ファイル名の作成
+			// ファイル名取得
+			String originalFileName = userImage.getOriginalFilename();
+			// ファイル拡張子取得
+			String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+			// 一意な文字列取得
+			UUID uuid = UUID.randomUUID();
+			// 新しいファイル名
+			String fileName = uuid.toString() + extension;
+			// 保存先
+			Path filePath=Paths.get("static/users/" + fileName);
+			// 保存
+			Files.copy(userImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+			
+			users.get(0).setImagePath("/users/" + fileName);
+		} else if(deleteCheck) {
+			// 画像の削除
+			imageService.delete(users.get(0));
+			users.get(0).setImagePath("");
+		}
+		
+		if(errors.size() > 0) {
+			model.addAttribute("user", user);
+			model.addAttribute("password", password);
+			model.addAttribute("confirmPassword", confirmPassword);
+			model.addAttribute("errors", errors);
+			return "admin/users/edit";
+		} else {
+			users.get(0).setName(name);
+			users.get(0).setEmail(email);
+			users.get(0).setPassword(password);
+			usersMapper.update(users.get(0));
+			return "redirect:/admin/users/" + user.getId();
 		}
 	}
 }

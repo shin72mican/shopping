@@ -56,27 +56,27 @@ public interface UsersMapper {
 				if (Objects.nonNull(users.getId())) {
 					 WHERE("id = #{id}");
 				}
-				if (Objects.nonNull(users.getName())) {
-					 WHERE("name = #{name}");
-				}
-				if (Objects.nonNull(users.getEmail())) {
-					 WHERE("email = #{email}");
-				}
-				if (Objects.nonNull(users.getEmailVerifiedAt())) {
-					 WHERE("email_verified_at = #{emailVerifiedAt}");
-				}
-				if (Objects.nonNull(users.getPassword())) {
-					 WHERE("password = #{password}");
-				}
-				if (Objects.nonNull(users.getImagePath())) {
-					 WHERE("image_path = #{imagePath}");
-				}
-				if (Objects.nonNull(users.getCreateAt())) {
-					 WHERE("create_at = #{createAt}");
-				}
-				if (Objects.nonNull(users.getUpdateAt())) {
-					 WHERE("update_at = #{updateAt}");
-				}
+//				if (Objects.nonNull(users.getName())) {
+//					 WHERE("name = #{name}");
+//				}
+//				if (Objects.nonNull(users.getEmail())) {
+//					 WHERE("email = #{email}");
+//				}
+//				if (Objects.nonNull(users.getEmailVerifiedAt())) {
+//					 WHERE("email_verified_at = #{emailVerifiedAt}");
+//				}
+//				if (Objects.nonNull(users.getPassword())) {
+//					 WHERE("password = #{password}");
+//				}
+//				if (Objects.nonNull(users.getImagePath())) {
+//					 WHERE("image_path = #{imagePath}");
+//				}
+//				if (Objects.nonNull(users.getCreateAt())) {
+//					 WHERE("create_at = #{createAt}");
+//				}
+//				if (Objects.nonNull(users.getUpdateAt())) {
+//					 WHERE("update_at = #{updateAt}");
+//				}
 			}}.toString();
 		}
 
@@ -133,13 +133,13 @@ public interface UsersMapper {
 		public String update(Users users) {
 			return new SQL() {{
 				UPDATE("users");
-				SET("name", "#{name}");
-				SET("email", "#{email}");
-				SET("email_verified_at", "#{emailVerifiedAt}");
-				SET("password", "#{password}");
-				SET("image_path", "#{imagePath}");
-				SET("create_at", "#{createAt}");
-				SET("update_at", "#{updateAt}");
+				SET("name = #{name}");
+				SET("email = #{email}");
+				SET("email_verified_at = #{emailVerifiedAt}");
+				SET("password = #{password}");
+				SET("image_path = #{imagePath}");
+				SET("create_at = #{createAt}");
+				SET("update_at = CURRENT_TIMESTAMP");
 				WHERE("id = #{id}");
 			}}.toString();
 		}
