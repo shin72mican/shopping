@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -220,5 +221,19 @@ public class AdminUserController {
 			usersMapper.update(users.get(0));
 			return "redirect:/admin/users/" + user.getId();
 		}
+	}
+	
+	@DeleteMapping("/admin/users/{id}")
+	public String delete(@PathVariable("id") Long id) {
+		Users user = new Users(id);
+		List<Users> users = usersMapper.find(user);
+		
+		// 画像削除
+		imageService.delete(users.get(0));
+		
+		// ユーザー削除
+		usersMapper.delete(users.get(0));
+		
+		return "redirect:/admin/users";
 	}
 }
