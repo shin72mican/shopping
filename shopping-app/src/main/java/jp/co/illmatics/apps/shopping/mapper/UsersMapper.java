@@ -25,6 +25,9 @@ public interface UsersMapper {
 	
 	@SelectProvider(UserSqlProvider.class)
 	List<Users> findSearch(String name, String email, String sortType, String sortDirection, Integer displayCount, Integer currentPage);
+	
+	@SelectProvider(UserSqlProvider.class)
+	List<Users> findEmail(Users user);
 
 	@InsertProvider(UserSqlProvider.class)
 	void insert(Users users);
@@ -104,17 +107,26 @@ public interface UsersMapper {
 				OFFSET(displayCount * (currentPage - 1) + "ROWS FETCH FIRST " +  displayCount  + " ROWS ONLY");
 			}}.toString();
 		}
+		
+		// emailがuniqueであるかの確認
+		public String findEmail(Users user) {
+			return new SQL() {{
+				SELECT("*");
+				FROM("users");
+				WHERE("email = #{email} AND ROWNUM <= 1");
+			}}.toString();
+		}
 
 		public String insert(Users users) {
 			return new SQL() {{
 				INSERT_INTO("users");
 				VALUES("name", "#{name}");
 				VALUES("email", "#{email}");
-				VALUES("email_verified_at", "#{emailVerifiedAt}");
+				VALUES("email_verified_at", "CURRENT_TIMESTAMP");
 				VALUES("password", "#{password}");
 				VALUES("image_path", "#{imagePath}");
-				VALUES("create_at", "#{createAt}");
-				VALUES("update_at", "#{updateAt}");
+				VALUES("create_at", "CURRENT_TIMESTAMP");
+				VALUES("update_at", "CURRENT_TIMESTAMP");
 			}}.toString();
 		}
 

@@ -59,6 +59,8 @@
 			</form>
 		</div>
 		
+		<a class="mb-3 btn btn-success" th:href="@{/admin/users/create}">新規</a>
+		
 		<th:block th:if="${ users.size() == 0 }">
 			<p>検索結果に一致するデータが存在しません</p>
 		</th:block>

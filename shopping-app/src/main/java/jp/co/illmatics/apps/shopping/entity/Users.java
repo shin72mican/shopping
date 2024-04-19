@@ -10,8 +10,18 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Users {
 	
+	public Users() {
+		
+	}
+	
 	public Users(Long id) {
 		this.id = id;
+	}
+	
+	public Users(String name, String email, String password) {
+		this.name = name;
+		this.email = email;
+		this.password = password;
 	}
 
 	private Long id;
