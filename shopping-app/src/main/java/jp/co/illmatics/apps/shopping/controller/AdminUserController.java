@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import jp.co.illmatics.apps.shopping.entity.Users;
+import jp.co.illmatics.apps.shopping.mapper.ProductReviewsMapper;
 import jp.co.illmatics.apps.shopping.mapper.UsersMapper;
+import jp.co.illmatics.apps.shopping.mapper.WishProductsMapper;
 import jp.co.illmatics.apps.shopping.service.admin.error.UserErrorCheckService;
 import jp.co.illmatics.apps.shopping.service.admin.image.UserImageService;
 import jp.co.illmatics.apps.shopping.service.admin.url.UserUrlService;
@@ -34,6 +36,12 @@ import jp.co.illmatics.apps.shopping.values.form.users.SortType;
 public class AdminUserController {
 	@Autowired
 	UsersMapper usersMapper;
+	
+	@Autowired
+	ProductReviewsMapper productReviewsMapper;
+	
+	@Autowired
+	WishProductsMapper wishProductsMapper;
 	
 	@Autowired
 	UserUrlService urlService;
@@ -231,7 +239,13 @@ public class AdminUserController {
 		// 画像削除
 		imageService.delete(users.get(0));
 		
-		// ユーザー削除
+		// 顧客関連レビュー削除
+		productReviewsMapper.usersDelete(users.get(0));
+		
+		// 顧客関連評価削除
+		wishProductsMapper.usersDelete(users.get(0));
+		
+		// 顧客情報削除
 		usersMapper.delete(users.get(0));
 		
 		return "redirect:/admin/users";
