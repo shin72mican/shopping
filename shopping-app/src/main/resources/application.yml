@@ -16,7 +16,12 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
+  # session time 30min
+  session:
+    timeout: 1800s
     
 mybatis:
+  # camel-case setting
   configuration:
     map-underscore-to-camel-case: true
+
