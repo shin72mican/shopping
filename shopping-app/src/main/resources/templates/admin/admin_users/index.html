@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{admin/layout/layout}">
+<head>
+	<title>admin product category index</title>
+</head>
+<body>
+	<div layout:fragment="admin-content">
+		
+		<div class="mt-4 mb-3">
+			<form th:action="@{/admin/admin_users}" th:method="get" class="border p-3 shadow">
+				<div class="container">
+					<div class="row mb-3">
+						<div class="col-lg-6">
+							<input class="form-control" type="text" name="name" th:value="${name}" placeholder="名称" />
+						</div>
+						
+						<div class="col-lg-6">
+							<input class="form-control" type="email" name="email" th:value="${email}" placeholder="メールアドレス" />
+						</div>
+					</div>
+					
+					<div class="row mb-3">
+						<div class="col-lg-12">
+							<input class="form-check-input" type="radio" name="authority" value="all" th:checked="${authority.equals('all')}" />
+						  <label class="form-check-label me-3">すべての権限</label>
+						
+							<input class="form-check-input" type="radio" name="authority" value="owner" th:checked="${authority.equals('owner')}" />
+							<label class="form-check-label me-3">オーナー</label>
+							
+							<input class="form-check-input" type="radio" name="authority" value="general" th:checked="${authority.equals('general')}" />
+							<label class="form-check-label">一般</label>
+						</div>
+					</div>
+					
+					<div class="row">
+						<div class="col-lg-4">
+							<select class="form-select" name="sort_type">
+								<option th:each="type : ${typeList}"
+												th:value="${type.value}" th:text="${type.viewType}"
+												th:selected="${sortType == type.value}">
+								</option>
+							</select>
+						</div>
+						
+						<div class="col-lg-4">
+							<select class="form-select" name="sort_direction">
+								<option th:each="sort : ${sortList}"
+												th:value="${sort.value}" th:text="${sort.viewDirection}"
+												th:selected="${sortDirection == sort.value}">
+								</option>
+							</select>
+						</div>
+						
+						<div class="col-lg-2">
+							<select class="form-select" name="display_count">
+								<option th:each="count : ${countList}"
+												th:value="${count.value}" th:text="${count.viewCount}"
+												th:selected="${displayCount == count.value}">
+								</option>
+							</select>
+						</div>
+						
+						<div class="col-lg-2">
+							<input class="btn btn-primary" type="submit" value="検索" />
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		
+		<a class="mb-3 btn btn-success" th:href="@{/admin/admin_users/create}">新規</a>
+		
+		<th:block th:if="${ admins.size() == 0 }">
+			<p>検索結果に一致するデータが存在しません</p>
+		</th:block>
+		
+		<th:block th:if="${ admins.size() > 0 }">
+			<table class="table table-striped">
+				<thead>
+					<tr class="border-top border-bottom">
+						<th>ID</th>
+						<th>名称</th>
+						<th>メールアドレス</th>
+						<th>権限</th>
+					</tr>
+				</thead>
+				
+				<tbody>
+					<tr th:each="admin:${admins}">
+						<td style="width: 10%;" th:text="${admin.id}"></td>
+						<td style="width: 30%;" th:text="${admin.name}"></td>
+						<td style="width: 45%;" th:text="${admin.email}"></td>
+						<td style="width: 15%;" th:text="${admin.authority}"></td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<nav>
+		    <ul class="pagination pg-blue justify-content-center">
+		        <li th:if="${startPage} > 1" class="page-item ">
+		            <a class="page-link" th:href="@{${url} + '&page=1'}" tabindex="-2">最初</a>
+		        </li>
+		        <li th:if="${page} > 1" class="page-item ">
+		            <a class="page-link" th:href="@{${url} + '&page=' + ${page-1}}" tabindex="-1">前へ</a>
+		        </li>
+		        <th:block th:if="${endPage}<=0">
+		            <li class="page-item " th:classappend="${i == page} ? active" th:each="i : ${startPage}">
+		                <a class="page-link" th:href="@{${url} + '&page=' + ${i}}" th:text="${i}"></a>
+		            </li>
+		        </th:block>
+		        <!-- StartPageからEndPageまでのページ数を表示する -->
+		        <th:block th:if="${endPage}>0">
+		            <li class="page-item " th:classappend="${i == page} ? active" th:each="i : ${#numbers.sequence(startPage, endPage)}">
+		                <a class="page-link" th:href="@{${url} + '&page=' + ${i}}" th:text="${i}"></a>
+		            </li>
+		        </th:block>
+		        <li th:if="${page} < ${totalPage}" class="page-item ">
+		            <a class="page-link" th:href="@{${url} + '&page=' + ${page+1}}">次へ</a>
+		        </li>
+		        <li th:if="${endPage} < ${totalPage}" class="page-item ">
+		            <a class="page-link" th:href="@{${url} + '&page=' + ${totalPage}}">最後</a>
+		        </li>
+		    </ul>
+			</nav>
+		</th:block>
+	</div>
+</body>
+</html>

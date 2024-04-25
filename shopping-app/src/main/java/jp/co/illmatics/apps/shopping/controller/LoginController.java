@@ -36,7 +36,7 @@ public class LoginController {
 	public String adminIndex(Model model) {
 		BCryptPasswordEncoder password = new BCryptPasswordEncoder();
 		model.addAttribute("pass", password.encode("pass"));
-		return "admin/admin_users/login";
+		return "admin/login";
 	}
 	
 	// ログイン処理
@@ -52,14 +52,14 @@ public class LoginController {
 		
 		if(errors.size() > 0) {
 			model.addAttribute("errors", errors);
-			return "admin/admin_users/login";
+			return "admin/login";
 		} else {
 			// セッションデータ保持
 			// 名前、メールアドレス、権限
 			adminAccount.setId(admins.get(0).getId());
 			adminAccount.setName(admins.get(0).getName());
 			adminAccount.setEmail(admins.get(0).getEmail());
-			adminAccount.setIsOwner(admins.get(0).getIsOwner());
+			adminAccount.setAuthority(admins.get(0).getAuthority());
 			return "redirect:/admin/home";
 		}
 	}

@@ -25,6 +25,8 @@ public class Admins {
 	
 	private Long isOwner;
 	
+	private String authority;
+	
 	private Timestamp createAt;
 	
 	private Timestamp updateAt;

@@ -14,24 +14,35 @@ import jp.co.illmatics.apps.shopping.session.AdminAccount;
 @Component
 public class CheckLoginAspect {
 	@Autowired
-	AdminAccount account;
+	AdminAccount adminAccount;
 	
 //	@Around("execution(* jp.co.illmatics.apps.shopping.controller.account.*Controller.*(..))")
 	@Around("execution(* jp.co.illmatics.apps.shopping.controller..Admin*Controller.*(..))")
 	public Object checkLogin(ProceedingJoinPoint jp) throws Throwable {
 		Signature sig = jp.getSignature();
-		System.out.println("現在のコントローラー" + sig.getDeclaringType().getSimpleName() + "#" + sig.getName());
-		
-		// ログイン関連コントローラー
-		// ログインしていなくても遷移可能
-		if(sig.getDeclaringType().getSimpleName().equals("LoginController")) {
-			return jp.proceed();
-		}
+		System.out.println("現在のコントローラー#アクション" + sig.getDeclaringType().getSimpleName() + "#" + sig.getName());
 		
 		// ログインしていない場合
 		// 管理者ログインページ遷移
-		if(ObjectUtils.isEmpty(account.getName()) || ObjectUtils.isEmpty(account.getEmail())) {
+		if (ObjectUtils.isEmpty(adminAccount.getName()) || ObjectUtils.isEmpty(adminAccount.getEmail())) {
 			return "redirect:/admin/login";
+		}
+		
+		// ログイン関連コントローラー
+		// ログインしていなくても遷移可能
+		if (sig.getDeclaringType().getSimpleName().equals("LoginController")) {
+			return jp.proceed();
+		}
+		
+		if (sig.getDeclaringType().getSimpleName().equals("AdminController")) {
+			if (adminAccount.getAuthority().equals("owner")) {
+				return jp.proceed();
+			} else if (adminAccount.getAuthority().equals("general")) {
+				return "redirect:/errors/403";
+			} else {
+				System.err.println("権限が異常なアカウントです");
+				return "redirect:/errors/403";
+			}
 		}
 		
 		return jp.proceed();
