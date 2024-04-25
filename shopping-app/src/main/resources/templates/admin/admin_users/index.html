@@ -90,7 +90,7 @@
 				<tbody>
 					<tr th:each="admin:${admins}">
 						<td style="width: 10%;" th:text="${admin.id}"></td>
-						<td style="width: 30%;" th:text="${admin.name}"></td>
+						<td style="width: 30%;"><a th:href="@{/admin/admin_users/{id}(id=${admin.id})}" th:text="${admin.name}"></a></td>
 						<td style="width: 45%;" th:text="${admin.email}"></td>
 						<td style="width: 15%;" th:text="${admin.authority}"></td>
 					</tr>

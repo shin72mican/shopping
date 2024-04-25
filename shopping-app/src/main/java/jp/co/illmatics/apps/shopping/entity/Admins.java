@@ -10,6 +10,14 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Admins {
 	
+	public Admins() {
+		
+	}
+	
+	public Admins(Long id) {
+		this.id = id;
+	}
+	
 	public Admins(String email, String password) {
 		this.email = email;
 		this.password = password;

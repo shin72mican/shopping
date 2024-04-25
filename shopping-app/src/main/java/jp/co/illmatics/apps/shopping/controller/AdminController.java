@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jp.co.illmatics.apps.shopping.entity.Admins;
@@ -29,6 +30,7 @@ public class AdminController {
 	@Autowired
 	AdminUrlService urlService;
 	
+	// 一覧ページ
 	@GetMapping("/admin/admin_users")
 	public String index(
 			@RequestParam(name = "name", defaultValue = "") String name,
@@ -75,5 +77,17 @@ public class AdminController {
 		
 		return "admin/admin_users/index";
 		
+	}
+	
+	// 詳細ページ
+	@GetMapping("/admin/admin_users/{id}")
+	public String show(
+			@PathVariable("id") Long id,
+			Model model) {
+		Admins admin = new Admins(id);
+		List<Admins> admins = adminsMapper.find(admin);
+		
+		model.addAttribute("admin", admins.get(0));
+		return "admin/admin_users/show";
 	}
 }

@@ -1,6 +1,7 @@
 package jp.co.illmatics.apps.shopping.mapper;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.SelectProvider;
@@ -16,6 +17,9 @@ public interface AdminsMapper {
 	
 	@SelectProvider(AdminSqlProvider.class)
 	List<Admins> findEmail(Admins admin);
+	
+	@SelectProvider(AdminSqlProvider.class)
+	List<Admins> find(Admins admin);
 	
 	public class AdminSqlProvider implements ProviderMethodResolver {
 		// メールアドレス検索
@@ -50,6 +54,18 @@ public interface AdminsMapper {
 					ORDER_BY(sortType + " DESC");
 				}
 				OFFSET(displayCount * (currentPage - 1) + "ROWS FETCH FIRST " +  displayCount  + " ROWS ONLY");
+			}}.toString();
+		}
+		
+		public String find(Admins admin) {
+			return new SQL() {{
+				SELECT("id", "name", "email", "password", "is_owner", 
+						"CASE is_owner WHEN 1 THEN 'オーナー' WHEN 0 THEN '一般' ELSE 'no_data' END AS authority",
+						"create_at", "update_at");
+				FROM("admin_users");
+				if(Objects.nonNull(admin.getId())) {
+					WHERE("id = #{id}");
+				}
 			}}.toString();
 		}
 		

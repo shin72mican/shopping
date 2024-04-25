@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{admin/layout/layout}">
+<head>
+	<title>admin product category index</title>
+</head>
+<body>
+	
+	<div layout:fragment="admin-content">
+		
+		<table class="mt-5">
+			<tr>
+				<td style="width: 60px;"><a th:href="@{/admin/admin_users}">一覧</a></td>
+				<td style="width: 70px;"><a class="btn btn-success" th:href="@{/admin/admin_users/{id}/edit(id=${admin.id})}">編集</a></td>
+				<td style="width: 60px;">
+					<form th:action="@{/admin/admin_users/{id}(id = ${admin.id})}" th:method="delete">
+						<input type="submit" value="削除" class="btn btn-danger" />
+					</form>
+				</td>
+			</tr>
+		</table>
+		
+		<table class="table">
+			<tbody>
+				<tr>
+					<th style="width: 40px;">ID</th>
+					<td style="width: 60px;" th:text="${admin.id}"></td>
+				</tr>
+				<tr>
+					<th>名称</th>
+					<td th:text="${admin.name}"></td>
+				</tr>
+				<tr>
+					<th>メールアドレス</th>
+					<td th:text="${admin.email}"></td>
+				</tr>
+				<tr>
+					<th>権限</th>
+					<td th:text="${admin.authority}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+</body>
+</html>
