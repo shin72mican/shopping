@@ -6,8 +6,10 @@ import java.util.Objects;
 import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.SelectProvider;
+import org.apache.ibatis.annotations.UpdateProvider;
 import org.apache.ibatis.builder.annotation.ProviderMethodResolver;
 import org.apache.ibatis.jdbc.SQL;
+import org.springframework.util.StringUtils;
 
 import jp.co.illmatics.apps.shopping.entity.Admins;
 
@@ -24,6 +26,9 @@ public interface AdminsMapper {
 	
 	@InsertProvider(AdminSqlProvider.class)
 	void insert(Admins admin);
+	
+	@UpdateProvider(AdminSqlProvider.class)
+	void update(Admins admin, Admins sorceAdmin);
 	
 	public class AdminSqlProvider implements ProviderMethodResolver {
 		// メールアドレス検索
@@ -74,17 +79,6 @@ public interface AdminsMapper {
 		}
 		
 		public String insert(Admins admin) {
-			System.out.println(
-					new SQL() {{
-						INSERT_INTO("admin_users");
-						VALUES("name", "#{name}");
-						VALUES("email", "#{email}");
-						VALUES("password", "#{password}");
-						VALUES("is_owner", "#{isOwner}");
-						VALUES("create_at", "CURRENT_TIMESTAMP");
-						VALUES("update_at", "CURRENT_TIMESTAMP");
-					}}.toString()
-					);
 			return new SQL() {{
 				INSERT_INTO("admin_users");
 				VALUES("name", "#{name}");
@@ -93,6 +87,22 @@ public interface AdminsMapper {
 				VALUES("is_owner", "#{isOwner}");
 				VALUES("create_at", "CURRENT_TIMESTAMP");
 				VALUES("update_at", "CURRENT_TIMESTAMP");
+			}}.toString();
+		}
+		
+		public String update(Admins admin, Admins sorceAdmin) {
+			return new SQL() {{
+				UPDATE("admin_users");
+				SET("name = #{admin.name}");
+				if (!admin.getName().equals(sorceAdmin.getName())) {
+					SET("email = #{admin.email}");
+				}
+				if (StringUtils.hasLength(admin.getPassword())) {
+					SET("password = #{admin.password}");
+				}
+				SET("is_owner = #{admin.isOwner}");
+				SET("update_at = CURRENT_TIMESTAMP");
+				WHERE("id = #{admin.id}");
 			}}.toString();
 		}
 		

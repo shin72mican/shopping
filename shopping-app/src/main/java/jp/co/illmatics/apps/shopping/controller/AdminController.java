@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jp.co.illmatics.apps.shopping.entity.Admins;
@@ -17,6 +18,7 @@ import jp.co.illmatics.apps.shopping.service.admin.error.AdminErrorCheckService;
 import jp.co.illmatics.apps.shopping.service.admin.url.AdminUrlService;
 import jp.co.illmatics.apps.shopping.session.AdminAccount;
 import jp.co.illmatics.apps.shopping.values.Page;
+import jp.co.illmatics.apps.shopping.values.admins.Authority;
 import jp.co.illmatics.apps.shopping.values.form.Display;
 import jp.co.illmatics.apps.shopping.values.form.SortDirection;
 import jp.co.illmatics.apps.shopping.values.form.admins.SortType;
@@ -114,8 +116,8 @@ public class AdminController {
 			@RequestParam(name = "confirm_password", defaultValue = "") String confirmPassword,
 			@RequestParam(name = "authority", defaultValue = "general") String authority,
 			Model model) {
-		Admins admin = new Admins(name, email, password);
-		List<String> errors = errorCheckService.errorCheck(admin, confirmPassword, authority);
+		Admins admin = new Admins(name, email, password, authority);
+		List<String> errors = errorCheckService.createErrorCheck(admin, confirmPassword);
 		
 		if (errors.size() > 0) {
 			model.addAttribute("name", name);
@@ -140,4 +142,54 @@ public class AdminController {
 			return "redirect:/admin/admin_users";
 		}
 	}
+	
+	// 編集ページ
+	@GetMapping("/admin/admin_users/{id}/edit")
+	public String edit(
+			@PathVariable("id") Long id,
+			Model model) {
+		Admins admin = new Admins(id);
+		List<Admins> admins = adminsMapper.find(admin);
+		model.addAttribute("admin", admins.get(0));
+		// Authority enumから権限の取得
+		Authority authority = Authority.getByValue(admins.get(0).getIsOwner()); 
+		model.addAttribute("authority", authority.getViweValue());
+		return "admin/admin_users/edit";
+	}
+	
+	// 更新処理
+	@PutMapping("/admin/admin_users/{id}")
+	public String update(
+			@PathVariable("id") Long id,
+			@RequestParam(name = "name", defaultValue = "") String name,
+			@RequestParam(name = "email", defaultValue = "") String email,
+			@RequestParam(name = "password", defaultValue = "") String password,
+			@RequestParam(name = "confirm_password", defaultValue = "") String confirmPassword,
+			@RequestParam(name = "authority", defaultValue = "") String authority,
+			Model model) {
+		Admins admin = new Admins(id, name, email, password, authority);
+		List<Admins> admins = adminsMapper.find(admin);
+		List<String> errors = errorCheckService.editErrorCheck(admin, confirmPassword);
+		
+		if(errors.size() > 0) {
+			model.addAttribute("errors", errors);
+			model.addAttribute("admin", admin);
+			model.addAttribute("password", password);
+			model.addAttribute("confirmPassword", confirmPassword);
+			model.addAttribute("authority", authority);
+			return "admin/admin_users/edit";
+		} else {
+			// パスワードハッシュ化
+			BCryptPasswordEncoder hashPassword = new BCryptPasswordEncoder();
+			admin.setPassword(hashPassword.encode(password));
+			
+			// Authority enumから権限の取得
+			Authority formAuthority = Authority.getByViewValue(admin.getAuthority());
+			admin.setIsOwner(formAuthority.getValue());
+						
+//			adminsMapper.update(admin, admins.get(0));
+			return "redirect:/admin/admin_users/" + admin.getId();
+		}
+	}
+	
 }

@@ -23,10 +23,19 @@ public class Admins {
 		this.password = password;
 	}
 	
-	public Admins(String name, String email, String password) {
+	public Admins(String name, String email, String password, String authority) {
 		this.name = name;
 		this.email = email;
 		this.password = password;
+		this.authority = authority;
+	}
+	
+	public Admins(Long id, String name, String email, String password, String authority) {
+		this.id = id;
+		this.name = name;
+		this.email = email;
+		this.password = password;
+		this.authority = authority;
 	}
 	
 	private Long id;
