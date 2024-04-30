@@ -3,6 +3,7 @@ package jp.co.illmatics.apps.shopping.mapper;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.builder.annotation.ProviderMethodResolver;
@@ -20,6 +21,9 @@ public interface AdminsMapper {
 	
 	@SelectProvider(AdminSqlProvider.class)
 	List<Admins> find(Admins admin);
+	
+	@InsertProvider(AdminSqlProvider.class)
+	void insert(Admins admin);
 	
 	public class AdminSqlProvider implements ProviderMethodResolver {
 		// メールアドレス検索
@@ -66,6 +70,29 @@ public interface AdminsMapper {
 				if(Objects.nonNull(admin.getId())) {
 					WHERE("id = #{id}");
 				}
+			}}.toString();
+		}
+		
+		public String insert(Admins admin) {
+			System.out.println(
+					new SQL() {{
+						INSERT_INTO("admin_users");
+						VALUES("name", "#{name}");
+						VALUES("email", "#{email}");
+						VALUES("password", "#{password}");
+						VALUES("is_owner", "#{isOwner}");
+						VALUES("create_at", "CURRENT_TIMESTAMP");
+						VALUES("update_at", "CURRENT_TIMESTAMP");
+					}}.toString()
+					);
+			return new SQL() {{
+				INSERT_INTO("admin_users");
+				VALUES("name", "#{name}");
+				VALUES("email", "#{email}");
+				VALUES("password", "#{password}");
+				VALUES("is_owner", "#{isOwner}");
+				VALUES("create_at", "CURRENT_TIMESTAMP");
+				VALUES("update_at", "CURRENT_TIMESTAMP");
 			}}.toString();
 		}
 		

@@ -23,6 +23,12 @@ public class Admins {
 		this.password = password;
 	}
 	
+	public Admins(String name, String email, String password) {
+		this.name = name;
+		this.email = email;
+		this.password = password;
+	}
+	
 	private Long id;
 	
 	private String name;
@@ -31,7 +37,7 @@ public class Admins {
 	
 	private String password;
 	
-	private Long isOwner;
+	private int isOwner;
 	
 	private String authority;
 	
