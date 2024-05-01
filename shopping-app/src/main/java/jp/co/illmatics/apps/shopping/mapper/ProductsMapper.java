@@ -24,6 +24,9 @@ public interface ProductsMapper {
 	@SelectProvider(ProductSqlProvider.class)
 	List<Products> findSearch(Long categoryId, String name, Long price, String standard, String sortType, String sortDirection, int displayCount, Integer currentPage);
 	
+	@SelectProvider(ProductSqlProvider.class)
+	int findSearchCount(Long categoryId, String name, Long price, String standard);
+	
 	@InsertProvider(ProductSqlProvider.class)
 	void insert(Products products);
 	
@@ -80,6 +83,28 @@ public interface ProductsMapper {
 					ORDER_BY(sortType + " DESC");
 				}
 				OFFSET(displayCount * (currentPage - 1) + "ROWS FETCH FIRST " +  displayCount  + " ROWS ONLY");
+			}}.toString();
+		}
+		
+		// 検索データ個数
+		public String findSearchCount(Long categoryId, String name, Long price, String standard) {
+			return new SQL() {{
+				SELECT("COUNT (*)");
+				FROM("products p");
+				if(!name.equals("")) {
+					WHERE("p.name LIKE '%" + name + "%'");
+				}
+				if(standard.equals("over") && price != null) {
+					WHERE("p.price >= " + price);
+				} else if(standard.equals("less") && price != null) {
+					WHERE("p.price <= " + price);
+				} else {
+					WHERE("p.price >= 0");
+				}
+				if(categoryId > 0) {
+					WHERE("p.product_category_id = " + categoryId);
+				}
+				INNER_JOIN("product_categories c ON p.product_category_id = c.id");
 			}}.toString();
 		}
 		

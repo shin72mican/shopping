@@ -94,7 +94,9 @@ public class AdminProductController {
 		
 		String url = urlService.searchUrl(categoryId, name, price, standard, sortType, sortDirection, displayCount);
 		
-		int totalPage = categories.size() / displayCount + 1;
+		int pageCount = productsMapper.findSearchCount(categoryId, name, price, standard);
+		
+		int totalPage = (pageCount - 1) / displayCount + 1;
 		int startPage = currentPage - (currentPage - 1) % Page.COUNT.getValue();
 		int endPage = (currentPage + Page.COUNT.getValue() - 1 > totalPage) ? totalPage : (currentPage + Page.COUNT.getValue() -1);
 		
