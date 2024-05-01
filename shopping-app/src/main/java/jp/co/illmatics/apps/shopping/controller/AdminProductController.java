@@ -12,7 +12,6 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +27,7 @@ import jp.co.illmatics.apps.shopping.mapper.CategoriesMapper;
 import jp.co.illmatics.apps.shopping.mapper.ProductReviewsMapper;
 import jp.co.illmatics.apps.shopping.mapper.ProductsMapper;
 import jp.co.illmatics.apps.shopping.mapper.WishProductsMapper;
+import jp.co.illmatics.apps.shopping.service.admin.error.ProductErrorCheckService;
 import jp.co.illmatics.apps.shopping.service.admin.image.ProductImageService;
 import jp.co.illmatics.apps.shopping.service.admin.url.ProductUrlService;
 import jp.co.illmatics.apps.shopping.values.Page;
@@ -43,6 +43,11 @@ public class AdminProductController {
 	@Autowired
 	ProductImageService imageService;
 	
+	// 新規・更新エラーチェック
+	@Autowired
+	ProductErrorCheckService errorCheckService;
+	
+	// DB処理
 	@Autowired
 	private ProductsMapper productsMapper;
 	
@@ -131,43 +136,19 @@ public class AdminProductController {
 			@RequestParam(name = "product_image", defaultValue="") MultipartFile productImage,
 			Model model) throws IOException {
 		
-		Products product = new Products();
+		Products product = new Products(categoryId, name, price, description);
 		
 		// エラーチェック
 		List<String> errors = new ArrayList<String>();
 		
 
-		if (!StringUtils.hasLength(name)) {
-			errors.add("名前を入力してください");
-		}
-		
-		if (price == null) {
-			errors.add("価格を入力してください");
-		} else {
-			product = new Products(categoryId, name, price, description);
-			if (price < 0) {
-				errors.add("0以上で価格を入力して下さい");
-			}
-		}
+		errors = errorCheckService.errorCheck(product);
 		
 		model.addAttribute("errors", errors);
 		
 		if(!productImage.isEmpty()) {
-			// 一意な画像ファイル名の作成
-			// ファイル名取得
-			String originalFileName = productImage.getOriginalFilename();
-			// ファイル拡張子取得
-			String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
-			// 一意な文字列取得
-			UUID uuid = UUID.randomUUID();
-			// 新しいファイル名
-			String fileName = uuid.toString() + extension;
-			// 保存先
-			Path filePath=Paths.get("static/products/" + fileName);
-			// 保存
-			Files.copy(productImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-			
-			product.setImagePath("/products/" + fileName);
+			// 画像保存処理
+			product = imageService.saveImage(productImage, product);
 		} else {
 			product.setImagePath("");
 		}
@@ -218,19 +199,9 @@ public class AdminProductController {
 		// エラーチェック
 		List<String> errors = new ArrayList<String>();
 		
-		if (name.equals("")) {
-			errors.add("名前を入力してください");
-		}
+		errors = errorCheckService.errorCheck(product);
 		
-		if (price == null) {
-			errors.add("価格を入力してください");
-		} else {
-			if (price < 0) {
-				errors.add("0以上で価格を入力して下さい");
-			} else {
-				product.setPrice(price);
-			}
-		}
+		model.addAttribute("errors", errors);
 		
 		if(!productImage.isEmpty() && errors.size() == 0) {
 			// 画像の削除
