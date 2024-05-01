@@ -3,6 +3,7 @@ package jp.co.illmatics.apps.shopping.mapper;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.ibatis.annotations.DeleteProvider;
 import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.SelectProvider;
@@ -29,6 +30,9 @@ public interface AdminsMapper {
 	
 	@UpdateProvider(AdminSqlProvider.class)
 	void update(Admins admin, Admins sorceAdmin);
+	
+	@DeleteProvider(AdminSqlProvider.class)
+	void delete(Admins admin);
 	
 	public class AdminSqlProvider implements ProviderMethodResolver {
 		// メールアドレス検索
@@ -103,6 +107,14 @@ public interface AdminsMapper {
 				SET("is_owner = #{admin.isOwner}");
 				SET("update_at = CURRENT_TIMESTAMP");
 				WHERE("id = #{admin.id}");
+			}}.toString();
+		}
+		
+		// 削除
+		public String delete(Admins admin) {
+			return new SQL() {{
+				DELETE_FROM("admin_users");
+				WHERE("id = #{id}");
 			}}.toString();
 		}
 		

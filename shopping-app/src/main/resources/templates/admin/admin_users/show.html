@@ -11,6 +11,11 @@
 		
 		<table class="mt-5">
 			<tr>
+				<td th:each="error:${errors}" colspan="3">
+					<p class="text-danger" th:text="${error}"}></p>
+				</td>
+			</tr>
+			<tr>
 				<td style="width: 60px;"><a th:href="@{/admin/admin_users}">一覧</a></td>
 				<td style="width: 70px;"><a class="btn btn-success" th:href="@{/admin/admin_users/{id}/edit(id=${admin.id})}">編集</a></td>
 				<td style="width: 60px;">

@@ -1,11 +1,13 @@
 package jp.co.illmatics.apps.shopping.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -187,9 +189,35 @@ public class AdminController {
 			Authority formAuthority = Authority.getByViewValue(admin.getAuthority());
 			admin.setIsOwner(formAuthority.getValue());
 						
-//			adminsMapper.update(admin, admins.get(0));
+			adminsMapper.update(admin, admins.get(0));
 			return "redirect:/admin/admin_users/" + admin.getId();
 		}
+	}
+	
+	// 管理者削除処理
+	@DeleteMapping("/admin/admin_users/{id}")
+	public String delete(
+			@PathVariable("id") Long id,
+			Model model) {
+		
+		Admins admin = new Admins(id);
+		List<Admins> admins = adminsMapper.find(admin);
+		
+		
+		List<String> errors = new ArrayList<String>();
+		
+		if(adminAccount.getId() == id) {
+			errors.add("ログインアカウントは削除することができません");
+			model.addAttribute("admin", admins.get(0));
+			model.addAttribute("errors", errors);
+			return "admin/admin_users/show";
+		} else {
+			// 削除処理
+			adminsMapper.delete(admin);
+			
+			return "redirect:/admin/admin_users";
+		}
+		
 	}
 	
 }
