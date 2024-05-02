@@ -35,6 +35,7 @@ dependencies {
 	//implementation ('nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.3.0')
 	implementation ('nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.3.0')
 	implementation ('org.aspectj:aspectjweaver')
+	//implementation ('org.springframework.boot:spring-boot-starter-validation')
 }
 
 tasks.named('test') {

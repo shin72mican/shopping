@@ -22,6 +22,12 @@ public interface UsersMapper {
 
 	@SelectProvider(UserSqlProvider.class)
 	List<Users> findAll();
+	
+	@SelectProvider(UserSqlProvider.class)
+	List<Users> findSearch(String name, String email, String sortType, String sortDirection, Integer displayCount, Integer currentPage);
+	
+	@SelectProvider(UserSqlProvider.class)
+	List<Users> findEmail(Users user);
 
 	@InsertProvider(UserSqlProvider.class)
 	void insert(Users users);
@@ -34,9 +40,15 @@ public interface UsersMapper {
 	
 	@SelectProvider(UserSqlProvider.class)
 	Long count(Users users);
+	
+	@SelectProvider(UserSqlProvider.class)
+	Long countAll(String name, String email);
 
 	@SelectProvider(UserSqlProvider.class)
 	Optional<Users> findByName(String username);
+	
+	@SelectProvider(UserSqlProvider.class)
+	int findSearchCount(String name, String email, String sortType);
 
 	public class UserSqlProvider implements ProviderMethodResolver {
 
@@ -47,27 +59,27 @@ public interface UsersMapper {
 				if (Objects.nonNull(users.getId())) {
 					 WHERE("id = #{id}");
 				}
-				if (Objects.nonNull(users.getName())) {
-					 WHERE("name = #{name}");
-				}
-				if (Objects.nonNull(users.getEmail())) {
-					 WHERE("email = #{email}");
-				}
-				if (Objects.nonNull(users.getEmailVerifiedAt())) {
-					 WHERE("email_verified_at = #{emailVerifiedAt}");
-				}
-				if (Objects.nonNull(users.getPassword())) {
-					 WHERE("password = #{password}");
-				}
-				if (Objects.nonNull(users.getImagePath())) {
-					 WHERE("image_path = #{imagePath}");
-				}
-				if (Objects.nonNull(users.getCreateAt())) {
-					 WHERE("create_at = #{createAt}");
-				}
-				if (Objects.nonNull(users.getUpdateAt())) {
-					 WHERE("update_at = #{updateAt}");
-				}
+//				if (Objects.nonNull(users.getName())) {
+//					 WHERE("name = #{name}");
+//				}
+//				if (Objects.nonNull(users.getEmail())) {
+//					 WHERE("email = #{email}");
+//				}
+//				if (Objects.nonNull(users.getEmailVerifiedAt())) {
+//					 WHERE("email_verified_at = #{emailVerifiedAt}");
+//				}
+//				if (Objects.nonNull(users.getPassword())) {
+//					 WHERE("password = #{password}");
+//				}
+//				if (Objects.nonNull(users.getImagePath())) {
+//					 WHERE("image_path = #{imagePath}");
+//				}
+//				if (Objects.nonNull(users.getCreateAt())) {
+//					 WHERE("create_at = #{createAt}");
+//				}
+//				if (Objects.nonNull(users.getUpdateAt())) {
+//					 WHERE("update_at = #{updateAt}");
+//				}
 			}}.toString();
 		}
 
@@ -79,30 +91,58 @@ public interface UsersMapper {
 
 			}}.toString();
 		}
+		
+		public String findSearch(String name, String email, String sortType, String sortDirection, Integer displayCount, Integer currentPage) {
+			return new SQL() {{
+				SELECT("id", "name", "email", "create_at", "update_at");
+				FROM("users");
+				if(!name.equals("")) {
+					WHERE("name LIKE '%" + name + "%'");
+				}
+				if(!email.equals("")) {
+					WHERE("email LIKE '%" + email + "%'");
+				}
+				if (sortDirection.equals("asc")) {
+					ORDER_BY(sortType);
+				} else if (sortDirection.equals("desc")) {
+					ORDER_BY(sortType + " DESC");
+				}
+				OFFSET(displayCount * (currentPage - 1) + "ROWS FETCH FIRST " +  displayCount  + " ROWS ONLY");
+			}}.toString();
+		}
+		
+		// emailがuniqueであるかの確認
+		public String findEmail(Users user) {
+			return new SQL() {{
+				SELECT("*");
+				FROM("users");
+				WHERE("email = #{email} AND ROWNUM <= 1");
+			}}.toString();
+		}
 
 		public String insert(Users users) {
 			return new SQL() {{
 				INSERT_INTO("users");
 				VALUES("name", "#{name}");
 				VALUES("email", "#{email}");
-				VALUES("email_verified_at", "#{emailVerifiedAt}");
+				VALUES("email_verified_at", "CURRENT_TIMESTAMP");
 				VALUES("password", "#{password}");
 				VALUES("image_path", "#{imagePath}");
-				VALUES("create_at", "#{createAt}");
-				VALUES("update_at", "#{updateAt}");
+				VALUES("create_at", "CURRENT_TIMESTAMP");
+				VALUES("update_at", "CURRENT_TIMESTAMP");
 			}}.toString();
 		}
 
 		public String update(Users users) {
 			return new SQL() {{
 				UPDATE("users");
-				SET("name", "#{name}");
-				SET("email", "#{email}");
-				SET("email_verified_at", "#{emailVerifiedAt}");
-				SET("password", "#{password}");
-				SET("image_path", "#{imagePath}");
-				SET("create_at", "#{createAt}");
-				SET("update_at", "#{updateAt}");
+				SET("name = #{name}");
+				SET("email = #{email}");
+				SET("email_verified_at = #{emailVerifiedAt}");
+				SET("password = #{password}");
+				SET("image_path = #{imagePath}");
+				SET("create_at = #{createAt}");
+				SET("update_at = CURRENT_TIMESTAMP");
 				WHERE("id = #{id}");
 			}}.toString();
 		}
@@ -144,12 +184,38 @@ public interface UsersMapper {
 				}
 			}}.toString();
 		}
+		
+		public String countAll(String name, String email) {
+			return new SQL() {{
+				SELECT("COUNT(*)");
+				FROM("users");
+				if(!name.equals("")) {
+					WHERE("name LIKE '%" + name + "%'");
+				}
+				if(!email.equals("")) {
+					WHERE("email LIKE '%" + email + "%'");
+				}
+			}}.toString();
+		}
 
 		public String findByName(String name) {
 			return new SQL() {{
 				SELECT("id", "name", "email", "email_verified_at", "password", "image_path", "create_at", "update_at");
 				FROM("users");
 				WHERE("name = #{name}");
+			}}.toString();
+		}
+		
+		public String findSearchCount(String name, String email, String sortType) {
+			return new SQL() {{
+				SELECT("COUNT (*)");
+				FROM("users");
+				if(!name.equals("")) {
+					WHERE("name LIKE '%" + name + "%'");
+				}
+				if(!email.equals("")) {
+					WHERE("email LIKE '%" + email + "%'");
+				}
 			}}.toString();
 		}
 
