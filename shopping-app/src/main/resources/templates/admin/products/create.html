@@ -9,7 +9,7 @@
 	<div layout:fragment="admin-content">
 		<div class="mt-4 mb-3">
 			<span th:each="error:${errors}">
-				<p class="text-danger" th:text="${error}"}></pth>
+				<p class="text-danger" th:text="${error}"></p>
 			</span>
 			
 			<form action="/admin/products" method="post" enctype="multipart/form-data">
@@ -32,7 +32,7 @@
 				
 				<div class="mt-2 mb-2">
 					<label class="form-label">説明</label>
-					<textarea class="form-control" name="description" placeholder="説明"></textarea>
+					<textarea class="form-control" name="description" placeholder="説明" th:text="${description}"></textarea>
 				</div>
 				
 				<div class="mt-2 mb-2">

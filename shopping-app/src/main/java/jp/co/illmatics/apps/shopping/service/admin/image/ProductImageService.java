@@ -17,7 +17,7 @@ import jp.co.illmatics.apps.shopping.entity.Products;
 @Service
 public class ProductImageService {
 	
-	public Products saveImage(MultipartFile productImage, Products product) throws IOException {
+	public String saveImage(MultipartFile productImage, Products product) throws IOException {
 		// 一意な画像ファイル名の作成
 		// ファイル名取得
 		String originalFileName = productImage.getOriginalFilename();
@@ -32,9 +32,7 @@ public class ProductImageService {
 		// 保存
 		Files.copy(productImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 		
-		product.setImagePath("/products/" + fileName);
-		
-		return product;
+		return "/products/" + fileName;
 	}
 	
 	public void delete(Products product) {

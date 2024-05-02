@@ -31,10 +31,11 @@ public class Products {
 		this.description = description;
 	}
 	
-	public Products(Long id, Long categoryId, String name, String description) {
+	public Products(Long id, Long categoryId, String name, Long price, String description) {
 		this.id = id;
 		this.productCategoryId = categoryId;
 		this.name = name;
+		this.price = price;
 		this.description = description;
 	}
 	

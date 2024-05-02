@@ -1,13 +1,8 @@
 package jp.co.illmatics.apps.shopping.controller;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -144,13 +139,14 @@ public class AdminProductController {
 		List<String> errors = new ArrayList<String>();
 		
 
-		errors = errorCheckService.errorCheck(product);
+		errors = errorCheckService.errorCheck(product, productImage);
 		
 		model.addAttribute("errors", errors);
 		
 		if(!productImage.isEmpty()) {
 			// 画像保存処理
-			product = imageService.saveImage(productImage, product);
+			// ファイルパス返却
+			product.setImagePath(imageService.saveImage(productImage, product));
 		} else {
 			product.setImagePath("");
 		}
@@ -172,7 +168,7 @@ public class AdminProductController {
 	
 	@GetMapping("/admin/products/{id}/edit")
 	public String edit(
-			@PathVariable(name = "id") Long id,
+			@PathVariable("id") Long id,
 			Model model) {
 		Products product = new Products(id);
 		List<String> errors = new ArrayList<String>();
@@ -195,13 +191,13 @@ public class AdminProductController {
 			@RequestParam(name = "product_image", defaultValue="") MultipartFile productImage,
 			@RequestParam(name = "delete_check", defaultValue = "false") Boolean deleteCheck,
 			Model model) throws IOException {
-		Products product = new Products(id, categoryId, name, description);
+		Products product = new Products(id, categoryId, name, price, description);
 		List<Products> products = productsMapper.find(product);
 		
 		// エラーチェック
 		List<String> errors = new ArrayList<String>();
 		
-		errors = errorCheckService.errorCheck(product);
+		errors = errorCheckService.errorCheck(product, productImage);
 		
 		model.addAttribute("errors", errors);
 		
@@ -209,21 +205,7 @@ public class AdminProductController {
 			// 画像の削除
 			imageService.delete(products.get(0));
 			
-			// 一意な画像ファイル名の作成
-			// ファイル名取得
-			String originalFileName = productImage.getOriginalFilename();
-			// ファイル拡張子取得
-			String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
-			// 一意な文字列取得
-			UUID uuid = UUID.randomUUID();
-			// 新しいファイル名
-			String fileName = uuid.toString() + extension;
-			// 保存先
-			Path filePath=Paths.get("static/products/" + fileName);
-			// 保存
-			Files.copy(productImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-			
-			products.get(0).setImagePath("/products/" + fileName);
+			products.get(0).setImagePath(imageService.saveImage(productImage, products.get(0)));
 		} else if(deleteCheck) {
 			// 画像の削除
 			imageService.delete(products.get(0));

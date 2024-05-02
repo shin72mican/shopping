@@ -58,7 +58,7 @@ public interface ProductsMapper {
 			}}.toString();
 		}
 		
-		// 検索データ取得
+		// カテゴリ管理一覧 - 検索データ取得
 		public String findSearch(Long categoryId, String name, Long price, String standard, String sortType, String sortDirection, int displayCount, Integer currentPage) {
 			return new SQL() {{
 				SELECT("p.id", "p.product_category_id", "c.name AS category_name", "p.name", "p.price", "p.description", "p.image_path", "p.create_at", "p.update_at");
