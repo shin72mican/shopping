@@ -18,6 +18,11 @@ public class Users {
 		this.id = id;
 	}
 	
+	public Users(String email, String password) {
+		this.email = email;
+		this.password = password;
+	}
+	
 	public Users(String name, String email, String password) {
 		this.name = name;
 		this.email = email;

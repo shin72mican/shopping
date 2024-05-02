@@ -1,14 +1,10 @@
 package jp.co.illmatics.apps.shopping.controller;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -129,21 +125,8 @@ public class AdminUserController {
 		List<String> errors = errorCheckService.createErrorCheck(user, confirmPassword, userImage);
 		
 		if(!userImage.isEmpty() && errors.size() == 0) {
-			// 一意な画像ファイル名の作成
-			// ファイル名取得
-			String originalFileName = userImage.getOriginalFilename();
-			// ファイル拡張子取得
-			String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
-			// 一意な文字列取得
-			UUID uuid = UUID.randomUUID();
-			// 新しいファイル名
-			String fileName = uuid.toString() + extension;
-			// 保存先
-			Path filePath=Paths.get("static/users/" + fileName);
-			// 保存
-			Files.copy(userImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-			
-			user.setImagePath("/users/" + fileName);
+			// 画像ファイル保存後、ファイルパスを返す
+			user.setImagePath(imageService.saveImage(userImage));
 		} else {
 			user.setImagePath("");
 		}
@@ -156,7 +139,7 @@ public class AdminUserController {
 			model.addAttribute("confirmPassword", confirmPassword);
 			return "/admin/users/create";
 		} else {
-			user.setPassword(passwordEncoder.encode("password"));
+			user.setPassword(passwordEncoder.encode(password));
 			usersMapper.insert(user);
 			return "redirect:/admin/users";
 		}
@@ -195,21 +178,7 @@ public class AdminUserController {
 			// 画像の削除
 			imageService.delete(users.get(0));
 			
-			// 一意な画像ファイル名の作成
-			// ファイル名取得
-			String originalFileName = userImage.getOriginalFilename();
-			// ファイル拡張子取得
-			String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
-			// 一意な文字列取得
-			UUID uuid = UUID.randomUUID();
-			// 新しいファイル名
-			String fileName = uuid.toString() + extension;
-			// 保存先
-			Path filePath=Paths.get("static/users/" + fileName);
-			// 保存
-			Files.copy(userImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-			
-			users.get(0).setImagePath("/users/" + fileName);
+			users.get(0).setImagePath(imageService.saveImage(userImage));
 		} else if(deleteCheck) {
 			// 画像の削除
 			imageService.delete(users.get(0));
@@ -225,7 +194,10 @@ public class AdminUserController {
 		} else {
 			users.get(0).setName(name);
 			users.get(0).setEmail(email);
-			users.get(0).setPassword(password);
+			// パスワードハッシュ化
+			BCryptPasswordEncoder hashPassword = new BCryptPasswordEncoder();
+			users.get(0).setPassword(hashPassword.encode(password));
+			
 			usersMapper.update(users.get(0));
 			return "redirect:/admin/users/" + user.getId();
 		}
