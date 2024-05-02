@@ -46,6 +46,9 @@ public interface UsersMapper {
 
 	@SelectProvider(UserSqlProvider.class)
 	Optional<Users> findByName(String username);
+	
+	@SelectProvider(UserSqlProvider.class)
+	int findSearchCount(String name, String email, String sortType);
 
 	public class UserSqlProvider implements ProviderMethodResolver {
 
@@ -200,6 +203,19 @@ public interface UsersMapper {
 				SELECT("id", "name", "email", "email_verified_at", "password", "image_path", "create_at", "update_at");
 				FROM("users");
 				WHERE("name = #{name}");
+			}}.toString();
+		}
+		
+		public String findSearchCount(String name, String email, String sortType) {
+			return new SQL() {{
+				SELECT("COUNT (*)");
+				FROM("users");
+				if(!name.equals("")) {
+					WHERE("name LIKE '%" + name + "%'");
+				}
+				if(!email.equals("")) {
+					WHERE("email LIKE '%" + email + "%'");
+				}
 			}}.toString();
 		}
 

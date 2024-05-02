@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import jp.co.illmatics.apps.shopping.entity.Users;
 import jp.co.illmatics.apps.shopping.mapper.UsersMapper;
@@ -19,7 +20,7 @@ public class UserErrorCheckService {
 	UsersMapper usersMapper;
 	
 	// 新規・更新共通エラーチェック
-	public List<String> errorCheck(Users user, String confirmPassword) {
+	public List<String> errorCheck(Users user, String confirmPassword, MultipartFile userImage) {
 		List<String> errors = new ArrayList<String>();
 		
 		if(!StringUtils.hasLength(user.getName())) {
@@ -60,25 +61,40 @@ public class UserErrorCheckService {
 			}
 		}
 		
+		if(!userImage.isEmpty()) {
+			// 一意な画像ファイル名の作成
+			// ファイル名取得
+			String originalFileName = userImage.getOriginalFilename();
+			// ファイル拡張子取得
+			String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+			
+			// 画像タイプエラーチェック
+			boolean extendionCheck = extension.equals(".jpg") || extension.equals(".jpeg") || extension.equals(".png");
+			
+			if (!extendionCheck) {
+				errors.add("jpg, jpeg, pngファイルでしか保存することができません");
+			}
+		}
+		
 		return errors;
 	}
 	
 	// 新規エラーチェック
-	public List<String> createErrorCheck(Users user, String confirmPassword) {
+	public List<String> createErrorCheck(Users user, String confirmPassword, MultipartFile userImage) {
 		List<String> errors = new ArrayList<String>();
 		List<Users> users = usersMapper.findEmail(user);
 		
 		if(users.size() > 0) {
 			errors.add("メールアドレスは既に登録されています");
 		} else {
-			errors = errorCheck(user, confirmPassword);
+			errors = errorCheck(user, confirmPassword, userImage);
 		}
 		
 		return errors;
 	}
 	
 	// 編集エラーチェック
-	public List<String> editErrorCheck(Users user, String confirmPassword) {
+	public List<String> editErrorCheck(Users user, String confirmPassword, MultipartFile userImage) {
 		List<String> errors = new ArrayList<String>();
 		List<Users> users = usersMapper.findEmail(user);
 		
@@ -86,10 +102,10 @@ public class UserErrorCheckService {
 			if(!Objects.equals(users.get(0).getId(), user.getId())) {
 				errors.add("メールアドレスは既に登録されています");
 			} else {
-				errors = errorCheck(user, confirmPassword);
+				errors = errorCheck(user, confirmPassword, userImage);
 			}
 		} else {
-			errors = errorCheck(user, confirmPassword);
+			errors = errorCheck(user, confirmPassword, userImage);
 		}
 		
 		return errors;

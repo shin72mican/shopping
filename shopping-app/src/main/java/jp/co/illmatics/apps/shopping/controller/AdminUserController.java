@@ -85,7 +85,7 @@ public class AdminUserController {
 		String url = urlService.searchUrl(name, email, sortType, sortDirection, displayCount);
 		model.addAttribute("url", url);
 		
-		int totalPage = Integer.valueOf(usersMapper.countAll(name, email).toString()) / displayCount + 1;
+		int totalPage = (usersMapper.findSearchCount(name, email, sortType) - 1) / displayCount + 1;
 		int startPage = currentPage - (currentPage - 1) % Page.COUNT.getValue();
 		int endPage = (currentPage + Page.COUNT.getValue() - 1 > totalPage) ? totalPage : (currentPage + Page.COUNT.getValue() -1);
 		
@@ -126,7 +126,7 @@ public class AdminUserController {
 		
 		Users user = new Users(name, email, password);
 		
-		List<String> errors = errorCheckService.createErrorCheck(user, confirmPassword);
+		List<String> errors = errorCheckService.createErrorCheck(user, confirmPassword, userImage);
 		
 		if(!userImage.isEmpty() && errors.size() == 0) {
 			// 一意な画像ファイル名の作成
@@ -189,7 +189,7 @@ public class AdminUserController {
 			Model model) throws IOException {
 		Users user = new Users(id, name, email, password);
 		List<Users> users = usersMapper.find(user);
-		List<String> errors = errorCheckService.editErrorCheck(user, confirmPassword);
+		List<String> errors = errorCheckService.editErrorCheck(user, confirmPassword, userImage);
 		
 		if(!userImage.isEmpty() && errors.size() == 0) {
 			// 画像の削除
