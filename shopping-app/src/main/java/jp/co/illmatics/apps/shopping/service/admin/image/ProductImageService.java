@@ -17,6 +17,7 @@ import jp.co.illmatics.apps.shopping.entity.Products;
 @Service
 public class ProductImageService {
 	
+	// 画像ファイル保存後、ファイルパスを返す
 	public String saveImage(MultipartFile productImage, Products product) throws IOException {
 		// 一意な画像ファイル名の作成
 		// ファイル名取得
