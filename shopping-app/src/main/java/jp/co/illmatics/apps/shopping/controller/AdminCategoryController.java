@@ -44,7 +44,7 @@ public class AdminCategoryController {
 			HttpServletRequest request,
 			Model model) {
 		List<Categories> categories = new ArrayList<Categories>();
-		categories = categoriesMapper.findAll(name, sortType, sortDirection, displayCount, currentPage);
+		categories = categoriesMapper.findSearch(name, sortType, sortDirection, displayCount, currentPage);
 		
 		String url = urlService.searchUrl(name, sortType, sortDirection, displayCount);
 		

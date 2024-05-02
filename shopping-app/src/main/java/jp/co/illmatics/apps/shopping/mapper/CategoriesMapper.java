@@ -19,7 +19,10 @@ public interface CategoriesMapper {
 	List<Categories> find(Categories categories);
 	
 	@SelectProvider(CategorySqlProvider.class)
-	List<Categories> findAll(String name, String sortType, String sortDirection, Integer displayCount, Integer currentPage);
+	List<Categories> findAll();
+	
+	@SelectProvider(CategorySqlProvider.class)
+	List<Categories> findSearch(String name, String sortType, String sortDirection, Integer displayCount, Integer currentPage);
 	
 	@SelectProvider(CategorySqlProvider.class)
 	List<Categories> findLatest();
@@ -61,7 +64,15 @@ public interface CategoriesMapper {
 		}
 		
 		// 全データ取得
-		public String findAll(String name, String sortType, String sortDirection, Integer displayCount, Integer currentPage) {
+		public String findAll() {
+			return new SQL() {{
+				SELECT("id", "name", "order_no", "create_at", "update_at");
+				FROM("product_categories");
+			}}.toString();
+		}
+		
+		// 検索データ取得
+		public String findSearch(String name, String sortType, String sortDirection, Integer displayCount, Integer currentPage) {
 			return new SQL() {{
 				SELECT("id", "name", "order_no", "create_at", "update_at");
 				FROM("product_categories");
