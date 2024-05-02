@@ -72,7 +72,7 @@ public class AdminController {
 		model.addAttribute("admins", admins);
 		
 		// ページング
-		int totalPage = admins.size() / displayCount + 1;
+		int totalPage = adminsMapper.findSearchCount(name, email, authority, sortType) / displayCount + 1;
 		int startPage = currentPage - (currentPage - 1) % Page.COUNT.getValue();
 		int endPage = (currentPage + Page.COUNT.getValue() - 1 > totalPage) ? totalPage : (currentPage + Page.COUNT.getValue() -1);
 		

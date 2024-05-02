@@ -20,6 +20,9 @@ public interface AdminsMapper {
 	List<Admins> findSearch(String name, String email, String authority, String sortType, String sortDirection, Integer displayCount, Integer currentPage);
 	
 	@SelectProvider(AdminSqlProvider.class)
+	int findSearchCount(String name, String email, String authority, String sortType);
+	
+	@SelectProvider(AdminSqlProvider.class)
 	List<Admins> findEmail(Admins admin);
 	
 	@SelectProvider(AdminSqlProvider.class)
@@ -115,6 +118,23 @@ public interface AdminsMapper {
 			return new SQL() {{
 				DELETE_FROM("admin_users");
 				WHERE("id = #{id}");
+			}}.toString();
+		}
+		
+		
+		// データ検索
+		public String findSearchCount(String name, String email, String authority, String sortType) {
+			return new SQL() {{
+				SELECT("COUNT (*)");
+				FROM("admin_users");
+				if (!name.equals("")) {
+					WHERE("name LIKE '%" + name + "%'");
+				}
+				if (authority.equals("owner")) {
+					WHERE("is_owner = 1");
+				} else if (authority.equals("general")) {
+					WHERE("is_owner = 0");
+				}
 			}}.toString();
 		}
 		
