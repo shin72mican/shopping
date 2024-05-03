@@ -24,7 +24,7 @@
 		            <li><hr class="dropdown-divider"></li>
 		            <li><a class="dropdown-item" href="javascript:logout.submit()">ログアウト</a></li>
 		          </ul>
-		          <form th:action="${'/admin/logout'}" th:method="post" name="logout"></form>
+		          <form th:action="@{'/admin/logout'}" th:method="post" name="logout"></form>
 		        </li>
 		      </ul>
 		    </div>

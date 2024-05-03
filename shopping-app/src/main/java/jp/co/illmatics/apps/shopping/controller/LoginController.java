@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import jp.co.illmatics.apps.shopping.mapper.AdminsMapper;
 import jp.co.illmatics.apps.shopping.mapper.UsersMapper;
 import jp.co.illmatics.apps.shopping.service.admin.error.AdminLoginErrorCheckService;
 import jp.co.illmatics.apps.shopping.service.admin.error.UserLoginErrorCheckService;
+import jp.co.illmatics.apps.shopping.service.admin.image.UserImageService;
 import jp.co.illmatics.apps.shopping.session.AdminAccount;
 import jp.co.illmatics.apps.shopping.session.UserAccount;
 
@@ -47,6 +49,9 @@ public class LoginController {
 	// 顧客ログインエラーチェック
 	@Autowired
 	UserLoginErrorCheckService userLoginErrorCheckService;
+	
+	@Autowired
+	UserImageService imageService;
 	
 	// ログインページ
 	@GetMapping("/admin/login")
@@ -83,7 +88,7 @@ public class LoginController {
 	
 	// ログアウト
 	@PostMapping("/admin/logout")
-	public String logout() {
+	public String adminLogout() {
 		// セッション削除
 		session.invalidate();
 		return "redirect:/admin/login";
@@ -141,6 +146,13 @@ public class LoginController {
 		
 		List<String> errors = userLoginErrorCheckService.signinErrorCheck(user, confirmPassword, userImage);
 		
+		if(!userImage.isEmpty() && errors.size() == 0) {
+			// 画像ファイル保存後、ファイルパスを返す
+			user.setImagePath(imageService.saveImage(userImage));
+		} else {
+			user.setImagePath("");
+		}
+		
 		if (errors.size() > 0) {
 			model.addAttribute("errors", errors);
 			model.addAttribute("name", name);
@@ -149,9 +161,34 @@ public class LoginController {
 			model.addAttribute("confirmPassword", confirmPassword);
 			return "user/signin";
 		} else {
+			// パスワードハッシュ化
+			BCryptPasswordEncoder hashPassword = new BCryptPasswordEncoder();
+			user.setPassword(hashPassword.encode(password));
+			usersMapper.insert(user);
+			
+			List<Users> emailUser = usersMapper.findEmail(user);
+			
+			// セッションデータ保持
+			// 名前、メールアドレス
+			userAccount.setId(emailUser.get(0).getId());
+			userAccount.setName(name);
+			userAccount.setEmail(email);
 			
 			return "redirect:/home";
 		}
+	}
+	
+	// ログアウト
+	@PostMapping("/logout")
+	public String userLogout() {
+		// セッション削除
+		session.invalidate();
+		return "redirect:/login";
+	}
+	
+	@GetMapping("/logout")
+	public String logout() {
+		return "redirect:/login";
 	}
 	
 }
