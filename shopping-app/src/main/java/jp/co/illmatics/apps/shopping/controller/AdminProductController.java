@@ -219,6 +219,11 @@ public class AdminProductController {
 			model.addAttribute("product", product);
 			return "admin/products/edit";
 		} else {
+			products.get(0).setProductCategoryId(categoryId);
+			products.get(0).setName(name);
+			products.get(0).setPrice(price);
+			products.get(0).setDescription(description);
+			
 			productsMapper.update(products.get(0));
 			return "redirect:/admin/products";
 		}
