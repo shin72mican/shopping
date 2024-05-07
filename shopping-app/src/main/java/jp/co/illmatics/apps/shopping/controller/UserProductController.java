@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpSession;
 import jp.co.illmatics.apps.shopping.entity.Categories;
+import jp.co.illmatics.apps.shopping.entity.ProductReviews;
 import jp.co.illmatics.apps.shopping.entity.Products;
 import jp.co.illmatics.apps.shopping.mapper.CategoriesMapper;
+import jp.co.illmatics.apps.shopping.mapper.ProductReviewsMapper;
 import jp.co.illmatics.apps.shopping.mapper.ProductsMapper;
 import jp.co.illmatics.apps.shopping.session.UserAccount;
 
@@ -29,6 +31,9 @@ public class UserProductController {
 	
 	@Autowired
 	ProductsMapper productsMapper;
+	
+	@Autowired
+	ProductReviewsMapper productReviewsMapper;
 	
 	@GetMapping("/products")
 	public String index(
@@ -54,9 +59,13 @@ public class UserProductController {
 			Model model) {
 		
 		Products product = new Products(id);
+		// 商品情報取得
 		List<Products> products = productsMapper.findUser(product, userAccount.getId());
+		// 商品レビュー取得
+		List<ProductReviews> productReviews = productReviewsMapper.findProductReviewFromProduct(product);
 		
 		model.addAttribute("product", products.get(0));
+		model.addAttribute("productReviews", productReviews);
 		
 		return "/user/products/show";
 	}

@@ -3,7 +3,7 @@
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{user/layout/layout}">
 <head>
-	<title>user home</title>
+	<title>user products show</title>
 </head>
 <body>
 	<div layout:fragment="user-content">
@@ -11,6 +11,9 @@
 			<div class="row">
 				<div class="col-lg-4">
 					<img th:src="${product.imagePath}" style="width: 300px; height: 200px;" onerror="this.src='/images/no_image.png'" class="card-img-top">
+					<div>
+						<a class="btn btn-info" style="color: white;" th:href="@{/products/{products_id}/product_reviews/create(products_id=${product.id})}">レビューを書く</a>
+					</div>
 				</div>
 				<div class="col-lg-8">
 					<h3 th:text="${product.name}"></h3>
@@ -20,17 +23,48 @@
 					<hr />
 					<th:block th:unless="${product.wishUserId == @userAccount.getId()}">
 						<form th:action="@{'/wish_products/' + ${product.getId()} }" th:method="post" name="favoriteSave">
-<!--							<button>♡</button>-->
 							<a href="javascript:favoriteSave.submit()">♡</a>
 						</form>
 					</th:block>
 					<th:block th:if="${product.wishUserId == @userAccount.getId()}">
 						<form th:action="@{'/wish_products/' + ${product.getId()} }" th:method="delete" name="favoriteDelete">
-<!--							<button>♥</button>-->
 							<a href="javascript:favoriteDelete.submit()">♥</a>
 						</form>
 					</th:block>
 				</div>
+			</div>
+			
+			<div class="row">
+				<table th:each="productReview:${productReviews}">
+					<tr>
+						<th rowspan="2" style="width: 70px;"><img th:src="${productReview.userImagePath}" style="width: 50px; height: 50px;" onerror="this.src='/images/no_image.png'"></th>
+						<th th:text="${productReview.userName}"></th>
+					</tr>
+					<tr>
+						<th>
+							<th:block th:if="${@userAccount.id == productReview.userId}">
+								<a th:href="@{/products/{product_id}/product_reviews/{product_review_id}/edit(product_id=${productReview.productId}, product_review_id=${productReview.id})}" th:text="${productReview.title}"></a>
+							</th:block>
+						</th>
+					</tr>
+					<tr>
+						<th></th>
+						<th>
+							<th:block th:each="i : ${#numbers.sequence(0,4)}">
+								<th:block th:if="${i < productReview.rank}">
+									<img th:src="${'/images/reviews/star-on.png'}" style="width: 50px; height: 50px;" onerror="this.src='/images/no_image.png'">
+								</th:block>
+								<th:block th:if="${i >= productReview.rank}")>
+									<img th:src="${'/images/reviews/star-off.png'}" style="width: 50px; height: 50px;" onerror="this.src='/images/no_image.png'">
+								</th:block>
+							</th:block>
+						</th>
+					</tr>
+					<tr>
+						<th></th>
+						<th th:text="${productReview.body}"></th>
+					</tr>
+				</table>
 			</div>
 		</div>
 	</div>
