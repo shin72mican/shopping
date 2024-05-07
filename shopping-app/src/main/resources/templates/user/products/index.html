@@ -8,10 +8,24 @@
 <body>
 	<div layout:fragment="user-content" class="card d-block m-2 p-0" style="width: 180px;" th:each="product:${products}">
 		<div>
-			<img th:src="${product.imagePath}" style="height: 100px;" onerror="this.src='/images/no_image.png'" class="card-img-top">
+			<a th:href="@{'/products/' + ${product.getId()} }"><img th:src="${product.imagePath}" style="height: 100px;" onerror="this.src='/images/no_image.png'" class="card-img-top"></a>
 			<div class="card-body">
-				<h5 class="card-name" th:text="${product.name}"></h5>
+				<a th:href="@{'/products/' + ${product.getId()} }">
+					<h5 class="card-name" th:text="${product.name}"></h5>
+				</a>
 				<p class="card-description" th:text="${product.description}"></p>
+				<th:block th:unless="${product.wishUserId == @userAccount.getId()}">
+					<form th:action="@{'/wish_products/' + ${product.getId()} }" th:method="post" id="favoriteSave">
+						<button>♡</button>
+<!--						<a href="#" onclick="favoriteSave.submit()">♡</a>-->
+					</form>
+				</th:block>
+				<th:block th:if="${product.wishUserId == @userAccount.getId()}">
+					<form th:action="@{'/wish_products/' + ${product.getId()} }" th:method="delete" name="favoriteDelete">
+						<button>♥</button>
+<!--						<a href="javascript:favoriteDelete.submit()">♥</a>-->
+					</form>
+				</th:block>
 			</div>
 		</div>
 	</div>

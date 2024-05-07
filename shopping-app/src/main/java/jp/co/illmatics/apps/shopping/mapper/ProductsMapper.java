@@ -25,6 +25,12 @@ public interface ProductsMapper {
 	List<Products> findSearch(Long categoryId, String name, Long price, String standard, String sortType, String sortDirection, int displayCount, Integer currentPage);
 	
 	@SelectProvider(ProductSqlProvider.class)
+	List<Products> findUser(Products product, Long userId);
+	
+	@SelectProvider(ProductSqlProvider.class)
+	List<Products> findSearchUser(Products product, Integer currentPage, Long userId);
+	
+	@SelectProvider(ProductSqlProvider.class)
 	int findSearchCount(Long categoryId, String name, Long price, String standard);
 	
 	@InsertProvider(ProductSqlProvider.class)
@@ -83,6 +89,25 @@ public interface ProductsMapper {
 					ORDER_BY(sortType + " DESC");
 				}
 				OFFSET(displayCount * (currentPage - 1) + "ROWS FETCH FIRST " +  displayCount  + " ROWS ONLY");
+			}}.toString();
+		}
+		
+		// 顧客商品詳細データ
+		public String findUser(Products product, Long userId) {
+			return new SQL() {{
+				SELECT("p.id", "p.product_category_id", "w.product_id AS wish_product_id", "w.user_id AS wish_user_id", "p.name", "p.price", "p.description", "p.image_path", "p.create_at", "p.update_at");
+				FROM("products p");
+				LEFT_OUTER_JOIN("wish_products w ON p.id = w.product_id AND w.user_id = #{userId}");
+			}}.toString();
+		}
+		
+		// 顧客商品一覧データ
+		public String findSearchUser(Products product, Integer currentPage, Long userId) {
+			return new SQL() {{
+				SELECT("p.id", "p.product_category_id", "w.product_id AS wish_product_id", "w.user_id AS wish_user_id", "p.name", "p.price", "p.description", "p.image_path", "p.create_at", "p.update_at");
+				FROM("products p");
+				LEFT_OUTER_JOIN("wish_products w ON p.id = w.product_id AND w.user_id = #{userId}");
+				//OFFSET(15 * (currentPage - 1) + "ROWS FETCH FIRST " +  15  + " ROWS ONLY");
 			}}.toString();
 		}
 		

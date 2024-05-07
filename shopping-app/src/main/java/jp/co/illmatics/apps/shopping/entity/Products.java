@@ -18,6 +18,11 @@ public class Products {
 		this.id = id;
 	}
 	
+	public Products(Long categoryId, String name) {
+		this.productCategoryId = categoryId;
+		this.name = name;
+	}
+	
 	public Products(Long categoryId, String name, String description) {
 		this.productCategoryId = categoryId;
 		this.name = name;
@@ -42,6 +47,10 @@ public class Products {
 	private Long id;
 	
 	private Long productCategoryId;
+	
+	private Long wishProductId;
+	
+	private Long wishUserId;
 	
 	private String categoryName;
 	
