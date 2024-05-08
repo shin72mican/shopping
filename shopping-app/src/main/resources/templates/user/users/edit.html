@@ -29,19 +29,19 @@
 				
 <!--				<p th:text="${pass}"></p>-->
 				<div class="border border-white bg-white" style="width: 600px;">
-					<p class="border p-3">新規登録</p>
+					<p class="border p-3">編集</p>
 					
 					<div class="pt-2 pb-5 ps-5 pe-5">
-						<form th:action="@{/register}" th:method="post" enctype="multipart/form-data">
+						<form th:action="@{/users/{id}(id=${user.id})}" th:method="put" enctype="multipart/form-data">
 							<div class="m-2">
 								<table>
 									<tr>
 										<td><label style="width: 100px;" class="form-label">ユーザー名</label></td>
-										<td><input style="width: 300px;" class="form-control" type="text" name="name" th:value="${name}" placeholder="ユーザー名" /></td>
+										<td><input style="width: 300px;" class="form-control" type="text" name="name" th:value="${user.name}" placeholder="ユーザー名" /></td>
 									</tr>
 									<tr>
 										<td><label style="width: 100px;" class="form-label">メールアドレス</label></td>
-										<td><input style="width: 300px;" class="form-control" type="text" name="email" th:value="${email}" placeholder="メールアドレス" /></td>
+										<td><input style="width: 300px;" class="form-control" type="text" name="email" th:value="${user.email}" placeholder="メールアドレス" /></td>
 									</tr>
 									<tr>
 										<td><label class="form-label">パスワード</label></td>
@@ -49,16 +49,29 @@
 									</tr>
 									<tr>
 										<td><label class="form-label">パスワード(確認)</label></td>
-										<td><input style="width: 300px;" class="form-control" type="password" name="comfirm_password" th:value="${comfilmPassword}" placeholder="パスワード(確認)" /></td>
+										<td><input style="width: 300px;" class="form-control" type="password" name="confirm_password" th:value="${comfilmPassword}" placeholder="パスワード(確認)" /></td>
 									</tr>
 									<tr>
 										<td><label class="form-label">イメージ</label></td>
 										<td><input class="form-control" type="file" name="user_image" /></td>
 									</tr>
+									<tr>
+										<td></td>
+										<td>
+											<input class="form-check-input" type="checkbox" name="delete_check" value="true" />
+											<label class="form-check-label">
+												削除
+											</label>
+										</td>
+									</tr>
+									<tr>
+										<td></td>
+										<td><img style="width: 100px; height: 100px;" th:src="${user.imagePath}" onerror="this.src='/images/no_image.png'"></td>
+									</tr>
 								</table>
 							</div>
 							
-							<button style="width: 300px;" class="btn btn-info">新規登録</button>
+							<button style="width: 300px;" class="btn btn-info">更新</button>
 						</form>
 					</div>
 				</div>
