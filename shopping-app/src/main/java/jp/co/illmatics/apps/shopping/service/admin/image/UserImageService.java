@@ -29,11 +29,11 @@ public class UserImageService {
 		// 新しいファイル名
 		String fileName = uuid.toString() + extension;
 		// 保存先
-		Path filePath=Paths.get("static/users/" + fileName);
+		Path filePath=Paths.get("static/users/images/" + fileName);
 		// 保存
 		Files.copy(userImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 		
-		return "/users/" + fileName;
+		return "/users/images/" + fileName;
 	}
 	
 	public void delete(Users user) {
