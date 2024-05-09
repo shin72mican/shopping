@@ -16,7 +16,9 @@ import jp.co.illmatics.apps.shopping.entity.Products;
 import jp.co.illmatics.apps.shopping.mapper.CategoriesMapper;
 import jp.co.illmatics.apps.shopping.mapper.ProductReviewsMapper;
 import jp.co.illmatics.apps.shopping.mapper.ProductsMapper;
+import jp.co.illmatics.apps.shopping.service.user.url.UserProductUrlService;
 import jp.co.illmatics.apps.shopping.session.UserAccount;
+import jp.co.illmatics.apps.shopping.values.Page;
 
 @Controller
 public class UserProductController {
@@ -35,6 +37,9 @@ public class UserProductController {
 	@Autowired
 	ProductReviewsMapper productReviewsMapper;
 	
+	@Autowired
+	UserProductUrlService urlService;
+	
 	@GetMapping("/products")
 	public String index(
 			@RequestParam(name = "category_id", defaultValue = "0") Long categoryId,
@@ -52,6 +57,19 @@ public class UserProductController {
 		model.addAttribute("searchName", name);
 		
 		model.addAttribute("products", products);
+		
+		String url = urlService.searchUrl(categoryId, name);
+		model.addAttribute("url", url);
+		
+		int totalPage = (productsMapper.findSearchUserCount(product, userAccount.getId()) - 1) / 15 + 1;
+		int startPage = currentPage - (currentPage - 1) % Page.COUNT.getValue();
+		int endPage = (currentPage + Page.COUNT.getValue() - 1 > totalPage) ? totalPage : (currentPage + Page.COUNT.getValue() -1);
+		
+        model.addAttribute("page", currentPage);
+        model.addAttribute("totalPage", totalPage);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        
 		
 		return "user/products/index";
 	}
