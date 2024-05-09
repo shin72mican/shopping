@@ -48,6 +48,9 @@ public class UserProductController {
 		List<Products> products = productsMapper.findSearchUser(product, currentPage, userAccount.getId());
 		
 		model.addAttribute("categories", categories);
+		model.addAttribute("categoryId", categoryId);
+		model.addAttribute("searchName", name);
+		
 		model.addAttribute("products", products);
 		
 		return "user/products/index";

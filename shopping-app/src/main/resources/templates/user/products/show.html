@@ -18,7 +18,7 @@
 				<div class="col-lg-8">
 					<h3 th:text="${product.name}"></h3>
 					<hr />
-					<p th:text="${'価格: ￥' + product.price}"></p>
+					<p th:text="${'価格: ￥' + #numbers.formatInteger(product.price, 3, 'COMMA')}"></p>
 					<p th:text="${product.description}"></p>
 					<hr />
 					<th:block th:unless="${product.wishUserId == @userAccount.getId()}">

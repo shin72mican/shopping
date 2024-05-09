@@ -18,7 +18,7 @@
 						<option th:value="0" th:text="すべてのカテゴリー"></option>
 						<option th:each="category:${categories}" th:value="${category.id}" th:selected="${category.id == categoryId}" th:text="${category.name}"></option>
 					</select>
-		      <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="name">
+		      <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="name" th:value="${searchName}">
 		      <button class="btn btn-outline-success" type="submit" style="width: 150px">検索</button>
 		    </form>
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
