@@ -43,23 +43,6 @@ public class UserErrorCheckService {
 			errors.add("255文字を超えるメールアドレスを登録することができません");
 		}
 		
-		if(!StringUtils.hasLength(user.getPassword())) {
-			errors.add("パスワードを入力してください");
-		}
-		
-		if(!StringUtils.hasLength(confirmPassword)) {
-			errors.add("パスワード(確認)を入力してください");
-		}
-		
-		if(StringUtils.hasLength(user.getPassword()) && StringUtils.hasLength(confirmPassword)) {
-			if(!ObjectUtils.nullSafeEquals(user.getPassword(), confirmPassword)) {
-				errors.add("パスワードが一致しません");	
-			}
-			
-			if(user.getPassword().length() < 4) {
-				errors.add("パスワードは4文字以上で設定してください");
-			}
-		}
 		
 		if(!userImage.isEmpty()) {
 			// 一意な画像ファイル名の作成
@@ -87,7 +70,28 @@ public class UserErrorCheckService {
 		if(users.size() > 0) {
 			errors.add("メールアドレスは既に登録されています");
 		} else {
+			// 新規・編集共通エラー
 			errors = errorCheck(user, confirmPassword, userImage);
+			
+			// パスワードエラーチェック
+			if(!StringUtils.hasLength(user.getPassword())) {
+				errors.add("パスワードを入力してください");
+			}
+			
+			if(!StringUtils.hasLength(confirmPassword)) {
+				errors.add("パスワード(確認)を入力してください");
+			}
+			
+			if(StringUtils.hasLength(user.getPassword()) && StringUtils.hasLength(confirmPassword)) {
+				if(!ObjectUtils.nullSafeEquals(user.getPassword(), confirmPassword)) {
+					errors.add("パスワードが一致しません");	
+				}
+				
+				if(user.getPassword().length() < 4) {
+					errors.add("パスワードは4文字以上で設定してください");
+				}
+			}
+			
 		}
 		
 		return errors;
@@ -98,14 +102,33 @@ public class UserErrorCheckService {
 		List<String> errors = new ArrayList<String>();
 		List<Users> users = usersMapper.findEmail(user);
 		
+		// 自身が登録したemailであるかのチェック
 		if(users.size() > 0) {
 			if(!Objects.equals(users.get(0).getId(), user.getId())) {
 				errors.add("メールアドレスは既に登録されています");
 			} else {
 				errors = errorCheck(user, confirmPassword, userImage);
+				if(StringUtils.hasLength(user.getPassword()) && StringUtils.hasLength(confirmPassword)) {
+					if(!ObjectUtils.nullSafeEquals(user.getPassword(), confirmPassword)) {
+						errors.add("パスワードが一致しません");	
+					}
+					
+					if(user.getPassword().length() < 4) {
+						errors.add("パスワードは4文字以上で設定してください");
+					}
+				}
 			}
 		} else {
 			errors = errorCheck(user, confirmPassword, userImage);
+			if(StringUtils.hasLength(user.getPassword()) && StringUtils.hasLength(confirmPassword)) {
+				if(!ObjectUtils.nullSafeEquals(user.getPassword(), confirmPassword)) {
+					errors.add("パスワードが一致しません");	
+				}
+				
+				if(user.getPassword().length() < 4) {
+					errors.add("パスワードは4文字以上で設定してください");
+				}
+			}
 		}
 		
 		return errors;

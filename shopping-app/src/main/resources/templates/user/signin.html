@@ -37,19 +37,19 @@
 								<table>
 									<tr>
 										<td><label style="width: 100px;" class="form-label">ユーザー名</label></td>
-										<td><input style="width: 300px;" class="form-control" type="text" name="name" th:value="${name}" placeholder="ユーザー名" /></td>
+										<td><input style="width: 300px;" class="form-control" type="text" name="name" th:value="${user.name}" placeholder="ユーザー名" /></td>
 									</tr>
 									<tr>
 										<td><label style="width: 100px;" class="form-label">メールアドレス</label></td>
-										<td><input style="width: 300px;" class="form-control" type="text" name="email" th:value="${email}" placeholder="メールアドレス" /></td>
+										<td><input style="width: 300px;" class="form-control" type="text" name="email" th:value="${user.email}" placeholder="メールアドレス" /></td>
 									</tr>
 									<tr>
 										<td><label class="form-label">パスワード</label></td>
-										<td><input style="width: 300px;" class="form-control" type="password" name="password" th:value="${password}" placeholder="パスワード" /></td>
+										<td><input style="width: 300px;" class="form-control" type="password" name="password" th:value="${user.password}" placeholder="パスワード" /></td>
 									</tr>
 									<tr>
 										<td><label class="form-label">パスワード(確認)</label></td>
-										<td><input style="width: 300px;" class="form-control" type="password" name="comfirm_password" th:value="${comfilmPassword}" placeholder="パスワード(確認)" /></td>
+										<td><input style="width: 300px;" class="form-control" type="password" name="comfirm_password" th:value="${confirmPassword}" placeholder="パスワード(確認)" /></td>
 									</tr>
 									<tr>
 										<td><label class="form-label">イメージ</label></td>
