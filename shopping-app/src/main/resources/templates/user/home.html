@@ -7,7 +7,33 @@
 </head>
 <body>
 	<div layout:fragment="user-content">
-		<div>
+		<div class="container-fluid mt-5">
+<!--			<div class="row justify-content-center">-->
+			<div class="row">
+				<div class="card d-block m-2 p-0" style="width: 180px;" th:each="product:${products}">
+					
+					<a th:href="@{'/products/' + ${product.getId()} }"><img th:src="${product.imagePath}" style="height: 100px;" onerror="this.src='/images/no_image.png'" class="card-img-top"></a>
+					<div class="card-body">
+						<a th:href="@{'/products/' + ${product.getId()} }">
+							<h5 class="card-name" th:text="${product.name}"></h5>
+						</a>
+						<p class="card-description" th:text="${product.description}"></p>
+						<th:block th:unless="${product.wishUserId == @userAccount.getId()}">
+<!--							<a href="javascript:save.submit()">♡</a>-->
+							<form th:action="@{'/wish_products/' + ${product.getId()} }" th:method="post" name="save">
+								<button>♡</button>
+							</form>
+						</th:block>
+						<th:block th:if="${product.wishUserId == @userAccount.getId()}">
+<!--							<a href="javascript:delete.submit()">♥</a>-->
+							<form th:action="@{'/wish_products/' + ${product.getId()} }" th:method="delete" name="delete">
+								<button>♥</button>
+							</form>
+						</th:block>
+					</div>
+				</div>
+				
+			</div>
 			
 		</div>
 	</div>

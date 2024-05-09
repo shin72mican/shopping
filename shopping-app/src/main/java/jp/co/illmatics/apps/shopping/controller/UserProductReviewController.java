@@ -1,6 +1,7 @@
 package jp.co.illmatics.apps.shopping.controller;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpSession;
+import jp.co.illmatics.apps.shopping.entity.Categories;
 import jp.co.illmatics.apps.shopping.entity.ProductReviews;
+import jp.co.illmatics.apps.shopping.mapper.CategoriesMapper;
 import jp.co.illmatics.apps.shopping.mapper.ProductReviewsMapper;
 import jp.co.illmatics.apps.shopping.service.user.error.ProductReviewErrorCheckService;
 import jp.co.illmatics.apps.shopping.session.UserAccount;
@@ -27,6 +30,9 @@ public class UserProductReviewController {
 	UserAccount userAccount;
 	
 	@Autowired
+	CategoriesMapper categoriesMapper;
+	
+	@Autowired
 	ProductReviewsMapper productReviewsMapper;
 	
 	@Autowired
@@ -37,8 +43,11 @@ public class UserProductReviewController {
 			@PathVariable("products_id") Long productId,
 			Model model) {
 		
+		List<Categories> categories = categoriesMapper.findAll();
+		
 		ProductReviews productReview = new ProductReviews(productId);
 		
+		model.addAttribute("categories", categories);
 		model.addAttribute("productReview", productReview);
 		
 		return "user/product_reviews/create";
@@ -57,6 +66,9 @@ public class UserProductReviewController {
 		List<String> errors = errorCheckServise.errorCheck(productReview);
 		
 		if(errors.size() > 0) {
+			List<Categories> categories = categoriesMapper.findAll();
+			model.addAttribute("categories", categories);
+			
 			model.addAttribute("errors", errors);
 			model.addAttribute("productReview", productReview);
 			return "user/product_reviews/create";
@@ -76,7 +88,11 @@ public class UserProductReviewController {
 		ProductReviews productReview = new ProductReviews(id, productId);
 		List<ProductReviews> productReviews = productReviewsMapper.findProductReview(productReview);
 		
-		if(productReviews.get(0).getUserId() == userAccount.getId()) {
+		if(productReviews.size() > 0 && Objects.equals(productReviews.get(0).getUserId(), userAccount.getId())) {
+			System.out.println("tset");
+			List<Categories> categories = categoriesMapper.findAll();
+			model.addAttribute("categories", categories);
+			
 			model.addAttribute("productReview", productReviews.get(0));
 			
 			return "user/product_reviews/edit";
@@ -100,6 +116,9 @@ public class UserProductReviewController {
 		List<String> errors = errorCheckServise.errorCheck(productReview);
 		
 		if(errors.size() > 0) {
+			List<Categories> categories = categoriesMapper.findAll();
+			model.addAttribute("categories", categories);
+			
 			model.addAttribute("errors", errors);
 			model.addAttribute("productReview", productReview);
 			return "user/product_reviews/edit";

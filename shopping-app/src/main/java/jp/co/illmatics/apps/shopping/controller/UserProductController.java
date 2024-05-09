@@ -58,12 +58,15 @@ public class UserProductController {
 			@PathVariable("id") Long id,
 			Model model) {
 		
+		List<Categories> categories = categoriesMapper.findAll();
+		
 		Products product = new Products(id);
 		// 商品情報取得
 		List<Products> products = productsMapper.findUser(product, userAccount.getId());
 		// 商品レビュー取得
 		List<ProductReviews> productReviews = productReviewsMapper.findProductReviewFromProduct(product);
 		
+		model.addAttribute("categories", categories);
 		model.addAttribute("product", products.get(0));
 		model.addAttribute("productReviews", productReviews);
 		

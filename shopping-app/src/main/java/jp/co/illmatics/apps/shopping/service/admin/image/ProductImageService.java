@@ -29,11 +29,11 @@ public class ProductImageService {
 		// 新しいファイル名
 		String fileName = uuid.toString() + extension;
 		// 保存先
-		Path filePath=Paths.get("static/products/" + fileName);
+		Path filePath=Paths.get("static/products/images/" + fileName);
 		// 保存
 		Files.copy(productImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 		
-		return "/products/" + fileName;
+		return "/products/images/" + fileName;
 	}
 	
 	public void delete(Products product) {
