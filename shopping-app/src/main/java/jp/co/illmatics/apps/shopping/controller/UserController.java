@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -83,16 +84,25 @@ public class UserController {
 			
 			if(errors.size() > 0) {
 				model.addAttribute("user", user);
-				model.addAttribute("password", password);
 				model.addAttribute("confirmPassword", confirmPassword);
 				model.addAttribute("errors", errors);
 				return "user/users/edit";
 			} else {
 				users.get(0).setName(name);
 				users.get(0).setEmail(email);
-				// パスワードハッシュ化
-				BCryptPasswordEncoder hashPassword = new BCryptPasswordEncoder();
-				users.get(0).setPassword(hashPassword.encode(password));
+				
+				// パスワードが空文字でないとき
+				if(StringUtils.hasLength(user.getPassword()) && StringUtils.hasLength(confirmPassword)) {
+					// パスワードハッシュ化
+					BCryptPasswordEncoder hashPassword = new BCryptPasswordEncoder();
+					users.get(0).setPassword(hashPassword.encode(password));
+				}
+				
+				// 画像パスがnullであるとき
+				if(Objects.isNull(users.get(0).getImagePath())) {
+					users.get(0).setImagePath("");
+				}
+				
 				
 				usersMapper.update(users.get(0));
 				return "redirect:/home";

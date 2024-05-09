@@ -98,6 +98,8 @@ public class LoginController {
 	// 顧客ログインページ
 	@GetMapping("/login")
 	public String userLoginIndex(Model model) {
+		Users user = new Users();
+		model.addAttribute("user", user);
 		return "user/login";
 	}
 	
@@ -116,6 +118,7 @@ public class LoginController {
 		
 		if (errors.size() > 0) {
 			model.addAttribute("errors", errors);
+			model.addAttribute("user", user);
 			return "user/login";
 		} else {
 			
@@ -136,6 +139,8 @@ public class LoginController {
 	// 顧客新規登録ページ
 	@GetMapping("/register")
 	public String userSigninIndex(Model model) {
+		Users user = new Users();
+		model.addAttribute("user", user);
 		return "user/signin";
 	}
 	
@@ -162,9 +167,7 @@ public class LoginController {
 		
 		if (errors.size() > 0) {
 			model.addAttribute("errors", errors);
-			model.addAttribute("name", name);
-			model.addAttribute("email", email);
-			model.addAttribute("password", password);
+			model.addAttribute("user", user);
 			model.addAttribute("confirmPassword", confirmPassword);
 			return "user/signin";
 		} else {
