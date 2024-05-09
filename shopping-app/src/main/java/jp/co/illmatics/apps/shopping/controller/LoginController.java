@@ -106,6 +106,7 @@ public class LoginController {
 	public String userLogin(
 			@RequestParam(name="email", defaultValue="") String email,
 			@RequestParam(name="password", defaultValue="") String password,
+			@RequestParam(name="login_save", defaultValue="false") boolean loginSave,
 			Model model) {
 		Users user = new Users(email, password);
 		List<Users> users = usersMapper.findEmail(user);
@@ -117,6 +118,12 @@ public class LoginController {
 			model.addAttribute("errors", errors);
 			return "user/login";
 		} else {
+			
+			if(loginSave) {
+				// セッションのタイムアウト無期限
+				session.setMaxInactiveInterval(-1);
+			}
+			
 			// セッションデータ保持
 			// 名前、メールアドレス
 			userAccount.setId(users.get(0).getId());
