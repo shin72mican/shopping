@@ -223,7 +223,7 @@ public class AdminProductController {
 			return "admin/products/edit";
 		} else {
 			productsMapper.update(products.get(0));
-			return "redirect:/admin/products";
+			return "redirect:/admin/products/" + product.getId();
 		}
 	}
 	
