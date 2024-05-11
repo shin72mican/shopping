@@ -68,7 +68,7 @@ public class AdminProductController {
 			HttpServletRequest request,
 			Model model) {
 		
-		List<Products> products = productsMapper.findIndex(categoryId, name, price, standard, sortType, sortDirection, displayCount, currentPage);
+		List<Products> products = productsMapper.findByCondition(categoryId, name, price, standard, sortType, sortDirection, displayCount, currentPage);
 		List<Categories> categories = categoriesMapper.findAll();
 		
 		model.addAttribute("categoryId", categoryId);
@@ -112,9 +112,13 @@ public class AdminProductController {
 		Products product = new Products(id);
 		List<Products> products = productsMapper.find(product);
 		
-		model.addAttribute("product", products.get(0));
-		
-		return "admin/products/show";
+		if(products.size() > 0) {
+			model.addAttribute("product", products.get(0));
+			
+			return "admin/products/show";
+		} else {
+			return "/403";
+		}
 	}
 	
 	@GetMapping("/admin/products/create")
