@@ -124,6 +124,7 @@ public class AdminProductController {
 		return "admin/products/create";
 	}
 	
+	// 商品新規登録処理
 	@PostMapping("/admin/products")
 	public String store(
 			@RequestParam(name = "category_id", defaultValue = "0") Long categoryId,
@@ -161,8 +162,10 @@ public class AdminProductController {
 			model.addAttribute("description", description);
 			return "/admin/products/create";
 		} else {
+			// 商品情報 - DB保存
 			productsMapper.insert(product);
-			return "redirect:/admin/products";
+			List<Products> products = productsMapper.findAll();
+			return "redirect:/admin/products/" + products.get(products.size() - 1).getId();
 		}
 	}
 	
