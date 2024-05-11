@@ -182,10 +182,14 @@ public class AdminProductController {
 		List<Categories> categories = categoriesMapper.findAll();
 		List<Products> products = productsMapper.find(product);
 		
-		model.addAttribute("errors", errors);
-		model.addAttribute("categories", categories);
-		model.addAttribute("product", products.get(0));
-		return "/admin/products/edit";
+		if(products.size() > 0) {
+			model.addAttribute("errors", errors);
+			model.addAttribute("categories", categories);
+			model.addAttribute("product", products.get(0));
+			return "/admin/products/edit";
+		} else {
+			return "/error/403";
+		}
 	}
 	
 	@PutMapping("/admin/products/{id}")
