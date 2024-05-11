@@ -117,7 +117,7 @@ public class AdminProductController {
 			
 			return "admin/products/show";
 		} else {
-			return "/403";
+			return "/error/403";
 		}
 	}
 	
