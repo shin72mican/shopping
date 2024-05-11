@@ -68,7 +68,7 @@ public class AdminProductController {
 			HttpServletRequest request,
 			Model model) {
 		
-		List<Products> products = productsMapper.findSearch(categoryId, name, price, standard, sortType, sortDirection, displayCount, currentPage);
+		List<Products> products = productsMapper.findIndex(categoryId, name, price, standard, sortType, sortDirection, displayCount, currentPage);
 		List<Categories> categories = categoriesMapper.findAll();
 		
 		model.addAttribute("categoryId", categoryId);
