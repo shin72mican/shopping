@@ -139,25 +139,25 @@ cd c:\git\shopping\bin
 ```bash
 # DBサーバーに接続
 docker exec -it docker-dbserver-1 bash
+# .bashrcにNLS_LANGを設定(DBサーバー初回起動時のみ)
+(echo 'NLS_LANG="Japanese_Japan.AL32UTF8"'; echo 'export NLS_LANG') > .bashrc
 # DBサーバーでsqlplusをsysdbaとして起動
 sqlplus / as sysdba
-# PDB$SEEDを基にデータベースTESTを作成
-alter session set container=PDB$SEED;
 # pdb$seedをopenするため下記の設定が必要
 alter session set "_oracle_script"=true;
 # pdb$seedをopen(エラーが発生した場合、7. Oracleのセットアップを最初から実行、alter sessionをせずに手順を実行)
 alter pluggable database pdb$seed open read write force;
 # pdb$seedを基にデータベースtestを作成
 create pluggable database TEST admin user tuser identified by tpassword file_name_convert = ('/opt/oracle/oradata/XE/pdbseed/', '/opt/oracle/oradata/XE/test/');
-# ユーザーtuserに権限付与
-GRANT ALL PRIVILEGES to TUSER;
+# 接続先DBをTESTに変更
+alter session set container=TEST;
 # データベースTESTの状態がMOUNTEDであることを確認
 show pdbs
 # データベースTESTをオープンして、その状態を維持
 alter pluggable database TEST open;
 alter pluggable database TEST save state;
-# 接続先DBをTESTに変更
-alter session set container=TEST;
+# ユーザーtuserに権限付与
+GRANT ALL PRIVILEGES to TUSER;
 # 初期データの投入 -> テーブル作成SQLを全てコピー、sqlplusのコンソールにペースト(SQLの内容は割愛)
 # テーブル作成SQLのパス -> c:\git\shopping\shopping-app\src\main\resources\sql\1-create-tables.sql
 
@@ -202,9 +202,14 @@ Docker Desktopを起動して、以下コマンドを実行する。
 ## サービス起動/停止＋
 ```bash
 # DB停止
-Docker Desktopから停止する
-# DBアクセス
-~/bin/sqlplus.sh
+Docker Desktopから停止する、あるいは
+docker stop (docker psで確認したDBサーバーのCONTAINER ID)
+# DBサーバーに接続
+docker exec -it docker-dbserver-1 bash
+# DBサーバーに接続
+sqlplus tuser/tpassword@localhost:1521/test
+# CRUDの例:usersテーブルの検索
+SELECT id, name FROM users;
 ```
 
 # 課題
