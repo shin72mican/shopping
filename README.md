@@ -245,3 +245,4 @@ masterへのマージはGitHubでPullRequestを利用し、有識者のコード
 * [Git](https://git-scm.com/book/ja/v2)
 * [設計書の例](https://pm-rasinban.com/bd-write)
 * [テスト設計書](https://docs.google.com/spreadsheets/d/1eAcfaLHgvd0X8Bomp7Be1qAVlkXLonyHEdmTw5qP91s/edit?usp=sharing)
+
