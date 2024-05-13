@@ -22,10 +22,10 @@ import jp.co.illmatics.apps.shopping.mapper.CategoriesMapper;
 import jp.co.illmatics.apps.shopping.mapper.ProductReviewsMapper;
 import jp.co.illmatics.apps.shopping.mapper.ProductsMapper;
 import jp.co.illmatics.apps.shopping.mapper.WishProductsMapper;
+import jp.co.illmatics.apps.shopping.service.PageService;
 import jp.co.illmatics.apps.shopping.service.admin.error.ProductErrorCheckService;
 import jp.co.illmatics.apps.shopping.service.admin.image.ProductImageService;
 import jp.co.illmatics.apps.shopping.service.admin.url.ProductUrlService;
-import jp.co.illmatics.apps.shopping.values.Page;
 import jp.co.illmatics.apps.shopping.values.form.Display;
 import jp.co.illmatics.apps.shopping.values.form.SortDirection;
 import jp.co.illmatics.apps.shopping.values.form.products.SortType;
@@ -41,6 +41,10 @@ public class AdminProductController {
 	// 新規・更新エラーチェック
 	@Autowired
 	ProductErrorCheckService errorCheckService;
+	
+	// ページング
+	@Autowired
+	PageService pageService;
 	
 	// DB処理
 	@Autowired
@@ -64,7 +68,7 @@ public class AdminProductController {
 			@RequestParam(name = "sort_type", defaultValue = "id") String sortType,
 			@RequestParam(name = "sort_direction", defaultValue = "asc") String sortDirection,
 			@RequestParam(name = "display_count", defaultValue = "10") int displayCount,
-			@RequestParam(name = "page", defaultValue = "1") Integer currentPage,
+			@RequestParam(name = "page", defaultValue = "1") int currentPage,
 			HttpServletRequest request,
 			Model model) {
 		
@@ -91,14 +95,16 @@ public class AdminProductController {
 		
 		int pageCount = productsMapper.findSearchCount(categoryId, name, price, standard);
 		
-		int totalPage = (pageCount - 1) / displayCount + 1;
-		int startPage = currentPage - (currentPage - 1) % Page.COUNT.getValue();
-		int endPage = (currentPage + Page.COUNT.getValue() - 1 > totalPage) ? totalPage : (currentPage + Page.COUNT.getValue() -1);
+		pageService.indexPaging(model, pageCount, displayCount, currentPage);
 		
-        model.addAttribute("page", currentPage);
-        model.addAttribute("totalPage", totalPage);
-        model.addAttribute("startPage", startPage);
-        model.addAttribute("endPage", endPage);
+//		int totalPage = (pageCount - 1) / displayCount + 1;
+//		int startPage = currentPage - (currentPage - 1) % Page.COUNT.getValue();
+//		int endPage = (currentPage + Page.COUNT.getValue() - 1 > totalPage) ? totalPage : (currentPage + Page.COUNT.getValue() -1);
+//		
+//        model.addAttribute("page", currentPage);
+//        model.addAttribute("totalPage", totalPage);
+//        model.addAttribute("startPage", startPage);
+//        model.addAttribute("endPage", endPage);
         
         model.addAttribute("url", url);
 		
@@ -155,7 +161,7 @@ public class AdminProductController {
 		
 		model.addAttribute("errors", errors);
 		
-		if(!productImage.isEmpty()) {
+		if(!productImage.isEmpty() && errors.size() == 0) {
 			// 画像保存処理
 			// ファイルパス返却
 			product.setImagePath(imageService.saveImage(productImage, product));
