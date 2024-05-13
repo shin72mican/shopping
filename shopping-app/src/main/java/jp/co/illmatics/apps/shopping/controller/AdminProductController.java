@@ -133,18 +133,25 @@ public class AdminProductController {
 	public String store(
 			@RequestParam(name = "category_id", defaultValue = "0") Long categoryId,
 			@RequestParam(name = "name", defaultValue = "") String name,
-			@RequestParam(name = "price", defaultValue = "") Long price,
+			@RequestParam(name = "price", required = false) String formPrice,
 			@RequestParam(name = "description", defaultValue = "") String description,
 			@RequestParam(name = "product_image", defaultValue="") MultipartFile productImage,
 			Model model) throws IOException {
+		// エラーチェック
+		List<String> errors = new ArrayList<String>();
+				
+		Long price;
+		try {
+			price = Long.parseLong(formPrice);
+		} catch (NumberFormatException e) {
+			errors.add("価格は数値でしか登録することができません");
+			price = 0L;
+		}
 		
 		Products product = new Products(categoryId, name, price, description);
 		
-		// エラーチェック
-		List<String> errors = new ArrayList<String>();
 		
-
-		errors = errorCheckService.errorCheck(product, productImage);
+		errors.addAll(errorCheckService.errorCheck(product, productImage));
 		
 		model.addAttribute("errors", errors);
 		
@@ -162,7 +169,7 @@ public class AdminProductController {
 			model.addAttribute("categories", categories);
 			model.addAttribute("categoryId", categoryId);
 			model.addAttribute("name", name);
-			model.addAttribute("price", price);
+			model.addAttribute("price", formPrice);
 			model.addAttribute("description", description);
 			return "/admin/products/create";
 		} else {
@@ -185,6 +192,7 @@ public class AdminProductController {
 		if(products.size() > 0) {
 			model.addAttribute("errors", errors);
 			model.addAttribute("categories", categories);
+			model.addAttribute("price", products.get(0).getPrice());
 			model.addAttribute("product", products.get(0));
 			return "/admin/products/edit";
 		} else {
@@ -197,18 +205,27 @@ public class AdminProductController {
 			@PathVariable("id") Long id,
 			@RequestParam(name = "category_id", defaultValue = "0") Long categoryId,
 			@RequestParam(name = "name", defaultValue = "") String name,
-			@RequestParam(name = "price", required = false) Long price,
+			@RequestParam(name = "price", required = false) String formPrice,
 			@RequestParam(name = "description", defaultValue = "") String description,
 			@RequestParam(name = "product_image", defaultValue="") MultipartFile productImage,
 			@RequestParam(name = "delete_check", defaultValue = "false") Boolean deleteCheck,
 			Model model) throws IOException {
-		Products product = new Products(id, categoryId, name, price, description);
-		List<Products> products = productsMapper.find(product);
 		
 		// エラーチェック
 		List<String> errors = new ArrayList<String>();
+				
+		Long price;
+		try {
+			price = Long.parseLong(formPrice);
+		} catch (NumberFormatException e) {
+			errors.add("価格は数値でしか登録することができません");
+			price = 0L;
+		}
 		
-		errors = errorCheckService.errorCheck(product, productImage);
+		Products product = new Products(id, categoryId, name, price, description);
+		List<Products> products = productsMapper.find(product);
+		
+		errors.addAll(errorCheckService.errorCheck(product, productImage));
 		
 		model.addAttribute("errors", errors);
 		
@@ -227,6 +244,7 @@ public class AdminProductController {
 			List<Categories> categories = categoriesMapper.findAll();
 			model.addAttribute("errors", errors);
 			model.addAttribute("categories", categories);
+			model.addAttribute("price", formPrice);
 			model.addAttribute("product", product);
 			return "admin/products/edit";
 		} else {
