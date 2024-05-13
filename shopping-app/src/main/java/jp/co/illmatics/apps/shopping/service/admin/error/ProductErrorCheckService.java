@@ -49,11 +49,12 @@ public class ProductErrorCheckService {
 				
 			}
 			
-			// 
+			// 画像タイプエラーチェック
 			boolean extendionCheck = extension.equals(".jpg") || extension.equals(".jpeg") || extension.equals(".png");
 			
 			if (!extendionCheck) {
-				errors.add("jpg, jpeg, pngファイルでしか保存することができません");
+				errors.add("" + originalFileName + " " + "を保存することができません。"
+						+ "jpg, jpeg, pngの形式のファイルのいずれかを保存することができます。");
 			}
 		}
 		

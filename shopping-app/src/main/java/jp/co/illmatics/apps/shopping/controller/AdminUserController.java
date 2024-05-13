@@ -24,10 +24,10 @@ import jp.co.illmatics.apps.shopping.entity.Users;
 import jp.co.illmatics.apps.shopping.mapper.ProductReviewsMapper;
 import jp.co.illmatics.apps.shopping.mapper.UsersMapper;
 import jp.co.illmatics.apps.shopping.mapper.WishProductsMapper;
+import jp.co.illmatics.apps.shopping.service.PageService;
 import jp.co.illmatics.apps.shopping.service.admin.error.UserErrorCheckService;
 import jp.co.illmatics.apps.shopping.service.admin.image.UserImageService;
 import jp.co.illmatics.apps.shopping.service.admin.url.UserUrlService;
-import jp.co.illmatics.apps.shopping.values.Page;
 import jp.co.illmatics.apps.shopping.values.form.Display;
 import jp.co.illmatics.apps.shopping.values.form.SortDirection;
 import jp.co.illmatics.apps.shopping.values.form.users.SortType;
@@ -52,6 +52,9 @@ public class AdminUserController {
 	@Autowired
 	UserImageService imageService;
 	
+	@Autowired
+	PageService pageService;
+	
 	private final PasswordEncoder passwordEncoder;
 
     public AdminUserController(PasswordEncoder passwordEncoder) {
@@ -67,7 +70,7 @@ public class AdminUserController {
 			@RequestParam(name = "display_count", defaultValue = "10") Integer displayCount,
 			@RequestParam(name = "page", defaultValue="1") Integer currentPage,
 			Model model) {
-		List<Users> users = usersMapper.findSearch(name, email, sortType, sortDirection, displayCount, currentPage);
+		List<Users> users = usersMapper.findByCondition(name, email, sortType, sortDirection, displayCount, currentPage);
 		
 		model.addAttribute("name", name);
 		model.addAttribute("email", email);
@@ -85,14 +88,10 @@ public class AdminUserController {
 		String url = urlService.searchUrl(name, email, sortType, sortDirection, displayCount);
 		model.addAttribute("url", url);
 		
-		int totalPage = (usersMapper.findSearchCount(name, email, sortType) - 1) / displayCount + 1;
-		int startPage = currentPage - (currentPage - 1) % Page.COUNT.getValue();
-		int endPage = (currentPage + Page.COUNT.getValue() - 1 > totalPage) ? totalPage : (currentPage + Page.COUNT.getValue() -1);
+		int pageCount = usersMapper.findSearchCount(name, email, sortType);
 		
-        model.addAttribute("page", currentPage);
-        model.addAttribute("totalPage", totalPage);
-        model.addAttribute("startPage", startPage);
-        model.addAttribute("endPage", endPage);
+		// ページング
+		pageService.indexPaging(model, pageCount, displayCount, currentPage);
 		
 		return "admin/users/index";
 	}
@@ -104,9 +103,14 @@ public class AdminUserController {
 		
 		Users user = new Users(id);
 		List<Users> users = usersMapper.find(user);
-		model.addAttribute("user", users.get(0));
 		
-		return "/admin/users/show";
+		if(users.size() > 0) {
+			model.addAttribute("user", users.get(0));
+			return "/admin/users/show";
+		} else {
+			return "/error/403";
+		}
+		
 	}
 	
 	// 新規登録ページ
@@ -135,9 +139,11 @@ public class AdminUserController {
 			// ファイル拡張子取得
 			String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
 			// 一意な文字列取得
-			UUID uuid = UUID.randomUUID();
+//			UUID uuid = UUID.randomUUID();
 			// 新しいファイル名
-			String fileName = uuid.toString() + extension;
+//			String fileName = LocalDateTime.now().toString() + extension;
+			long millTime = System.currentTimeMillis();
+			String fileName = "users_" + millTime + extension;
 			// 保存先
 			Path filePath=Paths.get("static/users/" + fileName);
 			// 保存
@@ -171,9 +177,12 @@ public class AdminUserController {
 		Users user = new Users(id);
 		List<Users> users = usersMapper.find(user);
 		
-		model.addAttribute("user", users.get(0));
-		
-		return "admin/users/edit";
+		if(users.size() > 0) {
+			model.addAttribute("user", users.get(0));
+			return "/admin/users/show";
+		} else {
+			return "/error/403";
+		}
 	}
 	
 	// データ更新

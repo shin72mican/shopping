@@ -35,7 +35,7 @@ public class UserErrorCheckService {
 			errors.add("メールアドレスを入力してください");
 		} else {
 			if(!user.getEmail().matches("^[a-zA-Z0-9_.+-]+@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\\.)+[a-zA-Z]{2,}$")) {
-				errors.add("メールアドレスの形式が異なります");
+				errors.add("メールアドレスの形式が異なります(例: example@test.com)");
 			}
 		}
 		
@@ -51,6 +51,10 @@ public class UserErrorCheckService {
 			errors.add("パスワード(確認)を入力してください");
 		}
 		
+		if(user.getPassword().length() > 255) {
+			errors.add("255文字を超えるパスワードを登録することができません");
+		}
+		
 		if(StringUtils.hasLength(user.getPassword()) && StringUtils.hasLength(confirmPassword)) {
 			if(!ObjectUtils.nullSafeEquals(user.getPassword(), confirmPassword)) {
 				errors.add("パスワードが一致しません");	
@@ -59,6 +63,7 @@ public class UserErrorCheckService {
 			if(user.getPassword().length() < 4) {
 				errors.add("パスワードは4文字以上で設定してください");
 			}
+			
 		}
 		
 		if(!userImage.isEmpty()) {
@@ -66,13 +71,19 @@ public class UserErrorCheckService {
 			// ファイル名取得
 			String originalFileName = userImage.getOriginalFilename();
 			// ファイル拡張子取得
-			String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+			String extension;
+			try {
+				extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+			} catch(StringIndexOutOfBoundsException e) {
+				extension = "";
+			}
 			
 			// 画像タイプエラーチェック
 			boolean extendionCheck = extension.equals(".jpg") || extension.equals(".jpeg") || extension.equals(".png");
 			
 			if (!extendionCheck) {
-				errors.add("jpg, jpeg, pngファイルでしか保存することができません");
+				errors.add("" + originalFileName + " " + "を保存することができません。"
+						+ "jpg, jpeg, pngの形式のファイルのいずれかを保存することができます。");	
 			}
 		}
 		

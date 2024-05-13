@@ -24,7 +24,7 @@ public interface UsersMapper {
 	List<Users> findAll();
 	
 	@SelectProvider(UserSqlProvider.class)
-	List<Users> findSearch(String name, String email, String sortType, String sortDirection, Integer displayCount, Integer currentPage);
+	List<Users> findByCondition(String name, String email, String sortType, String sortDirection, Integer displayCount, Integer currentPage);
 	
 	@SelectProvider(UserSqlProvider.class)
 	List<Users> findEmail(Users user);
@@ -92,7 +92,7 @@ public interface UsersMapper {
 			}}.toString();
 		}
 		
-		public String findSearch(String name, String email, String sortType, String sortDirection, Integer displayCount, Integer currentPage) {
+		public String findByCondition(String name, String email, String sortType, String sortDirection, Integer displayCount, Integer currentPage) {
 			return new SQL() {{
 				SELECT("id", "name", "email", "create_at", "update_at");
 				FROM("users");
