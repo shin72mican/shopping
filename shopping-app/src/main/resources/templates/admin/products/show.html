@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{admin/layout/layout}">
+<head>
+<title>admin product show</title>
+</head>
+<body>
+	<div layout:fragment="admin-content">
+		<table class="mt-5">
+			<tr>
+				<td style="width: 60px;"><a th:href="@{/admin/products}">一覧</a></td>
+				<td style="width: 70px;"><a class="btn btn-success" th:href="@{/admin/products/{id}/edit(id=${product.id})}">編集</a></td>
+				<td style="width: 60px;">
+					<form th:action="@{/admin/products/{id}(id = ${product.id})}" th:method="delete">
+						<input type="submit" value="削除" class="btn btn-danger" />
+					</form>
+				</td>
+			</tr>
+		</table>
+		
+		<table class="table">
+			<tbody>
+				<tr>
+					<th style="width: 80px;">ID</th>
+					<td style="width: 200px;" th:text="${product.id}"></td>
+				</tr>
+				<tr>
+					<th>商品カテゴリー</th>
+					<td th:text="${product.categoryName}"></td>
+				</tr>
+				<tr>
+					<th>名称</th>
+					<td th:text="${product.name}"></td>
+				</tr>
+				<tr>
+					<th>価格</th>
+					<td th:text="${'￥' + T(java.lang.String).format('%,d', product.price)}"></td>
+				</tr>
+				<tr>
+					<th>説明</th>
+					<td th:text="${product.description}"></td>
+				</tr>
+				<tr>
+					<th>イメージ</th>
+					<td><img th:src="${product.imagePath}" onerror="this.src='/images/no_image.png'"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>
