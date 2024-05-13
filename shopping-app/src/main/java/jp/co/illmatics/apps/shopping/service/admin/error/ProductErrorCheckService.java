@@ -21,12 +21,20 @@ public class ProductErrorCheckService {
 			errors.add("名前を入力してください");
 		}
 		
+		if(product.getName().length() > 255) {
+			errors.add("255文字を超える名前を登録することができません");
+		}
+		
 		if (product.getPrice() == null) {
 			errors.add("価格を入力してください");
 		} else {
 			if (product.getPrice() < 0) {
 				errors.add("0以上で価格を入力して下さい");
 			}
+		}
+		
+		if (product.getDescription().length() > 255) {
+			errors.add("255文字を超える説明を登録することができません");
 		}
 		
 		if(!productImage.isEmpty()) {
