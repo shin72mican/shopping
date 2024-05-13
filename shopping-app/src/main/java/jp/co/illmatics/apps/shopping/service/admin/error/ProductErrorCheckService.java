@@ -41,7 +41,13 @@ public class ProductErrorCheckService {
 			// ファイル名取得
 			String originalFileName = productImage.getOriginalFilename();
 			// ファイル拡張子取得
-			String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+			String extension;
+			try {
+				extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+			} catch(StringIndexOutOfBoundsException e) {
+				extension = "";
+				
+			}
 			
 			// 
 			boolean extendionCheck = extension.equals(".jpg") || extension.equals(".jpeg") || extension.equals(".png");
