@@ -21,6 +21,10 @@ public class ProductErrorCheckService {
 			errors.add("名前を入力してください");
 		}
 		
+		if(product.getName().length() > 255) {
+			errors.add("255文字を超える名前を登録することができません");
+		}
+		
 		if (product.getPrice() == null) {
 			errors.add("価格を入力してください");
 		} else {
@@ -29,11 +33,21 @@ public class ProductErrorCheckService {
 			}
 		}
 		
+		if (product.getDescription().length() > 255) {
+			errors.add("255文字を超える説明を登録することができません");
+		}
+		
 		if(!productImage.isEmpty()) {
 			// ファイル名取得
 			String originalFileName = productImage.getOriginalFilename();
 			// ファイル拡張子取得
-			String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+			String extension;
+			try {
+				extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+			} catch(StringIndexOutOfBoundsException e) {
+				extension = "";
+				
+			}
 			
 			// 
 			boolean extendionCheck = extension.equals(".jpg") || extension.equals(".jpeg") || extension.equals(".png");
