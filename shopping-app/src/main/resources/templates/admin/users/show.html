@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{admin/layout/layout}">
+<head>
+	<title>admin users show</title>
+</head>
+<body>
+	<div layout:fragment="admin-content">
+		
+		<table class="mt-5">
+			<tr>
+				<td style="width: 60px"><a th:href="@{/admin/users}">一覧</a></td>
+				<td style="width: 70px"><a class="btn btn-success" th:href="@{/admin/users/{id}/edit(id=${user.id})}">編集</a></td>
+				<td style="width: 60px">
+					<form th:action="@{/admin/users/{id}(id=${user.id})}" th:method="delete">
+						<input type="submit" value="削除" class="btn btn-danger" />
+					</form>
+				</td>
+			</tr>
+		</table>
+		
+		<table class="table">
+			<tbody>
+				<tr>
+					<td style="width: 50px;">ID</td>
+					<td style="width: 50px;" th:text="${user.id}"></td>
+				</tr>
+				<tr>
+					<td style="width: 50px;">名称</td>
+					<td style="width: 50px;" th:text="${user.name}"></td>
+				</tr>
+				<tr>
+					<td style="width: 50px;">メールアドレス</td>
+					<td style="width: 50px;" th:text="${user.email}"></td>
+				</tr>
+				<tr>
+					<td style="width: 50px;">イメージ</td>
+					<td><img style="width: 100px; height: 100px;" th:src="${user.imagePath}" onerror="this.src='/images/no_image.png'"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

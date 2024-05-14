@@ -95,16 +95,8 @@ public class AdminProductController {
 		
 		int pageCount = productsMapper.findSearchCount(categoryId, name, price, standard);
 		
+		// ページング
 		pageService.indexPaging(model, pageCount, displayCount, currentPage);
-		
-//		int totalPage = (pageCount - 1) / displayCount + 1;
-//		int startPage = currentPage - (currentPage - 1) % Page.COUNT.getValue();
-//		int endPage = (currentPage + Page.COUNT.getValue() - 1 > totalPage) ? totalPage : (currentPage + Page.COUNT.getValue() -1);
-//		
-//        model.addAttribute("page", currentPage);
-//        model.addAttribute("totalPage", totalPage);
-//        model.addAttribute("startPage", startPage);
-//        model.addAttribute("endPage", endPage);
         
         model.addAttribute("url", url);
 		

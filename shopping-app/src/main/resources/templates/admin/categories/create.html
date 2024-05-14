@@ -9,7 +9,7 @@
 	<div layout:fragment="admin-content">
 		<div class="mt-4 mb-3">
 			<span th:each="error:${errors}">
-				<p class="text-danger" th:text="${error}"}></pth>
+				<p class="text-danger" th:text="${error}"></p>
 			</span>
 			
 			<form action="/admin/product_categories" method="post">
