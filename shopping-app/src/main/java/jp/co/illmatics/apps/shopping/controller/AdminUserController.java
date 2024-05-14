@@ -108,7 +108,7 @@ public class AdminUserController {
 			model.addAttribute("user", users.get(0));
 			return "/admin/users/show";
 		} else {
-			return "/error/403";
+			return "/error/404";
 		}
 		
 	}
@@ -181,7 +181,7 @@ public class AdminUserController {
 			model.addAttribute("user", users.get(0));
 			return "/admin/users/show";
 		} else {
-			return "/error/403";
+			return "/error/404";
 		}
 	}
 	
@@ -245,18 +245,23 @@ public class AdminUserController {
 		Users user = new Users(id);
 		List<Users> users = usersMapper.find(user);
 		
-		// 画像削除
-		imageService.delete(users.get(0));
+		if(users.size() > 0) {
+			// 画像削除
+			imageService.delete(users.get(0));
+			
+			// 顧客関連レビュー削除
+			productReviewsMapper.usersDelete(users.get(0));
+			
+			// 顧客関連評価削除
+			wishProductsMapper.usersDelete(users.get(0));
+			
+			// 顧客情報削除
+			usersMapper.delete(users.get(0));
+			
+			return "redirect:/admin/users";
+		} else {
+			return "/error/404";
+		}
 		
-		// 顧客関連レビュー削除
-		productReviewsMapper.usersDelete(users.get(0));
-		
-		// 顧客関連評価削除
-		wishProductsMapper.usersDelete(users.get(0));
-		
-		// 顧客情報削除
-		usersMapper.delete(users.get(0));
-		
-		return "redirect:/admin/users";
 	}
 }
