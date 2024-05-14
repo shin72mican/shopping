@@ -1,12 +1,7 @@
 package jp.co.illmatics.apps.shopping.controller;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -133,23 +128,8 @@ public class AdminUserController {
 		List<String> errors = errorCheckService.createErrorCheck(user, confirmPassword, userImage);
 		
 		if(!userImage.isEmpty() && errors.size() == 0) {
-			// 一意な画像ファイル名の作成
-			// ファイル名取得
-			String originalFileName = userImage.getOriginalFilename();
-			// ファイル拡張子取得
-			String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
-			// 一意な文字列取得
-//			UUID uuid = UUID.randomUUID();
-			// 新しいファイル名
-//			String fileName = LocalDateTime.now().toString() + extension;
-			long millTime = System.currentTimeMillis();
-			String fileName = "users_" + millTime + extension;
-			// 保存先
-			Path filePath=Paths.get("static/users/" + fileName);
-			// 保存
-			Files.copy(userImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-			
-			user.setImagePath("/users/" + fileName);
+			// 画像ファイル保存後、ファイルパスを返す
+			user.setImagePath(imageService.saveImage(userImage));
 		} else {
 			user.setImagePath("");
 		}
@@ -179,7 +159,7 @@ public class AdminUserController {
 		
 		if(users.size() > 0) {
 			model.addAttribute("user", users.get(0));
-			return "/admin/users/show";
+			return "/admin/users/edit";
 		} else {
 			return "/error/404";
 		}
@@ -198,46 +178,39 @@ public class AdminUserController {
 			Model model) throws IOException {
 		Users user = new Users(id, name, email, password);
 		List<Users> users = usersMapper.find(user);
-		List<String> errors = errorCheckService.editErrorCheck(user, confirmPassword, userImage);
 		
-		if(!userImage.isEmpty() && errors.size() == 0) {
-			// 画像の削除
-			imageService.delete(users.get(0));
+		if(users.size() > 0) {
+			List<String> errors = errorCheckService.editErrorCheck(user, confirmPassword, userImage);
 			
-			// 一意な画像ファイル名の作成
-			// ファイル名取得
-			String originalFileName = userImage.getOriginalFilename();
-			// ファイル拡張子取得
-			String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
-			// 一意な文字列取得
-			UUID uuid = UUID.randomUUID();
-			// 新しいファイル名
-			String fileName = uuid.toString() + extension;
-			// 保存先
-			Path filePath=Paths.get("static/users/" + fileName);
-			// 保存
-			Files.copy(userImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+			if(!userImage.isEmpty() && errors.size() == 0) {
+				// 画像の削除
+				imageService.delete(users.get(0));
+				
+				users.get(0).setImagePath(imageService.saveImage(userImage));
+			} else if(deleteCheck) {
+				// 画像の削除
+				imageService.delete(users.get(0));
+				users.get(0).setImagePath("");
+			}
 			
-			users.get(0).setImagePath("/users/" + fileName);
-		} else if(deleteCheck) {
-			// 画像の削除
-			imageService.delete(users.get(0));
-			users.get(0).setImagePath("");
-		}
-		
-		if(errors.size() > 0) {
-			model.addAttribute("user", user);
-			model.addAttribute("password", password);
-			model.addAttribute("confirmPassword", confirmPassword);
-			model.addAttribute("errors", errors);
-			return "admin/users/edit";
+			if(errors.size() > 0) {
+				model.addAttribute("user", user);
+				model.addAttribute("password", password);
+				model.addAttribute("confirmPassword", confirmPassword);
+				model.addAttribute("errors", errors);
+				return "admin/users/edit";
+			} else {
+				users.get(0).setName(name);
+				users.get(0).setEmail(email);
+				users.get(0).setPassword(password);
+				usersMapper.update(users.get(0));
+				return "redirect:/admin/users/" + user.getId();
+			}
 		} else {
-			users.get(0).setName(name);
-			users.get(0).setEmail(email);
-			users.get(0).setPassword(password);
-			usersMapper.update(users.get(0));
-			return "redirect:/admin/users/" + user.getId();
+			return "/error/404";
 		}
+		
+		
 	}
 	
 	@DeleteMapping("/admin/users/{id}")
