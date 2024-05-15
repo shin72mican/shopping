@@ -26,7 +26,7 @@ public class CategoryUrlService {
 	
 	// id - パスパラメータ作成
 	public String idUrl(Long id) {
-		String url = "admin/categories/" + id.toString();
+		String url = "/admin/product_categories/" + id.toString();
 		return url;
 	}
 }
