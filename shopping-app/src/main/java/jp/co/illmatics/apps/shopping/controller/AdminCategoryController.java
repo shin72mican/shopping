@@ -89,7 +89,7 @@ public class AdminCategoryController {
 		try {
 			orderNo = Long.parseLong(formOrderNo);
 		} catch (NumberFormatException e) {
-			errors.add("価格は数値でしか登録することができません");
+			errors.add("並び順番号は数値でしか登録することができません");
 			orderNo = null;
 		}
 		
