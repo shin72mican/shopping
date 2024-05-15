@@ -23,6 +23,12 @@ public class Categories {
 		this.orderNo = orderNo;
 	}
 	
+	public Categories(Long id, String name, Long orderNo) {
+		this.id = id;
+		this.name = name;
+		this.orderNo = orderNo;
+	}
+	
 	private Long id;
 	
 	private String name;

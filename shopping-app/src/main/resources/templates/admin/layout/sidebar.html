@@ -9,9 +9,9 @@
 <body>
 	<div class="sticky-top" layout:fragment="admin-sidebar">
 		<ul class="nav flex-column mt-5">
-			<li class="nav-item mt-3"><a class="nav-link">商品管理</a></li>
+			<li class="nav-item mt-3"><a class="nav-link" th:href="@{/admin/products}">商品管理</a></li>
 			<li class="nav-item mt-2"><a class="nav-link" th:href="@{/admin/product_categories}">商品カテゴリー管理</a></li>
-			<li class="nav-item mt-2"><a class="nav-link">顧客管理</a></li>
+			<li class="nav-item mt-2"><a class="nav-link" th:href="@{/admin/users}">顧客管理</a></li>
 			<li class="nav-item mt-2"><a class="nav-link" th:href="@{/admin/admin_users}">管理者管理</a></li>
 		</ul>
 	</div>
