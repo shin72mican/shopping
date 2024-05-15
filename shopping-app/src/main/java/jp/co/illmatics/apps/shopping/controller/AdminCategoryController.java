@@ -85,23 +85,26 @@ public class AdminCategoryController {
 		
 		List<String> errors = new ArrayList<String>();
 		
+		// 入力された並び順番号が数値であるかの例外処理
+		/* 入力された並び順番号が数値であればString型からLong型に変換し変数に格納
+		 * 入力された並び順番号が数値でなければ変数にnullを格納
+		 * */
 		Long orderNo;
 		try {
 			orderNo = Long.parseLong(formOrderNo);
 		} catch (NumberFormatException e) {
-			errors.add("並び順番号は数値でしか登録することができません");
 			orderNo = null;
 		}
 		
 		Categories category = new Categories(name, orderNo);
 		
 		// エラーチェック
-		errors = errorCheckService.errorCheck(category);
+		errors.addAll(errorCheckService.errorCheck(category, formOrderNo));
 		
 		if (errors.size() > 0) {
 			model.addAttribute("errors", errors);
 			model.addAttribute("name", name);
-			model.addAttribute("orderNo", orderNo);
+			model.addAttribute("orderNo", formOrderNo);
 			return "admin/categories/create";
 		} else {
 			// 新規登録
@@ -167,7 +170,7 @@ public class AdminCategoryController {
 		Categories category = new Categories(id, name, orderNo);
 		
 		// エラーチェック
-		errors = errorCheckService.errorCheck(category);
+		errors = errorCheckService.errorCheck(category, formOrderNo);
 		
 		// 編集データの取得
 		List<Categories> categories = categoriesMapper.find(category);
