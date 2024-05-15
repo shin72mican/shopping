@@ -163,14 +163,16 @@ public class AdminCategoryController {
 		try {
 			orderNo = Long.parseLong(formOrderNo);
 		} catch (NumberFormatException e) {
-			errors.add("価格は数値でしか登録することができません");
-			orderNo = 0L;
+			orderNo = null;
 		}
 		
 		Categories category = new Categories(id, name, orderNo);
 		
 		// エラーチェック
 		errors = errorCheckService.errorCheck(category, formOrderNo);
+		
+		// 検索用インスタンス(idのみのインスタンス)入れなおし
+		category  = new Categories(id);
 		
 		// 編集データの取得
 		List<Categories> categories = categoriesMapper.find(category);

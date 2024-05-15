@@ -37,8 +37,10 @@ public class CategoryErrorCheckService {
 			// 入力された並び順が数値であるかの判定
 			if(StringUtils.hasLength(formOrderNo) && Objects.isNull(category.getOrderNo())) {
 				
-				errors.add("並び順番号は数値でしか登録することができません");
-			} else if(category.getOrderNo() <= 0) {
+				errors.add("並び順番号は整数でしか登録することができません");
+			}
+			
+			if(StringUtils.hasLength(formOrderNo) && Objects.nonNull(category.getOrderNo()) && category.getOrderNo() <= 0) {
 				errors.add("1以上の並び順番号を入力してください");
 			}
 			
