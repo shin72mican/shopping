@@ -38,11 +38,16 @@ public class CheckLoginAspect {
 			if (adminAccount.getAuthority().equals("owner")) {
 				return jp.proceed();
 			} else if (adminAccount.getAuthority().equals("general")) {
-				return "redirect:/errors/403";
+				if(sig.getName().equals("show") || sig.getName().equals("edit") || sig.getName().equals("update") || sig.getName().equals("delete")) {
+					return jp.proceed();
+				} else {
+					return "redirect:/errors/403";
+				}
 			} else {
 				System.err.println("権限が異常なアカウントです");
 				return "redirect:/errors/403";
 			}
+			
 		}
 		
 		return jp.proceed();

@@ -47,7 +47,7 @@ public class AdminErrorCheckService {
 	// 新規エラーチェック
 	public List<String> createErrorCheck(Admins admin, String confirmPassword) {
 		List<String> errors = new ArrayList<String>();
-		List<Admins> admins = adminsMapper.findEmail(admin);
+		List<Admins> admins = adminsMapper.find(admin);
 		
 		if (admins.size() > 0) {
 			errors.add("メールアドレスは既に登録されています");
@@ -79,7 +79,7 @@ public class AdminErrorCheckService {
 	// 編集エラーチェック
 	public List<String> editErrorCheck(Admins admin, String confirmPassword) {
 		List<String> errors = new ArrayList<String>();
-		List<Admins> admins = adminsMapper.findEmail(admin);
+		List<Admins> admins = adminsMapper.find(admin);
 		
 		if(admins.size() > 0) {
 			if(!Objects.equals(admins.get(0).getId(), admin.getId())) {

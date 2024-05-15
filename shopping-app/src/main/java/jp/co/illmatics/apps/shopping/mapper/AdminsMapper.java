@@ -17,13 +17,13 @@ import jp.co.illmatics.apps.shopping.entity.Admins;
 @Mapper
 public interface AdminsMapper {
 	@SelectProvider(AdminSqlProvider.class)
-	List<Admins> findSearch(String name, String email, String authority, String sortType, String sortDirection, Integer displayCount, Integer currentPage);
+	List<Admins> findByCondition(String name, String email, String authority, String sortType, String sortDirection, Integer displayCount, Integer currentPage);
 	
 	@SelectProvider(AdminSqlProvider.class)
-	int findSearchCount(String name, String email, String authority, String sortType);
+	int findByConditionCount(String name, String email, String authority, String sortType);
 	
 	@SelectProvider(AdminSqlProvider.class)
-	List<Admins> findEmail(Admins admin);
+	List<Admins> findAutority(Admins admin);
 	
 	@SelectProvider(AdminSqlProvider.class)
 	List<Admins> find(Admins admin);
@@ -38,8 +38,8 @@ public interface AdminsMapper {
 	void delete(Admins admin);
 	
 	public class AdminSqlProvider implements ProviderMethodResolver {
-		// メールアドレス検索
-		public String findEmail(Admins admin) {
+		// 管理者の権限検索(email)
+		public String findAutority(Admins admin) {
 			return new SQL() {{
 				SELECT("id", "name", "email", "password", "is_owner", 
 						"CASE is_owner WHEN 1 THEN 'owner' WHEN 0 THEN 'general' ELSE 'no_data' END AS authority",
@@ -50,7 +50,7 @@ public interface AdminsMapper {
 		}
 		
 		// データ検索
-		public String findSearch(String name, String email, String authority, String sortType, String sortDirection, Integer displayCount, Integer currentPage) {
+		public String findByCondition(String name, String email, String authority, String sortType, String sortDirection, Integer displayCount, Integer currentPage) {
 			return new SQL() {{
 				SELECT("id", "name", "email", "password", "is_owner", 
 						"CASE is_owner WHEN 1 THEN 'オーナー' WHEN 0 THEN '一般' ELSE 'no_data' END AS authority",
@@ -81,6 +81,9 @@ public interface AdminsMapper {
 				FROM("admin_users");
 				if(Objects.nonNull(admin.getId())) {
 					WHERE("id = #{id}");
+				}
+				if(Objects.nonNull(admin.getEmail())) {
+					WHERE("email = #{email}");
 				}
 			}}.toString();
 		}
@@ -123,7 +126,7 @@ public interface AdminsMapper {
 		
 		
 		// データ検索
-		public String findSearchCount(String name, String email, String authority, String sortType) {
+		public String findByConditionCount(String name, String email, String authority, String sortType) {
 			return new SQL() {{
 				SELECT("COUNT (*)");
 				FROM("admin_users");

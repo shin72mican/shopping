@@ -46,7 +46,7 @@ public class LoginController {
 			@RequestParam(name="password", defaultValue="") String password,
 			Model model) {
 		Admins admin = new Admins(email, password);
-		List<Admins> admins = adminsMapper.findEmail(admin);
+		List<Admins> admins = adminsMapper.findAutority(admin);
 		// エラーチェック
 		List<String> errors = adminLoginErrorCheckService.errorCheck(admin, admins);
 		
@@ -71,11 +71,6 @@ public class LoginController {
 		session.invalidate();
 		return "redirect:/admin/login";
 	}
-
-//	@GetMapping("/admin/login")
-//	public String loginAsAdmin(Model model) {
-//		return "/admin/login";
-//	}
 
 	@GetMapping("/users/login")
 	public String loginAsUsers(Model model) {
