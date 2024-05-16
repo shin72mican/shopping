@@ -89,6 +89,11 @@ public class UserLoginErrorCheckService {
 				errors.add("パスワードを入力してください");
 			}
 			
+			// メールアドレス、255文字以内であるかチェック
+			if (user.getPassword().length() > 255) {
+				errors.add("255文字を超えるパスワードを登録することができません");
+			}
+			
 			// パスワード(確認)入力チェック
 			if (!StringUtils.hasLength(confirmPassword)) {
 				errors.add("パスワード(確認)を入力してください");
