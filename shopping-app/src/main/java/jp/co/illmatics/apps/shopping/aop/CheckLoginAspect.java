@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import jp.co.illmatics.apps.shopping.session.AdminAccount;
+import jp.co.illmatics.apps.shopping.session.UserAccount;
 
 @Aspect
 @Component
@@ -16,9 +17,14 @@ public class CheckLoginAspect {
 	@Autowired
 	AdminAccount adminAccount;
 	
+	@Autowired
+	UserAccount userAccount;
+	
 //	@Around("execution(* jp.co.illmatics.apps.shopping.controller.account.*Controller.*(..))")
+	
+	// 管理者ログインAOP
 	@Around("execution(* jp.co.illmatics.apps.shopping.controller..Admin*Controller.*(..))")
-	public Object checkLogin(ProceedingJoinPoint jp) throws Throwable {
+	public Object checkAdminLogin(ProceedingJoinPoint jp) throws Throwable {
 		Signature sig = jp.getSignature();
 		System.out.println("現在のコントローラー#アクション" + sig.getDeclaringType().getSimpleName() + "#" + sig.getName());
 		
@@ -48,6 +54,20 @@ public class CheckLoginAspect {
 				return "redirect:/errors/403";
 			}
 			
+		}
+		
+		return jp.proceed();
+	}
+	
+	// 顧客ログインAOP
+	@Around("execution(* jp.co.illmatics.apps.shopping.controller..User*Controller.*(..))")
+	public Object checkUserLogin(ProceedingJoinPoint jp) throws Throwable {
+		Signature sig = jp.getSignature();
+		
+		// ログインしていない場合
+		// 顧客ログインページ遷移
+		if (ObjectUtils.isEmpty(userAccount.getName()) || ObjectUtils.isEmpty(userAccount.getEmail())) {
+			return "redirect:/login";
 		}
 		
 		return jp.proceed();

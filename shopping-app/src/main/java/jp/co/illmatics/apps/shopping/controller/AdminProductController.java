@@ -156,7 +156,7 @@ public class AdminProductController {
 		if(!productImage.isEmpty() && errors.size() == 0) {
 			// 画像保存処理
 			// ファイルパス返却
-			product.setImagePath(imageService.saveImage(productImage, product));
+			product.setImagePath(imageService.saveImage(productImage));
 		} else {
 			product.setImagePath("");
 		}
@@ -232,7 +232,7 @@ public class AdminProductController {
 				// 画像の削除
 				imageService.delete(products.get(0));
 				
-				products.get(0).setImagePath(imageService.saveImage(productImage, products.get(0)));
+				products.get(0).setImagePath(imageService.saveImage(productImage));
 			} else if(deleteCheck) {
 				// 画像の削除
 				imageService.delete(products.get(0));
@@ -261,7 +261,7 @@ public class AdminProductController {
 		} else {
 			return "/error/404";
 		}
-		
+
 	}
 	
 	@DeleteMapping("/admin/products/{id}")

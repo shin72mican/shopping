@@ -17,7 +17,7 @@ public interface WishProductsMapper {
 	void productsDelete(Products product);
 	
 	public class WishProductSqlProvider implements ProviderMethodResolver {
-		
+		// 削除顧客関連のレビュー削除
 		public String usersDelete(Users user) {
 			return new SQL() {{
 				DELETE_FROM("wish_products");

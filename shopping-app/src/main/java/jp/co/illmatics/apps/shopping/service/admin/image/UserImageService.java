@@ -35,6 +35,7 @@ public class UserImageService {
 	}
 	
 	public void delete(Users user) {
+		
 		// 画像の削除
 		if(Objects.nonNull(user.getImagePath())) {
 			// fileパス

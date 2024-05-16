@@ -126,6 +126,7 @@ public interface ProductsMapper {
 		
 		// データの更新
 		public String update(Products products) {
+			System.out.println(products.getPrice());
 			return new SQL() {{
 				UPDATE("products");
 				SET("product_category_id = #{productCategoryId}");

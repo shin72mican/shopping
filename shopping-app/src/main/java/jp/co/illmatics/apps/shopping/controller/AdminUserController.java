@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -142,7 +143,7 @@ public class AdminUserController {
 			model.addAttribute("confirmPassword", confirmPassword);
 			return "/admin/users/create";
 		} else {
-			user.setPassword(passwordEncoder.encode("password"));
+			user.setPassword(passwordEncoder.encode(password));
 			usersMapper.insert(user);
 			return "redirect:/admin/users";
 		}
@@ -182,6 +183,7 @@ public class AdminUserController {
 		if(users.size() > 0) {
 			List<String> errors = errorCheckService.editErrorCheck(user, confirmPassword, userImage);
 			
+
 			if(!userImage.isEmpty() && errors.size() == 0) {
 				// 画像の削除
 				imageService.delete(users.get(0));
@@ -202,7 +204,10 @@ public class AdminUserController {
 			} else {
 				users.get(0).setName(name);
 				users.get(0).setEmail(email);
-				users.get(0).setPassword(password);
+				// パスワードハッシュ化
+				BCryptPasswordEncoder hashPassword = new BCryptPasswordEncoder();
+				users.get(0).setPassword(hashPassword.encode(password));
+				
 				usersMapper.update(users.get(0));
 				return "redirect:/admin/users/" + user.getId();
 			}
