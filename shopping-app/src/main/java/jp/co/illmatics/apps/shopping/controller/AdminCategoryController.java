@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpServletRequest;
 import jp.co.illmatics.apps.shopping.entity.Categories;
 import jp.co.illmatics.apps.shopping.mapper.CategoriesMapper;
+import jp.co.illmatics.apps.shopping.service.PageService;
 import jp.co.illmatics.apps.shopping.service.admin.error.CategoryErrorCheckService;
 import jp.co.illmatics.apps.shopping.service.admin.url.CategoryUrlService;
-import jp.co.illmatics.apps.shopping.values.Page;
 import jp.co.illmatics.apps.shopping.values.form.Display;
 import jp.co.illmatics.apps.shopping.values.form.SortDirection;
 import jp.co.illmatics.apps.shopping.values.form.categories.SortType;
@@ -30,6 +30,9 @@ public class AdminCategoryController {
 	
 	@Autowired
 	CategoryErrorCheckService errorCheckService;
+	
+	@Autowired
+	PageService pageService;
 	
 	@Autowired
 	private CategoriesMapper categoriesMapper;
@@ -44,7 +47,7 @@ public class AdminCategoryController {
 			HttpServletRequest request,
 			Model model) {
 		List<Categories> categories = new ArrayList<Categories>();
-		categories = categoriesMapper.findSearch(name, sortType, sortDirection, displayCount, currentPage);
+		categories = categoriesMapper.findByCondition(name, sortType, sortDirection, displayCount, currentPage);
 		
 		String url = urlService.searchUrl(name, sortType, sortDirection, displayCount);
 		
@@ -61,14 +64,10 @@ public class AdminCategoryController {
 		model.addAttribute("url", url);
 		model.addAttribute("categories", categories);
 		
-		int totalPage = categories.size() / displayCount + 1;
-		int startPage = currentPage - (currentPage - 1) % Page.COUNT.getValue();
-		int endPage = (currentPage + Page.COUNT.getValue() - 1 > totalPage) ? totalPage : (currentPage + Page.COUNT.getValue() -1);
+		int pageCount = categoriesMapper.findByConditionCount(name);
 		
-        model.addAttribute("page", currentPage);
-        model.addAttribute("totalPage", totalPage);
-        model.addAttribute("startPage", startPage);
-        model.addAttribute("endPage", endPage);
+		// ページング
+		pageService.indexPaging(model, pageCount, displayCount, currentPage);
 		
 		return "admin/categories/index";
 	}
@@ -81,24 +80,31 @@ public class AdminCategoryController {
 	@PostMapping("/admin/product_categories")
 	public String store(
 			@RequestParam(value = "name", required = false) String name,
-			@RequestParam(value = "orderNo", defaultValue = "") Long orderNo,
+			@RequestParam(value = "orderNo", defaultValue = "") String formOrderNo,
 			Model model) {
 		
 		List<String> errors = new ArrayList<String>();
 		
-		// エラーチェック
-		errors = errorCheckService.errorCheck(name, orderNo);
+		// 入力された並び順番号が数値であるかの例外処理
+		/* 入力された並び順番号が数値であればString型からLong型に変換し変数に格納
+		 * 入力された並び順番号が数値でなければ変数にnullを格納
+		 * */
+		Long orderNo;
+		try {
+			orderNo = Long.parseLong(formOrderNo);
+		} catch (NumberFormatException e) {
+			orderNo = null;
+		}
 		
 		Categories category = new Categories(name, orderNo);
-		List<Categories> checkCategories = categoriesMapper.find(category);
-		if (checkCategories.size() > 0 && orderNo != null && orderNo >= 0) {
-			errors.add("指定された並び順番号は既に存在します");
-		}
+		
+		// エラーチェック
+		errors.addAll(errorCheckService.errorCheck(category, formOrderNo));
 		
 		if (errors.size() > 0) {
 			model.addAttribute("errors", errors);
 			model.addAttribute("name", name);
-			model.addAttribute("orderNo", orderNo);
+			model.addAttribute("orderNo", formOrderNo);
 			return "admin/categories/create";
 		} else {
 			// 新規登録
@@ -133,58 +139,78 @@ public class AdminCategoryController {
 	public String edit(
 			@PathVariable("id") Long id,
 			Model model) {
-		List<Categories> category = categoriesMapper.find(new Categories(id));
-		model.addAttribute("category", category.get(0));
-		return "admin/categories/edit";
+		List<Categories> categories = categoriesMapper.find(new Categories(id));
+		
+		if (categories.size() > 0) {
+			model.addAttribute("category", categories.get(0));
+			return "admin/categories/edit";
+		} else {
+			return "/error/404";
+		}
+		
 	}
 	
 	@PutMapping("/admin/product_categories/{id}")
 	public String update(
 			@PathVariable("id") Long id,
 			@RequestParam(value = "name", defaultValue = "") String name,
-			@RequestParam(value = "orderNo", defaultValue = "0", required = true) Long orderNo,
+			@RequestParam(value = "orderNo", defaultValue = "0", required = true) String formOrderNo,
 			Model model) {
 		
 		List<String> errors = new ArrayList<String>();
 		
-		// エラーチェック
-		errors = errorCheckService.errorCheck(name, orderNo);
-		
-		Categories category = new Categories(name, orderNo);
-		List<Categories> checkCategories = categoriesMapper.find(category);
-		if (checkCategories.size() > 0 && orderNo != null && orderNo >= 0) {
-			errors.add("指定された並び順番号は既に存在します");
+		Long orderNo;
+		try {
+			orderNo = Long.parseLong(formOrderNo);
+		} catch (NumberFormatException e) {
+			orderNo = null;
 		}
 		
+		Categories category = new Categories(id, name, orderNo);
+		
+		// エラーチェック
+		errors = errorCheckService.errorCheck(category, formOrderNo);
+		
+		// 検索用インスタンス(idのみのインスタンス)入れなおし
+		category  = new Categories(id);
+		
 		// 編集データの取得
-		List<Categories> categories = categoriesMapper.find(new Categories(id));
+		List<Categories> categories = categoriesMapper.find(category);
 		
-		// 名前・並び順番号セッター
-		categories.get(0).setName(name);
-		categories.get(0).setOrderNo(orderNo);
-		
-		if (errors.size() > 0) {
-			model.addAttribute("errors", errors);
-			model.addAttribute("category", categories.get(0));
-			return "admin/categories/edit";
-		} else {
-			// 更新処理
-			categoriesMapper.update(categories.get(0));
+		if (categories.size() > 0) {
+			// 名前・並び順番号セッター
+			categories.get(0).setName(name);
+			categories.get(0).setOrderNo(orderNo);
 			
-			String url = urlService.idUrl(categories.get(0).getId());
-			return "redirect:" + url;
+			if (errors.size() > 0) {
+				model.addAttribute("errors", errors);
+				model.addAttribute("category", categories.get(0));
+				return "admin/categories/edit";
+			} else {
+				// 更新処理
+				categoriesMapper.update(categories.get(0));
+				
+				String url = urlService.idUrl(categories.get(0).getId());
+				return "redirect:" + url;
+			}
+		} else {
+			return "/error/404";
 		}
 	}
 	
 	@DeleteMapping("/admin/product_categories/{id}")
 	public String delete(@PathVariable("id") Long id) {
 		// 削除データの取得
-		List<Categories> category = categoriesMapper.find(new Categories(id));
+		List<Categories> categories = categoriesMapper.find(new Categories(id));
 		
-		categoriesMapper.delete(category.get(0));
-		
-		String url = "/admin/product_categories";
-		return "redirect:" + url;
+		if (categories.size() > 0) {
+			categoriesMapper.delete(categories.get(0));
+			
+			String url = "/admin/product_categories";
+			return "redirect:" + url;
+		} else {
+			return "/error/404";
+		}
 	}
 	
 }

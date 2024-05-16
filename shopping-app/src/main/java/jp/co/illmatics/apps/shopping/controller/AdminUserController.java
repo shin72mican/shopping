@@ -20,10 +20,10 @@ import jp.co.illmatics.apps.shopping.entity.Users;
 import jp.co.illmatics.apps.shopping.mapper.ProductReviewsMapper;
 import jp.co.illmatics.apps.shopping.mapper.UsersMapper;
 import jp.co.illmatics.apps.shopping.mapper.WishProductsMapper;
+import jp.co.illmatics.apps.shopping.service.PageService;
 import jp.co.illmatics.apps.shopping.service.admin.error.UserErrorCheckService;
 import jp.co.illmatics.apps.shopping.service.admin.image.UserImageService;
 import jp.co.illmatics.apps.shopping.service.admin.url.UserUrlService;
-import jp.co.illmatics.apps.shopping.values.Page;
 import jp.co.illmatics.apps.shopping.values.form.Display;
 import jp.co.illmatics.apps.shopping.values.form.SortDirection;
 import jp.co.illmatics.apps.shopping.values.form.users.SortType;
@@ -48,6 +48,9 @@ public class AdminUserController {
 	@Autowired
 	UserImageService imageService;
 	
+	@Autowired
+	PageService pageService;
+	
 	private final PasswordEncoder passwordEncoder;
 
     public AdminUserController(PasswordEncoder passwordEncoder) {
@@ -63,7 +66,7 @@ public class AdminUserController {
 			@RequestParam(name = "display_count", defaultValue = "10") Integer displayCount,
 			@RequestParam(name = "page", defaultValue="1") Integer currentPage,
 			Model model) {
-		List<Users> users = usersMapper.findSearch(name, email, sortType, sortDirection, displayCount, currentPage);
+		List<Users> users = usersMapper.findByCondition(name, email, sortType, sortDirection, displayCount, currentPage);
 		
 		model.addAttribute("name", name);
 		model.addAttribute("email", email);
@@ -81,14 +84,10 @@ public class AdminUserController {
 		String url = urlService.searchUrl(name, email, sortType, sortDirection, displayCount);
 		model.addAttribute("url", url);
 		
-		int totalPage = (usersMapper.findSearchCount(name, email, sortType) - 1) / displayCount + 1;
-		int startPage = currentPage - (currentPage - 1) % Page.COUNT.getValue();
-		int endPage = (currentPage + Page.COUNT.getValue() - 1 > totalPage) ? totalPage : (currentPage + Page.COUNT.getValue() -1);
+		int pageCount = usersMapper.findSearchCount(name, email, sortType);
 		
-        model.addAttribute("page", currentPage);
-        model.addAttribute("totalPage", totalPage);
-        model.addAttribute("startPage", startPage);
-        model.addAttribute("endPage", endPage);
+		// ページング
+		pageService.indexPaging(model, pageCount, displayCount, currentPage);
 		
 		return "admin/users/index";
 	}
@@ -100,9 +99,14 @@ public class AdminUserController {
 		
 		Users user = new Users(id);
 		List<Users> users = usersMapper.find(user);
-		model.addAttribute("user", users.get(0));
 		
-		return "/admin/users/show";
+		if(users.size() > 0) {
+			model.addAttribute("user", users.get(0));
+			return "/admin/users/show";
+		} else {
+			return "/error/404";
+		}
+		
 	}
 	
 	// 新規登録ページ
@@ -154,9 +158,12 @@ public class AdminUserController {
 		Users user = new Users(id);
 		List<Users> users = usersMapper.find(user);
 		
-		model.addAttribute("user", users.get(0));
-		
-		return "admin/users/edit";
+		if(users.size() > 0) {
+			model.addAttribute("user", users.get(0));
+			return "/admin/users/edit";
+		} else {
+			return "/error/404";
+		}
 	}
 	
 	// データ更新
@@ -172,35 +179,43 @@ public class AdminUserController {
 			Model model) throws IOException {
 		Users user = new Users(id, name, email, password);
 		List<Users> users = usersMapper.find(user);
-		List<String> errors = errorCheckService.editErrorCheck(user, confirmPassword, userImage);
 		
-		if(!userImage.isEmpty() && errors.size() == 0) {
-			// 画像の削除
-			imageService.delete(users.get(0));
+		if(users.size() > 0) {
+			List<String> errors = errorCheckService.editErrorCheck(user, confirmPassword, userImage);
 			
-			users.get(0).setImagePath(imageService.saveImage(userImage));
-		} else if(deleteCheck) {
-			// 画像の削除
-			imageService.delete(users.get(0));
-			users.get(0).setImagePath("");
-		}
-		
-		if(errors.size() > 0) {
-			model.addAttribute("user", user);
-			model.addAttribute("password", password);
-			model.addAttribute("confirmPassword", confirmPassword);
-			model.addAttribute("errors", errors);
-			return "admin/users/edit";
+
+			if(!userImage.isEmpty() && errors.size() == 0) {
+				// 画像の削除
+				imageService.delete(users.get(0));
+				
+				users.get(0).setImagePath(imageService.saveImage(userImage));
+			} else if(deleteCheck) {
+				// 画像の削除
+				imageService.delete(users.get(0));
+				users.get(0).setImagePath("");
+			}
+			
+			if(errors.size() > 0) {
+				model.addAttribute("user", user);
+				model.addAttribute("password", password);
+				model.addAttribute("confirmPassword", confirmPassword);
+				model.addAttribute("errors", errors);
+				return "admin/users/edit";
+			} else {
+				users.get(0).setName(name);
+				users.get(0).setEmail(email);
+				// パスワードハッシュ化
+				BCryptPasswordEncoder hashPassword = new BCryptPasswordEncoder();
+				users.get(0).setPassword(hashPassword.encode(password));
+				
+				usersMapper.update(users.get(0));
+				return "redirect:/admin/users/" + user.getId();
+			}
 		} else {
-			users.get(0).setName(name);
-			users.get(0).setEmail(email);
-			// パスワードハッシュ化
-			BCryptPasswordEncoder hashPassword = new BCryptPasswordEncoder();
-			users.get(0).setPassword(hashPassword.encode(password));
-			
-			usersMapper.update(users.get(0));
-			return "redirect:/admin/users/" + user.getId();
+			return "/error/404";
 		}
+		
+		
 	}
 	
 	@DeleteMapping("/admin/users/{id}")
@@ -208,18 +223,23 @@ public class AdminUserController {
 		Users user = new Users(id);
 		List<Users> users = usersMapper.find(user);
 		
-		// 画像削除
-		imageService.delete(users.get(0));
+		if(users.size() > 0) {
+			// 画像削除
+			imageService.delete(users.get(0));
+			
+			// 顧客関連レビュー削除
+			productReviewsMapper.usersDelete(users.get(0));
+			
+			// 顧客関連評価削除
+			wishProductsMapper.usersDelete(users.get(0));
+			
+			// 顧客情報削除
+			usersMapper.delete(users.get(0));
+			
+			return "redirect:/admin/users";
+		} else {
+			return "/error/404";
+		}
 		
-		// 顧客関連レビュー削除
-		productReviewsMapper.usersDelete(users.get(0));
-		
-		// 顧客関連評価削除
-		wishProductsMapper.usersDelete(users.get(0));
-		
-		// 顧客情報削除
-		usersMapper.delete(users.get(0));
-		
-		return "redirect:/admin/users";
 	}
 }

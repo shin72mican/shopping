@@ -22,7 +22,10 @@ public interface CategoriesMapper {
 	List<Categories> findAll();
 	
 	@SelectProvider(CategorySqlProvider.class)
-	List<Categories> findSearch(String name, String sortType, String sortDirection, Integer displayCount, Integer currentPage);
+	List<Categories> findByCondition(String name, String sortType, String sortDirection, Integer displayCount, Integer currentPage);
+	
+	@SelectProvider(CategorySqlProvider.class)
+	int findByConditionCount(String name);
 	
 	@SelectProvider(CategorySqlProvider.class)
 	List<Categories> findLatest();
@@ -72,7 +75,7 @@ public interface CategoriesMapper {
 		}
 		
 		// 検索データ取得
-		public String findSearch(String name, String sortType, String sortDirection, Integer displayCount, Integer currentPage) {
+		public String findByCondition(String name, String sortType, String sortDirection, Integer displayCount, Integer currentPage) {
 			return new SQL() {{
 				SELECT("id", "name", "order_no", "create_at", "update_at");
 				FROM("product_categories");
@@ -85,6 +88,17 @@ public interface CategoriesMapper {
 					ORDER_BY(sortType + " DESC");
 				}
 				OFFSET(displayCount * (currentPage - 1) + "ROWS FETCH FIRST " +  displayCount  + " ROWS ONLY");
+			}}.toString();
+		}
+		
+		// 検索データ件数
+		public String findByConditionCount(String name) {
+			return new SQL() {{
+				SELECT("COUNT (*)");
+				FROM("product_categories");
+				if(!name.equals("")) {
+					WHERE("name LIKE '%" + name + "%'");
+				}
 			}}.toString();
 		}
 		

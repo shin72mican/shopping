@@ -55,6 +55,7 @@ public interface ProductsMapper {
 				SELECT("p.id", "p.product_category_id", "c.name AS category_name", "p.name", "p.price", "p.description", "p.image_path", "p.create_at", "p.update_at");
 				FROM("products p");
 				INNER_JOIN("product_categories c ON p.product_category_id = c.id");
+				ORDER_BY("id");
 			}}.toString();
 		}
 		

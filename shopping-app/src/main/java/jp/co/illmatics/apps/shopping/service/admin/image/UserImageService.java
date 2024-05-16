@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,10 +23,9 @@ public class UserImageService {
 		String originalFileName = userImage.getOriginalFilename();
 		// ファイル拡張子取得
 		String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
-		// 一意な文字列取得
-		UUID uuid = UUID.randomUUID();
 		// 新しいファイル名
-		String fileName = uuid.toString() + extension;
+		long millTime = System.currentTimeMillis();
+		String fileName = "users_" + millTime + extension;
 		// 保存先
 		Path filePath=Paths.get("static/users/images/" + fileName);
 		// 保存

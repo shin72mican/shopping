@@ -3,6 +3,7 @@ package jp.co.illmatics.apps.shopping.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -95,16 +96,8 @@ public class AdminProductController {
 		
 		int pageCount = productsMapper.findSearchCount(categoryId, name, price, standard);
 		
+		// ページング
 		pageService.indexPaging(model, pageCount, displayCount, currentPage);
-		
-//		int totalPage = (pageCount - 1) / displayCount + 1;
-//		int startPage = currentPage - (currentPage - 1) % Page.COUNT.getValue();
-//		int endPage = (currentPage + Page.COUNT.getValue() - 1 > totalPage) ? totalPage : (currentPage + Page.COUNT.getValue() -1);
-//		
-//        model.addAttribute("page", currentPage);
-//        model.addAttribute("totalPage", totalPage);
-//        model.addAttribute("startPage", startPage);
-//        model.addAttribute("endPage", endPage);
         
         model.addAttribute("url", url);
 		
@@ -123,7 +116,7 @@ public class AdminProductController {
 			
 			return "admin/products/show";
 		} else {
-			return "/error/403";
+			return "/error/404";
 		}
 	}
 	
@@ -150,14 +143,13 @@ public class AdminProductController {
 		try {
 			price = Long.parseLong(formPrice);
 		} catch (NumberFormatException e) {
-			errors.add("価格は数値でしか登録することができません");
-			price = 0L;
+			price = null;
 		}
 		
 		Products product = new Products(categoryId, name, price, description);
 		
 		
-		errors.addAll(errorCheckService.errorCheck(product, productImage));
+		errors = errorCheckService.errorCheck(product, productImage, formPrice);
 		
 		model.addAttribute("errors", errors);
 		
@@ -182,6 +174,7 @@ public class AdminProductController {
 			// 商品情報 - DB保存
 			productsMapper.insert(product);
 			List<Products> products = productsMapper.findAll();
+			product = products.get(products.size() - 1);
 			return "redirect:/admin/products/" + products.get(products.size() - 1).getId();
 		}
 	}
@@ -202,7 +195,7 @@ public class AdminProductController {
 			model.addAttribute("product", products.get(0));
 			return "/admin/products/edit";
 		} else {
-			return "/error/403";
+			return "/error/404";
 		}
 	}
 	
@@ -224,44 +217,51 @@ public class AdminProductController {
 		try {
 			price = Long.parseLong(formPrice);
 		} catch (NumberFormatException e) {
-			errors.add("価格は数値でしか登録することができません");
-			price = 0L;
+			price = null;
 		}
 		
 		Products product = new Products(id, categoryId, name, price, description);
 		List<Products> products = productsMapper.find(product);
 		
-		errors.addAll(errorCheckService.errorCheck(product, productImage));
-		
-		model.addAttribute("errors", errors);
-		
-		if(!productImage.isEmpty() && errors.size() == 0) {
-			// 画像の削除
-			imageService.delete(products.get(0));
+		if(products.size() > 0) {
+			errors = errorCheckService.errorCheck(product, productImage, formPrice);
 			
-			products.get(0).setImagePath(imageService.saveImage(productImage));
-		} else if(deleteCheck) {
-			// 画像の削除
-			imageService.delete(products.get(0));
-            products.get(0).setImagePath("");
-		}
-		
-		if(errors.size() > 0) {
-			List<Categories> categories = categoriesMapper.findAll();
 			model.addAttribute("errors", errors);
-			model.addAttribute("categories", categories);
-			model.addAttribute("price", formPrice);
-			model.addAttribute("product", product);
-			return "admin/products/edit";
-		} else {
-			products.get(0).setProductCategoryId(categoryId);
-			products.get(0).setName(name);
-			products.get(0).setPrice(price);
-			products.get(0).setDescription(description);
 			
-			productsMapper.update(products.get(0));
-			return "redirect:/admin/products/" + product.getId();
+			if(!productImage.isEmpty() && errors.size() == 0) {
+				// 画像の削除
+				imageService.delete(products.get(0));
+				
+				products.get(0).setImagePath(imageService.saveImage(productImage));
+			} else if(deleteCheck) {
+				// 画像の削除
+				imageService.delete(products.get(0));
+	            products.get(0).setImagePath("");
+			} else if(Objects.isNull(products.get(0).getImagePath())) {
+				products.get(0).setImagePath("");
+			}
+			
+			if(errors.size() > 0) {
+				List<Categories> categories = categoriesMapper.findAll();
+				model.addAttribute("errors", errors);
+				model.addAttribute("categories", categories);
+				model.addAttribute("price", formPrice);
+				model.addAttribute("product", product);
+				return "admin/products/edit";
+			} else {
+				// セッター
+				products.get(0).setProductCategoryId(categoryId);
+				products.get(0).setName(name);
+				products.get(0).setPrice(price);
+				products.get(0).setDescription(description);
+				
+				productsMapper.update(products.get(0));
+				return "redirect:/admin/products/" + product.getId();
+			}
+		} else {
+			return "/error/404";
 		}
+
 	}
 	
 	@DeleteMapping("/admin/products/{id}")
@@ -270,17 +270,22 @@ public class AdminProductController {
 		Products product = new Products(id);
 		List<Products> products = productsMapper.find(product);
 		
-		// 画像の削除
-		imageService.delete(products.get(0));
-        
-        // 関連レビュー削除
-        productReviewsMapper.productsDelete(products.get(0));
-        // 関連ほしいもの削除
-        wishProductsMapper.productsDelete(products.get(0));
-        // 商品削除
-        productsMapper.delete(products.get(0));
+		if (products.size() > 0) {
+			// 画像の削除
+			imageService.delete(products.get(0));
+	        
+	        // 関連レビュー削除
+	        productReviewsMapper.productsDelete(products.get(0));
+	        // 関連ほしいもの削除
+	        wishProductsMapper.productsDelete(products.get(0));
+	        // 商品削除
+	        productsMapper.delete(products.get(0));
+			
+			return "redirect:/admin/products";
+		} else {
+			return "/error/404";
+		}
 		
-		return "redirect:/admin/products";
 	}
 }
 
