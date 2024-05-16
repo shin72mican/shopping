@@ -23,7 +23,7 @@ public interface ProductsMapper {
 	List<Products> findAll();
 	
 	@SelectProvider(ProductSqlProvider.class)
-	List<Products> findSearch(Long categoryId, String name, Long price, String standard, String sortType, String sortDirection, int displayCount, Integer currentPage);
+	List<Products> findByCondition(Long categoryId, String name, Long price, String standard, String sortType, String sortDirection, int displayCount, Integer currentPage);
 	
 	@SelectProvider(ProductSqlProvider.class)
 	List<Products> findUser(Products product, Long userId);
@@ -68,11 +68,12 @@ public interface ProductsMapper {
 				SELECT("p.id", "p.product_category_id", "c.name AS category_name", "p.name", "p.price", "p.description", "p.image_path", "p.create_at", "p.update_at");
 				FROM("products p");
 				INNER_JOIN("product_categories c ON p.product_category_id = c.id");
+				ORDER_BY("id");
 			}}.toString();
 		}
 		
 		// カテゴリ管理一覧 - 検索データ取得
-		public String findSearch(Long categoryId, String name, Long price, String standard, String sortType, String sortDirection, int displayCount, Integer currentPage) {
+		public String findByCondition(Long categoryId, String name, Long price, String standard, String sortType, String sortDirection, int displayCount, Integer currentPage) {
 			return new SQL() {{
 				SELECT("p.id", "p.product_category_id", "c.name AS category_name", "p.name", "p.price", "p.description", "p.image_path", "p.create_at", "p.update_at");
 				FROM("products p");
