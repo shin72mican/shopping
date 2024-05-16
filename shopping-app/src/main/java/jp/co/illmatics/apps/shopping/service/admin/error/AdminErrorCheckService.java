@@ -62,6 +62,10 @@ public class AdminErrorCheckService {
 				errors.add("パスワード(確認)を入力してください");
 			}
 			
+			if(admin.getPassword().length() > 255) {
+				errors.add("255文字を超えるパスワードを登録することができません");
+			}
+			
 			if(StringUtils.hasLength(admin.getPassword()) && StringUtils.hasLength(confirmPassword)) {
 				if(!ObjectUtils.nullSafeEquals(admin.getPassword(), confirmPassword)) {
 					errors.add("パスワードが一致しません");	
@@ -86,6 +90,9 @@ public class AdminErrorCheckService {
 				errors.add("メールアドレスは既に登録されています");
 			} else {
 				errors = errorCheck(admin, confirmPassword);
+				if(admin.getPassword().length() > 255) {
+					errors.add("255文字を超えるパスワードを登録することができません");
+				}
 				
 				if(!ObjectUtils.nullSafeEquals(admin.getPassword(), confirmPassword)) {
 					errors.add("パスワードが一致しません");	
@@ -97,6 +104,10 @@ public class AdminErrorCheckService {
 			}
 		} else {
 			errors = errorCheck(admin, confirmPassword);
+			
+			if(admin.getPassword().length() > 255) {
+				errors.add("255文字を超えるパスワードを登録することができません");
+			}
 			
 			if(!ObjectUtils.nullSafeEquals(admin.getPassword(), confirmPassword)) {
 				errors.add("パスワードが一致しません");	

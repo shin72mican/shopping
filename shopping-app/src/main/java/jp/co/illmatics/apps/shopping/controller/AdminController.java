@@ -101,7 +101,7 @@ public class AdminController {
 		 * 一般ユーザー自身のページではない場合
 		 * 403エラー表示
 		 * */
-		if(adminAccount.getAuthority().equals("owner") ||
+		if(!adminAccount.getAuthority().equals("owner") &&
 				!(adminAccount.getAuthority().equals("general") && Objects.equals(admin.getId(), adminAccount.getId()))) {
 			return "error/403";
 		}
@@ -173,7 +173,7 @@ public class AdminController {
 		 * 一般ユーザー自身のページではない場合
 		 * 403エラー表示
 		 * */
-		if(adminAccount.getAuthority().equals("owner") ||
+		if(!adminAccount.getAuthority().equals("owner") &&
 				!(adminAccount.getAuthority().equals("general") && Objects.equals(admin.getId(), adminAccount.getId()))) {
 			return "error/403";
 		}
@@ -210,7 +210,7 @@ public class AdminController {
 		 * 一般ユーザー自身のページではない場合
 		 * 403エラー表示
 		 * */
-		if(adminAccount.getAuthority().equals("owner") ||
+		if(!adminAccount.getAuthority().equals("owner") &&
 				!(adminAccount.getAuthority().equals("general") && Objects.equals(admin.getId(), adminAccount.getId()))) {
 			return "error/403";
 		}
@@ -250,6 +250,18 @@ public class AdminController {
 			Model model) {
 		
 		Admins admin = new Admins(id);
+		
+		// 権限の判定
+		/* オーナーではない
+		 * または
+		 * 一般ユーザー自身のページではない場合
+		 * 403エラー表示
+		 * */
+		if(!adminAccount.getAuthority().equals("owner") &&
+				!(adminAccount.getAuthority().equals("general") && Objects.equals(admin.getId(), adminAccount.getId()))) {
+			return "error/403";
+		}
+		
 		List<Admins> admins = adminsMapper.find(admin);
 		
 		if (admins.size() > 0) {
