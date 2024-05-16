@@ -16,6 +16,6 @@ public class AdminAccount {
 	
 	private String email;
 	
-	private String Authority;
+	private String authority;
 	
 }

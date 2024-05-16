@@ -2,6 +2,7 @@ package jp.co.illmatics.apps.shopping.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import jp.co.illmatics.apps.shopping.entity.Admins;
 import jp.co.illmatics.apps.shopping.mapper.AdminsMapper;
+import jp.co.illmatics.apps.shopping.service.PageService;
 import jp.co.illmatics.apps.shopping.service.admin.error.AdminErrorCheckService;
 import jp.co.illmatics.apps.shopping.service.admin.url.AdminUrlService;
 import jp.co.illmatics.apps.shopping.session.AdminAccount;
-import jp.co.illmatics.apps.shopping.values.Page;
 import jp.co.illmatics.apps.shopping.values.admins.Authority;
 import jp.co.illmatics.apps.shopping.values.form.Display;
 import jp.co.illmatics.apps.shopping.values.form.SortDirection;
@@ -40,6 +41,9 @@ public class AdminController {
 	@Autowired
 	AdminErrorCheckService errorCheckService;
 	
+	@Autowired
+	PageService pageService;
+	
 	// 一覧ページ
 	@GetMapping("/admin/admin_users")
 	public String index(
@@ -53,7 +57,7 @@ public class AdminController {
 			Model model) {
 		
 		// 検索データ取得
-		List<Admins> admins = adminsMapper.findSearch(name, email, authority, sortType, sortDirection, displayCount, currentPage);
+		List<Admins> admins = adminsMapper.findByCondition(name, email, authority, sortType, sortDirection, displayCount, currentPage);
 		
 		// フロントへフォームデータ
 		model.addAttribute("name", name);
@@ -71,15 +75,10 @@ public class AdminController {
 		// フロントへデータベースデータ
 		model.addAttribute("admins", admins);
 		
-		// ページング
-		int totalPage = adminsMapper.findSearchCount(name, email, authority, sortType) / displayCount + 1;
-		int startPage = currentPage - (currentPage - 1) % Page.COUNT.getValue();
-		int endPage = (currentPage + Page.COUNT.getValue() - 1 > totalPage) ? totalPage : (currentPage + Page.COUNT.getValue() -1);
+		int pageCount = adminsMapper.findByConditionCount(name, email, authority, sortType);
 		
-        model.addAttribute("page", currentPage);
-        model.addAttribute("totalPage", totalPage);
-        model.addAttribute("startPage", startPage);
-        model.addAttribute("endPage", endPage);
+		// ページング
+		pageService.indexPaging(model, pageCount, displayCount, currentPage);
         
         // ページングurl取得
      	String url = urlService.searchQueryUrl(name, email, authority, sortType, sortDirection, displayCount, currentPage);
@@ -95,10 +94,26 @@ public class AdminController {
 			@PathVariable("id") Long id,
 			Model model) {
 		Admins admin = new Admins(id);
+		
+		// 権限の判定
+		/* オーナーではない
+		 * または
+		 * 一般ユーザー自身のページではない場合
+		 * 403エラー表示
+		 * */
+		if(!adminAccount.getAuthority().equals("owner") &&
+				!(adminAccount.getAuthority().equals("general") && Objects.equals(admin.getId(), adminAccount.getId()))) {
+			return "error/403";
+		}
+		
 		List<Admins> admins = adminsMapper.find(admin);
 		
-		model.addAttribute("admin", admins.get(0));
-		return "admin/admin_users/show";
+		if(admins.size() > 0) {
+			model.addAttribute("admin", admins.get(0));
+			return "admin/admin_users/show";
+		} else {
+			return "error/404";
+		}
 	}
 	
 	// 新規登録ページ
@@ -151,12 +166,30 @@ public class AdminController {
 			@PathVariable("id") Long id,
 			Model model) {
 		Admins admin = new Admins(id);
+		
+		// 権限の判定
+		/* オーナーではない
+		 * または
+		 * 一般ユーザー自身のページではない場合
+		 * 403エラー表示
+		 * */
+		if(!adminAccount.getAuthority().equals("owner") &&
+				!(adminAccount.getAuthority().equals("general") && Objects.equals(admin.getId(), adminAccount.getId()))) {
+			return "error/403";
+		}
+		
 		List<Admins> admins = adminsMapper.find(admin);
-		model.addAttribute("admin", admins.get(0));
-		// Authority enumから権限の取得
-		Authority authority = Authority.getByValue(admins.get(0).getIsOwner()); 
-		model.addAttribute("authority", authority.getViweValue());
-		return "admin/admin_users/edit";
+		
+		if(admins.size() > 0) {
+			model.addAttribute("admin", admins.get(0));
+			// Authority enumから権限の取得
+			Authority authority = Authority.getByValue(admins.get(0).getIsOwner()); 
+			model.addAttribute("authority", authority.getViweValue());
+			return "admin/admin_users/edit";
+			
+		} else {
+			return "error/404";
+		}
 	}
 	
 	// 更新処理
@@ -170,27 +203,43 @@ public class AdminController {
 			@RequestParam(name = "authority", defaultValue = "") String authority,
 			Model model) {
 		Admins admin = new Admins(id, name, email, password, authority);
+		
+		// 権限の判定
+		/* オーナーではない
+		 * または
+		 * 一般ユーザー自身のページではない場合
+		 * 403エラー表示
+		 * */
+		if(!adminAccount.getAuthority().equals("owner") &&
+				!(adminAccount.getAuthority().equals("general") && Objects.equals(admin.getId(), adminAccount.getId()))) {
+			return "error/403";
+		}
+		
 		List<Admins> admins = adminsMapper.find(admin);
 		List<String> errors = errorCheckService.editErrorCheck(admin, confirmPassword);
 		
-		if(errors.size() > 0) {
-			model.addAttribute("errors", errors);
-			model.addAttribute("admin", admin);
-			model.addAttribute("password", password);
-			model.addAttribute("confirmPassword", confirmPassword);
-			model.addAttribute("authority", authority);
-			return "admin/admin_users/edit";
+		if(admins.size() > 0) {
+			if(errors.size() > 0) {
+				model.addAttribute("errors", errors);
+				model.addAttribute("admin", admin);
+				model.addAttribute("password", password);
+				model.addAttribute("confirmPassword", confirmPassword);
+				model.addAttribute("authority", authority);
+				return "admin/admin_users/edit";
+			} else {
+				// パスワードハッシュ化
+				BCryptPasswordEncoder hashPassword = new BCryptPasswordEncoder();
+				admin.setPassword(hashPassword.encode(password));
+				
+				// Authority enumから権限の取得
+				Authority formAuthority = Authority.getByViewValue(admin.getAuthority());
+				admin.setIsOwner(formAuthority.getValue());
+							
+				adminsMapper.update(admin, admins.get(0));
+				return "redirect:/admin/admin_users/" + admin.getId();
+			}
 		} else {
-			// パスワードハッシュ化
-			BCryptPasswordEncoder hashPassword = new BCryptPasswordEncoder();
-			admin.setPassword(hashPassword.encode(password));
-			
-			// Authority enumから権限の取得
-			Authority formAuthority = Authority.getByViewValue(admin.getAuthority());
-			admin.setIsOwner(formAuthority.getValue());
-						
-			adminsMapper.update(admin, admins.get(0));
-			return "redirect:/admin/admin_users/" + admin.getId();
+			return "error/404";
 		}
 	}
 	
@@ -201,21 +250,36 @@ public class AdminController {
 			Model model) {
 		
 		Admins admin = new Admins(id);
+		
+		// 権限の判定
+		/* オーナーではない
+		 * または
+		 * 一般ユーザー自身のページではない場合
+		 * 403エラー表示
+		 * */
+		if(!adminAccount.getAuthority().equals("owner") &&
+				!(adminAccount.getAuthority().equals("general") && Objects.equals(admin.getId(), adminAccount.getId()))) {
+			return "error/403";
+		}
+		
 		List<Admins> admins = adminsMapper.find(admin);
 		
-		
-		List<String> errors = new ArrayList<String>();
-		
-		if(adminAccount.getId() == id) {
-			errors.add("ログインアカウントは削除することができません");
-			model.addAttribute("admin", admins.get(0));
-			model.addAttribute("errors", errors);
-			return "admin/admin_users/show";
-		} else {
-			// 削除処理
-			adminsMapper.delete(admin);
+		if (admins.size() > 0) {
+			List<String> errors = new ArrayList<String>();
 			
-			return "redirect:/admin/admin_users";
+			if(adminAccount.getId() == id) {
+				errors.add("ログインアカウントは削除することができません");
+				model.addAttribute("admin", admins.get(0));
+				model.addAttribute("errors", errors);
+				return "admin/admin_users/show";
+			} else {
+				// 削除処理
+				adminsMapper.delete(admin);
+				
+				return "redirect:/admin/admin_users";
+			}
+		} else {
+			return "error/404";
 		}
 		
 	}

@@ -131,7 +131,7 @@ public class AdminCategoryController {
 			model.addAttribute("category", category.get(0));
 			return "admin/categories/show";
 		} else {
-			return "error/403";
+			return "error/404";
 		}
 	}
 	

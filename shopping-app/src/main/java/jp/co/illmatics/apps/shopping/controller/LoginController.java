@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,8 +55,6 @@ public class LoginController {
 	// ログインページ
 	@GetMapping("/admin/login")
 	public String adminIndex(Model model) {
-//		BCryptPasswordEncoder password = new BCryptPasswordEncoder();
-//		model.addAttribute("pass", password.encode("pass"));
 		return "admin/login";
 	}
 	
@@ -68,7 +65,7 @@ public class LoginController {
 			@RequestParam(name="password", defaultValue="") String password,
 			Model model) {
 		Admins admin = new Admins(email, password);
-		List<Admins> admins = adminsMapper.findEmail(admin);
+		List<Admins> admins = adminsMapper.findAutority(admin);
 		// エラーチェック
 		List<String> errors = adminLoginErrorCheckService.errorCheck(admin, admins);
 		
@@ -93,6 +90,7 @@ public class LoginController {
 		session.invalidate();
 		return "redirect:/admin/login";
 	}
+<<<<<<< HEAD
 	
 	
 	// 顧客ログインページ
@@ -101,6 +99,12 @@ public class LoginController {
 		Users user = new Users();
 		model.addAttribute("user", user);
 		return "user/login";
+=======
+
+	@GetMapping("/users/login")
+	public String loginAsUsers(Model model) {
+		return "/users/login";
+>>>>>>> main
 	}
 	
 	// 顧客ログイン
