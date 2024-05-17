@@ -47,7 +47,7 @@ public class AdminErrorCheckService {
 	// 新規エラーチェック
 	public List<String> createErrorCheck(Admins admin, String confirmPassword) {
 		List<String> errors = new ArrayList<String>();
-		List<Admins> admins = adminsMapper.findEmail(admin);
+		List<Admins> admins = adminsMapper.find(admin);
 		
 		if (admins.size() > 0) {
 			errors.add("メールアドレスは既に登録されています");
@@ -60,6 +60,10 @@ public class AdminErrorCheckService {
 			
 			if(!StringUtils.hasLength(confirmPassword)) {
 				errors.add("パスワード(確認)を入力してください");
+			}
+			
+			if(admin.getPassword().length() > 255) {
+				errors.add("255文字を超えるパスワードを登録することができません");
 			}
 			
 			if(StringUtils.hasLength(admin.getPassword()) && StringUtils.hasLength(confirmPassword)) {
@@ -79,13 +83,16 @@ public class AdminErrorCheckService {
 	// 編集エラーチェック
 	public List<String> editErrorCheck(Admins admin, String confirmPassword) {
 		List<String> errors = new ArrayList<String>();
-		List<Admins> admins = adminsMapper.findEmail(admin);
+		List<Admins> admins = adminsMapper.find(admin);
 		
 		if(admins.size() > 0) {
 			if(!Objects.equals(admins.get(0).getId(), admin.getId())) {
 				errors.add("メールアドレスは既に登録されています");
 			} else {
 				errors = errorCheck(admin, confirmPassword);
+				if(admin.getPassword().length() > 255) {
+					errors.add("255文字を超えるパスワードを登録することができません");
+				}
 				
 				if(!ObjectUtils.nullSafeEquals(admin.getPassword(), confirmPassword)) {
 					errors.add("パスワードが一致しません");	
@@ -97,6 +104,10 @@ public class AdminErrorCheckService {
 			}
 		} else {
 			errors = errorCheck(admin, confirmPassword);
+			
+			if(admin.getPassword().length() > 255) {
+				errors.add("255文字を超えるパスワードを登録することができません");
+			}
 			
 			if(!ObjectUtils.nullSafeEquals(admin.getPassword(), confirmPassword)) {
 				errors.add("パスワードが一致しません");	

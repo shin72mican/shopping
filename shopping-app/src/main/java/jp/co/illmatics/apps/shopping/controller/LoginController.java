@@ -56,8 +56,6 @@ public class LoginController {
 	// ログインページ
 	@GetMapping("/admin/login")
 	public String adminIndex(Model model) {
-//		BCryptPasswordEncoder password = new BCryptPasswordEncoder();
-//		model.addAttribute("pass", password.encode("pass"));
 		return "admin/login";
 	}
 	
@@ -68,7 +66,7 @@ public class LoginController {
 			@RequestParam(name="password", defaultValue="") String password,
 			Model model) {
 		Admins admin = new Admins(email, password);
-		List<Admins> admins = adminsMapper.findEmail(admin);
+		List<Admins> admins = adminsMapper.findAutority(admin);
 		// エラーチェック
 		List<String> errors = adminLoginErrorCheckService.errorCheck(admin, admins);
 		
@@ -93,7 +91,6 @@ public class LoginController {
 		session.invalidate();
 		return "redirect:/admin/login";
 	}
-	
 	
 	// 顧客ログインページ
 	@GetMapping("/login")
