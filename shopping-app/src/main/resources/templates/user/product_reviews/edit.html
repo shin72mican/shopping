@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{user/layout/layout}">
+<head>
+	<title>user product reviews edit</title>
+</head>
+<body>
+	<div layout:fragment="user-content">
+		<div class="mt-4 mb-3">
+			<span th:each="error:${errors}">
+				<p class="text-danger" th:text="${error}"></p>
+			</span>
+			
+			<form th:action="@{/products/{products_id}/product_reviews/{product_review_id}(products_id = ${productReview.productId}, product_review_id = ${productReview.id})}" th:method="patch">
+				<div class="mt-2 mb-2">
+					<label class="form-label">タイトル</label>
+					<input class="form-control" type="text" name="title" th:value="${productReview.title}" placeholder="タイトル" />
+				</div>
+				
+				<div class="mt-2 mb-2">
+					<label class="form-label">本文</label>
+					<input class="form-control" type="text" name="body" th:value="${productReview.body}" placeholder="本文" />
+				</div>
+				
+				<div class="mt-2 mb-2">
+					<input class="form-check-input" type="radio" name="rank" value="1" checked="checked" />
+					<label class="form-check-label">星1つ</label>
+					
+					<input class="form-check-input" type="radio" name="rank" value="2" />
+					<label class="form-check-label">星2つ</label>
+					
+					<input class="form-check-input" type="radio" name="rank" value="3" />
+					<label class="form-check-label">星3つ</label>
+					
+					<input class="form-check-input" type="radio" name="rank" value="4" />
+					<label class="form-check-label">星4つ</label>
+					
+					<input class="form-check-input" type="radio" name="rank" value="5" />
+					<label class="form-check-label">星5つ</label>
+				</div>
+				
+				<hr />
+				
+				<a class="btn btn-secondary me-2" th:href="@{/products/{id}(id=${productReview.productId})}">商品へ戻る</a>
+				<input class="btn btn-primary" type="submit" value="作成" />
+			</form>
+		</div>
+	</div>
+	
+</body>
+</html>

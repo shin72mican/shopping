@@ -1,7 +1,5 @@
 package jp.co.illmatics.apps.shopping.entity;
 
-import java.sql.Timestamp;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Data;
@@ -14,13 +12,15 @@ public class WishProducts {
 		
 	}
 	
+	public WishProducts(Long productId, Long userId) {
+		this.productId = productId;
+		this.userId = userId;
+	}
+	
 	private Long id;
 	
 	private Long productId;
 	
 	private Long userId;
 	
-	private Timestamp createAt;
-	
-	private Timestamp updateAt;
 }

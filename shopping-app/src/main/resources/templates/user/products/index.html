@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{user/layout/layout}">
+<head>
+<title>user product index</title>
+</head>
+<body>
+	<div layout:fragment="user-content">
+		<div class="container-fluid mt-5">
+<!--			<div class="row justify-content-center">-->
+			<div class="row">
+				<div class="card d-block m-2 p-0" style="width: 180px;" th:each="product:${products}">
+					
+					<a th:href="@{'/products/' + ${product.getId()} }"><img th:src="${product.imagePath}" style="height: 100px;" onerror="this.src='/images/no_image.png'" class="card-img-top"></a>
+					<div class="card-body">
+						<a th:href="@{'/products/' + ${product.getId()} }">
+							<h5 class="card-name" th:text="${product.name}"></h5>
+						</a>
+						<p class="card-description" th:text="${'￥' + #numbers.formatInteger(product.price, 3, 'COMMA')}"></p>
+						<th:block th:unless="${product.wishUserId == @userAccount.getId()}">
+							<a th:href="${'javascript:save' + product.id + '.submit()'}">♡</a>
+							<form th:action="@{'/wish_products/' + ${product.getId()} }" th:method="post" th:attr="name=${'save' + product.id}"></form>
+						</th:block>
+						<th:block th:if="${product.wishUserId == @userAccount.getId()}">
+							<a th:href="${'javascript:delete' + product.id + '.submit()'}">♥</a>
+							<form th:action="@{'/wish_products/' + ${product.getId()} }" th:method="delete" th:attr="name=${'delete' + product.id}"></form>
+						</th:block>
+					</div>
+				</div>
+				
+			</div>
+			
+			<nav>
+		    <ul class="pagination pg-blue justify-content-center">
+		        <li th:if="${startPage} > 1" class="page-item ">
+		            <a class="page-link" th:href="@{${url} + '&page=1'}" tabindex="-2">最初</a>
+		        </li>
+		        <li th:if="${page} > 1" class="page-item ">
+		            <a class="page-link" th:href="@{${url} + '&page=' + ${page-1}}" tabindex="-1">前へ</a>
+		        </li>
+		        <th:block th:if="${endPage}<=0">
+		            <li class="page-item " th:classappend="${i == page} ? active" th:each="i : ${startPage}">
+		                <a class="page-link" th:href="@{${url} + '&page=' + ${i}}" th:text="${i}"></a>
+		            </li>
+		        </th:block>
+				<!-- StartPageからEndPageまでのページ数を表示する -->
+		        <th:block th:if="${endPage}>0">
+		            <li class="page-item " th:classappend="${i == page} ? active" th:each="i : ${#numbers.sequence(startPage, endPage)}">
+		                <a class="page-link" th:href="@{${url} + '&page=' + ${i}}" th:text="${i}"></a>
+		            </li>
+		        </th:block>
+		        <li th:if="${page} < ${totalPage}" class="page-item ">
+		            <a class="page-link" th:href="@{${url} + '&page=' + ${page+1}}">次へ</a>
+		        </li>
+		        <li th:if="${endPage} < ${totalPage}" class="page-item ">
+		            <a class="page-link" th:href="@{${url} + '&page=' + ${totalPage}}">最後</a>
+		        </li>
+		    </ul>
+			</nav>
+			
+<!--			<div id="productList">-->
+				
+<!--			</div>-->
+			
+		</div>
+		
+<!--		<script th:inline="javascript">-->
+<!--			var products = /*[[${products}]]*/ [];-->
+			
+<!--			var productList = document.getElementById('productList');-->
+			
+<!--			for (var i = 0; i < products.length; i++) {-->
+<!--				console.log(products[i]['id']);-->
+<!--				console.log(products[i]['productCategoryId']);-->
+<!--				console.log(products[i]['wishProductId']);-->
+<!--				console.log(products[i]['wishUserId']);-->
+<!--				console.log(products[i]['name']);-->
+<!--				console.log(products[i]['description']);-->
+<!--				console.log(products[i]['price']);-->
+<!--				console.log(products[i]['imagePath']);-->
+<!--				console.log(products[i]['createAt']);-->
+<!--				console.log(products[i]['updateAt']);-->
+<!--			}-->
+<!--			console.log(products);-->
+<!--    	</script>-->
+		
+		
+	</div>
+		
+</body>
+</html>

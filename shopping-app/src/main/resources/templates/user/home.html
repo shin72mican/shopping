@@ -7,7 +7,31 @@
 </head>
 <body>
 	<div layout:fragment="user-content">
-		<div>
+		<div class="container-fluid mt-5">
+<!--			<div class="row justify-content-center">-->
+			<div class="row">
+				<h2>ほしいものリスト</h2>
+				<hr />
+				<div class="card d-block m-2 p-0" style="width: 180px;" th:each="product:${products}">
+					
+					<a th:href="@{'/products/' + ${product.getId()} }"><img th:src="${product.imagePath}" style="height: 100px;" onerror="this.src='/images/no_image.png'" class="card-img-top"></a>
+					<div class="card-body">
+						<a th:href="@{'/products/' + ${product.getId()} }">
+							<h5 class="card-name" th:text="${product.name}"></h5>
+						</a>
+						<p class="card-description" th:text="${'￥' + #numbers.formatInteger(product.price, 3, 'COMMA')}"></p>
+						<th:block th:unless="${product.wishUserId == @userAccount.getId()}">
+							<a th:href="${'javascript:save' + product.id + '.submit()'}">♡</a>
+							<form th:action="@{'/wish_products/' + ${product.getId()} }" th:method="post" th:attr="name=${'save' + product.id}"></form>
+						</th:block>
+						<th:block th:if="${product.wishUserId == @userAccount.getId()}">
+							<a th:href="${'javascript:delete' + product.id + '.submit()'}">♥</a>
+							<form th:action="@{'/wish_products/' + ${product.getId()} }" th:method="delete" th:attr="name=${'delete' + product.id}"></form>
+						</th:block>
+					</div>
+				</div>
+				
+			</div>
 			
 		</div>
 	</div>

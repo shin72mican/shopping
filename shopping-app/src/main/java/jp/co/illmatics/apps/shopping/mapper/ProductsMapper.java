@@ -12,6 +12,7 @@ import org.apache.ibatis.builder.annotation.ProviderMethodResolver;
 import org.apache.ibatis.jdbc.SQL;
 
 import jp.co.illmatics.apps.shopping.entity.Products;
+import jp.co.illmatics.apps.shopping.entity.Users;
 
 @Mapper
 public interface ProductsMapper {
@@ -23,6 +24,18 @@ public interface ProductsMapper {
 	
 	@SelectProvider(ProductSqlProvider.class)
 	List<Products> findByCondition(Long categoryId, String name, Long price, String standard, String sortType, String sortDirection, int displayCount, Integer currentPage);
+	
+	@SelectProvider(ProductSqlProvider.class)
+	List<Products> findUser(Products product, Long userId);
+	
+	@SelectProvider(ProductSqlProvider.class)
+	List<Products> findSearchUser(Products product, Integer currentPage, Long userId);
+	
+	@SelectProvider(ProductSqlProvider.class)
+	Integer findSearchUserCount(Products product, Long userId);
+	
+	@SelectProvider(ProductSqlProvider.class)
+	List<Products> findUserWishProducts(Users user);
 	
 	@SelectProvider(ProductSqlProvider.class)
 	int findSearchCount(Long categoryId, String name, Long price, String standard);
@@ -87,6 +100,57 @@ public interface ProductsMapper {
 			}}.toString();
 		}
 		
+		// 顧客商品詳細データ
+		public String findUser(Products product, Long userId) {
+			return new SQL() {{
+				SELECT("p.id", "p.product_category_id", "w.product_id AS wish_product_id", "w.user_id AS wish_user_id", "p.name", "p.price", "p.description", "p.image_path", "p.create_at", "p.update_at");
+				FROM("products p");
+				LEFT_OUTER_JOIN("wish_products w ON p.id = w.product_id AND w.user_id = #{userId}");
+				WHERE("p.id = #{product.id}");
+			}}.toString();
+		}
+		
+		// 顧客商品一覧データ
+		public String findSearchUser(Products product, Integer currentPage, Long userId) {
+			return new SQL() {{
+				SELECT("p.id", "p.product_category_id", "w.product_id AS wish_product_id", "w.user_id AS wish_user_id", "p.name", "p.price", "p.description", "p.image_path", "p.create_at", "p.update_at");
+				FROM("products p");
+				LEFT_OUTER_JOIN("wish_products w ON p.id = w.product_id AND w.user_id = #{userId}");
+				OFFSET(15 * (currentPage - 1) + "ROWS FETCH FIRST " +  15  + " ROWS ONLY");
+				if(!product.getName().equals("")) {
+					WHERE("p.name LIKE '%" + product.getName() + "%'");
+				}
+				if(product.getProductCategoryId() > 0) {
+					WHERE("p.product_category_id = " + product.getProductCategoryId());
+				}
+			}}.toString();
+		}
+		
+		// 顧客商品一覧データ
+		public String findSearchUserCount(Products product, Long userId) {
+			return new SQL() {{
+				SELECT("COUNT(*)");
+				FROM("products p");
+				LEFT_OUTER_JOIN("wish_products w ON p.id = w.product_id AND w.user_id = #{userId}");
+				if(!product.getName().equals("")) {
+					WHERE("p.name LIKE '%" + product.getName() + "%'");
+				}
+				if(product.getProductCategoryId() > 0) {
+					WHERE("p.product_category_id = " + product.getProductCategoryId());
+				}
+			}}.toString();
+		}
+		
+		// ユーザーお気に入り商品データ
+		public String findUserWishProducts(Users user) {
+			return new SQL() {{
+				SELECT("p.id", "p.product_category_id", "w.product_id AS wish_product_id", "w.user_id AS wish_user_id", "p.name", "p.price", "p.description", "p.image_path", "p.create_at", "p.update_at");
+				FROM("products p");
+				LEFT_OUTER_JOIN("wish_products w ON p.id = w.product_id AND w.user_id = #{id}");
+				WHERE("w.user_id = #{id}");
+			}}.toString();
+		}
+		
 		// 検索データ個数
 		public String findSearchCount(Long categoryId, String name, Long price, String standard) {
 			return new SQL() {{
@@ -126,7 +190,6 @@ public interface ProductsMapper {
 		
 		// データの更新
 		public String update(Products products) {
-			System.out.println(products.getPrice());
 			return new SQL() {{
 				UPDATE("products");
 				SET("product_category_id = #{productCategoryId}");

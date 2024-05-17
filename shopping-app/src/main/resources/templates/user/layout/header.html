@@ -10,18 +10,26 @@
 	<div layout:fragment="user-header" class="header navbar navbar-fixed-top">
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="navbar">
 			<div class="container-fluid">
-				<a class="navbar-brand" href="#">
+				<a class="navbar-brand" href="/home">
 					Shopping
 				</a>
+				<form class="d-flex" role="search" th:action="@{/products}" th:method="get">
+					<select class="form-select me-2" name="category_id">
+						<option th:value="0" th:text="すべてのカテゴリー"></option>
+						<option th:each="category:${categories}" th:value="${category.id}" th:selected="${category.id == categoryId}" th:text="${category.name}"></option>
+					</select>
+		      <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="name" th:value="${searchName}">
+		      <button class="btn btn-outline-success" type="submit" style="width: 150px">検索</button>
+		    </form>
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
 		      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
 		        <li class="nav-item dropdown">
-		          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-		            顧客
+		          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="${@userAccount.name}">
 		          </a>
 		          <ul class="list-right dropdown-menu dropdown-menu-end">
 <!--		            <li><a class="dropdown-item" th:href="${'/admin/admin_uesrs/' + @adminAccount.id}">管理者情報</a></li>-->
 								<li><a class="dropdown-item" th:href="${'/users/edit/' + @userAccount.id}">顧客情報編集</a></li>
+								<li><a class="dropdown-item" th:href="${'/products'}">商品一覧</a></li>
 		            <li><hr class="dropdown-divider"></li>
 		            <li><a class="dropdown-item" href="javascript:logout.submit()">ログアウト</a></li>
 		          </ul>
