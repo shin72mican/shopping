@@ -89,7 +89,6 @@ public class UserProductReviewController {
 		List<ProductReviews> productReviews = productReviewsMapper.findProductReview(productReview);
 		
 		if(productReviews.size() > 0 && Objects.equals(productReviews.get(0).getUserId(), userAccount.getId())) {
-			System.out.println("tset");
 			List<Categories> categories = categoriesMapper.findAll();
 			model.addAttribute("categories", categories);
 			
