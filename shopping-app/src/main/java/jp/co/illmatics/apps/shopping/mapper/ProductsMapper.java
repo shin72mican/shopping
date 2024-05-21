@@ -116,7 +116,7 @@ public interface ProductsMapper {
 				SELECT("p.id", "p.product_category_id", "w.product_id AS wish_product_id", "w.user_id AS wish_user_id", "p.name", "p.price", "p.description", "p.image_path", "p.create_at", "p.update_at");
 				FROM("products p");
 				LEFT_OUTER_JOIN("wish_products w ON p.id = w.product_id AND w.user_id = #{userId}");
-//				OFFSET(15 * (currentPage - 1) + "ROWS FETCH FIRST " +  15  + " ROWS ONLY");
+				OFFSET(15 * (currentPage - 1) + "ROWS FETCH FIRST " +  15  + " ROWS ONLY");
 				if(!product.getName().equals("")) {
 					WHERE("p.name LIKE '%" + product.getName() + "%'");
 				}
