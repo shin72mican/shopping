@@ -29,7 +29,7 @@ public interface ProductsMapper {
 	List<Products> findUser(Products product, Long userId);
 	
 	@SelectProvider(ProductSqlProvider.class)
-	List<Products> findSearchUser(Products product, Integer currentPage, Long userId);
+	List<Products> findSearchUser(Products product, Integer currentPage, Long userId, String sort);
 	
 	@SelectProvider(ProductSqlProvider.class)
 	Integer findSearchUserCount(Products product, Long userId);
@@ -111,7 +111,7 @@ public interface ProductsMapper {
 		}
 		
 		// 顧客商品一覧データ
-		public String findSearchUser(Products product, Integer currentPage, Long userId) {
+		public String findSearchUser(Products product, Integer currentPage, Long userId, String sort) {
 			return new SQL() {{
 				SELECT("p.id", "p.product_category_id", "w.product_id AS wish_product_id", "w.user_id AS wish_user_id", "p.name", "p.price", "p.description", "p.image_path", "p.create_at", "p.update_at");
 				FROM("products p");
@@ -122,6 +122,15 @@ public interface ProductsMapper {
 				}
 				if(product.getProductCategoryId() > 0) {
 					WHERE("p.product_category_id = " + product.getProductCategoryId());
+				}
+				if(sort.equals("wish")) {
+					ORDER_BY("w.user_id");
+				} else if(sort.equals("price_max")) {
+					ORDER_BY("p.price DESC");
+				} else if(sort.equals("price_min")) {
+					ORDER_BY("p.price");
+				} else if(sort.equals("release_date")) {
+					ORDER_BY("p.update_at DESC");
 				}
 			}}.toString();
 		}
