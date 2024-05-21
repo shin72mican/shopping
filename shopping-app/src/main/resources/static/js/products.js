@@ -9,8 +9,6 @@ const apiUrl = 'http://localhost:8080/api/products';
 
 let select = document.querySelector('[name="sort"]');
 select.onchange = event => {
-  console.log(select.value);
-  console.log(apiUrl + url.search + "&sort=" + select.value);
   productIndex(apiUrl + url.search + "&sort=" + select.value);
 }
 
