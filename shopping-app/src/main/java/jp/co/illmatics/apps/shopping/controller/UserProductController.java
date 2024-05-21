@@ -50,13 +50,13 @@ public class UserProductController {
 		Products product = new Products(categoryId, name);
 		
 		List<Categories> categories = categoriesMapper.findAll();
-		List<Products> products = productsMapper.findSearchUser(product, currentPage, userAccount.getId());
+//		List<Products> products = productsMapper.findSearchUser(product, currentPage, userAccount.getId());
 		
 		model.addAttribute("categories", categories);
 		model.addAttribute("categoryId", categoryId);
 		model.addAttribute("searchName", name);
 		
-		model.addAttribute("products", products);
+//		model.addAttribute("products", products);
 		
 		String url = urlService.searchUrl(categoryId, name);
 		model.addAttribute("url", url);
@@ -69,7 +69,6 @@ public class UserProductController {
         model.addAttribute("totalPage", totalPage);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
-        
 		
 		return "user/products/index";
 	}
