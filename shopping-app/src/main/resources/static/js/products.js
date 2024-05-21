@@ -24,8 +24,6 @@ function productIndex(url) {
 	      const productsHtml = json.map(product => createProductCard(product)).join('');
 	      // DOMに追加
 	      document.querySelector('#productList').innerHTML = productsHtml;
-	      
-	      console.log(json.length);
 	  })
 	  .catch((error) => {
 		  console.error('データの取得中にエラーが発生しました:', error);
