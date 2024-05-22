@@ -113,11 +113,11 @@ public interface CategoriesMapper {
 		}
 		
 		// 商品個数
-		public String itemCount(Long orderNo) {
+		public String itemCount(Long id) {
 			return new SQL() {{
 				SELECT("COUNT (*)");
 				FROM("products");
-				WHERE("product_category_id = " + orderNo);
+				WHERE("product_category_id = " + id);
 			}}.toString();
 		}
 		
