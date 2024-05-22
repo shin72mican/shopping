@@ -21,7 +21,10 @@ public class CategoryErrorCheckService {
 		
 		List<String> errors = new ArrayList<String>();
 		
-		List<Categories> checkCategories = categoriesMapper.find(category);
+		Categories findCategory = new Categories();
+		findCategory.setOrderNo(category.getOrderNo());
+		
+		List<Categories> checkCategories = categoriesMapper.find(findCategory);
 		if (checkCategories.size() > 0 &&  Objects.nonNull(category.getOrderNo()) && category.getOrderNo() >= 0) {
 			errors.add("指定された並び順番号は既に存在します");
 		} else {

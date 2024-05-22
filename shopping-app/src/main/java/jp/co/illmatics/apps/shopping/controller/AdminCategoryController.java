@@ -126,7 +126,7 @@ public class AdminCategoryController {
 		List<Categories> category = categoriesMapper.find(new Categories(id));
 		
 		if (category.size() > 0) {
-			Integer itemCount = categoriesMapper.itemCount(category.get(0).getOrderNo());
+			Integer itemCount = categoriesMapper.itemCount(category.get(0).getId());
 			model.addAttribute("itemCount", itemCount);
 			model.addAttribute("category", category.get(0));
 			return "admin/categories/show";
