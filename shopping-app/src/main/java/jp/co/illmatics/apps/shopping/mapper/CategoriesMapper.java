@@ -107,7 +107,6 @@ public interface CategoriesMapper {
 			return new SQL() {{
 				SELECT("id", "name", "order_no", "create_at", "update_at");
 				FROM("product_categories");
-				WHERE("ROWNUM <= 10");
 				ORDER_BY("id DESC");
 			}}.toString();
 		}
