@@ -25,7 +25,7 @@
 				
 				<hr />
 				
-				<a class="btn btn-secondary me-2" th:href="@{/admin/product_categories}">キャンセル</a>
+				<a class="btn btn-secondary me-2" th:href="@{/admin/product_categories/{id}(id=${category.id})}">キャンセル</a>
 				<input class="btn btn-primary" type="submit" value="更新" />
 			</form>
 		</div>
