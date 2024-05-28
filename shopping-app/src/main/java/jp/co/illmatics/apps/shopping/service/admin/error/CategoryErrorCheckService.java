@@ -69,7 +69,7 @@ public class CategoryErrorCheckService {
 		findCategory.setOrderNo(category.getOrderNo());
 		
 		List<Categories> checkCategories = categoriesMapper.find(findCategory);
-		if (checkCategories.size() > 0) {
+		if (checkCategories.size() > 0 && Objects.nonNull(category.getOrderNo())) {
 			if(!(checkCategories.get(0).getId().equals(category.getId()))) {
 				errors.add("指定された並び順番号は既に存在します");
 			} else {

@@ -154,7 +154,7 @@ public class AdminCategoryController {
 	public String update(
 			@PathVariable("id") Long id,
 			@RequestParam(value = "name", defaultValue = "") String name,
-			@RequestParam(value = "orderNo", defaultValue = "0", required = true) String formOrderNo,
+			@RequestParam(value = "orderNo") String formOrderNo,
 			Model model) {
 		
 		List<String> errors = new ArrayList<String>();
