@@ -99,7 +99,7 @@ public class AdminCategoryController {
 		Categories category = new Categories(name, orderNo);
 		
 		// エラーチェック
-		errors.addAll(errorCheckService.errorCheck(category, formOrderNo));
+		errors.addAll(errorCheckService.createErrorCheck(category, formOrderNo));
 		
 		if (errors.size() > 0) {
 			model.addAttribute("errors", errors);
@@ -169,7 +169,7 @@ public class AdminCategoryController {
 		Categories category = new Categories(id, name, orderNo);
 		
 		// エラーチェック
-		errors = errorCheckService.errorCheck(category, formOrderNo);
+		errors = errorCheckService.editErrorCheck(category, formOrderNo);
 		
 		// 検索用インスタンス(idのみのインスタンス)入れなおし
 		category  = new Categories(id);
