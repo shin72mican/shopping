@@ -3,6 +3,8 @@ package jp.co.illmatics.apps.shopping.service.admin.error;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -30,8 +32,20 @@ public class ProductErrorCheckService {
 			errors.add("価格を入力してください");
 		}
 		
+		// 価格の桁数が11以内であるか
+		if(formPrice.length() > 11) {
+			errors.add("価格は11桁までしか登録することができません");
+		}
+		
 		if (StringUtils.hasLength(formPrice) && Objects.isNull(product.getPrice())) {
-			errors.add("価格は整数でしか登録することができません");
+			// 数値であるかどうか
+			Pattern pattern = Pattern.compile("^[-1-9][0-9]*$");
+			Matcher matcher = pattern.matcher(formPrice);
+			
+			if(!matcher.find()) {
+				// 入力された値が数値でない
+				errors.add("価格は整数でしか登録することができません");
+			}
 		}
 		
 		if (StringUtils.hasLength(formPrice) && Objects.nonNull(product.getPrice()) && product.getPrice() < 0) {
