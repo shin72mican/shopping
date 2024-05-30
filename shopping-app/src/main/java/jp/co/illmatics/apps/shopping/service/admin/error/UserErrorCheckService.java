@@ -39,7 +39,7 @@ public class UserErrorCheckService {
 			}
 		}
 		
-		if(user.getName().length() > 255) {
+		if(user.getEmail().length() > 255) {
 			errors.add("255文字を超えるメールアドレスを登録することができません");
 		}
 		
