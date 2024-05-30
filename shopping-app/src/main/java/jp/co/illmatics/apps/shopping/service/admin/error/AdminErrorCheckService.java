@@ -1,5 +1,6 @@
 package jp.co.illmatics.apps.shopping.service.admin.error;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,7 +26,9 @@ public class AdminErrorCheckService {
 			errors.add("名前を入力してください");
 		}
 		
-		if(admin.getName().length() > 255) {
+		if(admin.getName().getBytes(StandardCharsets.UTF_8).length > 255) {
+        	errors.add("半角の文字列であれば255文字、全角の文字列ならば127文字を超える名前を登録することができません");
+        } else if(admin.getName().length() > 255) {
 			errors.add("255文字を超える名前を登録することができません");
 		}
 		
@@ -37,7 +40,9 @@ public class AdminErrorCheckService {
 			}
 		}
 		
-		if(admin.getName().length() > 255) {
+		if(admin.getEmail().getBytes(StandardCharsets.UTF_8).length > 255) {
+        	errors.add("半角の文字列であれば255文字、全角の文字列ならば127文字を超えるメールアドレスを登録することができません");
+        } else if(admin.getEmail().length() > 255) {
 			errors.add("255文字を超えるメールアドレスを登録することができません");
 		}
 		
@@ -62,7 +67,9 @@ public class AdminErrorCheckService {
 				errors.add("パスワード(確認)を入力してください");
 			}
 			
-			if(admin.getPassword().length() > 255) {
+			if(admin.getEmail().getBytes(StandardCharsets.UTF_8).length > 255) {
+	        	errors.add("半角の文字列であれば255文字、全角の文字列ならば127文字を超えるパスワードを登録することができません");
+	        } else if(admin.getPassword().length() > 255) {
 				errors.add("255文字を超えるパスワードを登録することができません");
 			}
 			
@@ -105,7 +112,9 @@ public class AdminErrorCheckService {
 		} else {
 			errors = errorCheck(admin, confirmPassword);
 			
-			if(admin.getPassword().length() > 255) {
+			if(admin.getEmail().getBytes(StandardCharsets.UTF_8).length > 255) {
+	        	errors.add("半角の文字列であれば255文字、全角の文字列ならば127文字を超えるパスワードを登録することができません");
+	        } else if(admin.getPassword().length() > 255) {
 				errors.add("255文字を超えるパスワードを登録することができません");
 			}
 			
