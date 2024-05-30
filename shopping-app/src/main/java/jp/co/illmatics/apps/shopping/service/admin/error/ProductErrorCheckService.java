@@ -1,5 +1,6 @@
 package jp.co.illmatics.apps.shopping.service.admin.error;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -24,7 +25,9 @@ public class ProductErrorCheckService {
 			errors.add("名前を入力してください");
 		}
 		
-		if(product.getName().length() > 255) {
+		if(product.getName().getBytes(StandardCharsets.UTF_8).length > 255) {
+        	errors.add("半角の文字列であれば255文字、全角の文字列ならば127文字を超える名前を登録することができません");
+        } else if(product.getName().length() > 255) {
 			errors.add("255文字を超える名前を登録することができません");
 		}
 		
