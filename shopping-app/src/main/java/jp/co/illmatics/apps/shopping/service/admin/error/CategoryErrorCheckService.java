@@ -26,7 +26,7 @@ public class CategoryErrorCheckService {
 		List<String> errors = new ArrayList<String>();
 		
 		if(category.getName().getBytes(StandardCharsets.UTF_8).length > 255) {
-        	errors.add("半角の文字列であれば255文字、全角の文字列ならば127文字を超える名前を登録することができません");
+        	errors.add("半角の文字列であれば255文字、全角の文字列ならば85文字を超える名前を登録することができません");
         } else if (!StringUtils.hasLength(category.getName())){
 			errors.add("名前を入力してください");
 		}

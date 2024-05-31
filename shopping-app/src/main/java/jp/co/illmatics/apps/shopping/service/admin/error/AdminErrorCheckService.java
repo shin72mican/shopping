@@ -27,7 +27,7 @@ public class AdminErrorCheckService {
 		}
 		
 		if(admin.getName().getBytes(StandardCharsets.UTF_8).length > 255) {
-        	errors.add("半角の文字列であれば255文字、全角の文字列ならば127文字を超える名前を登録することができません");
+        	errors.add("半角の文字列であれば255文字、全角の文字列ならば85文字を超える名前を登録することができません");
         } else if(admin.getName().length() > 255) {
 			errors.add("255文字を超える名前を登録することができません");
 		}
@@ -66,7 +66,7 @@ public class AdminErrorCheckService {
 			}
 			
 			if(admin.getEmail().getBytes(StandardCharsets.UTF_8).length > 255) {
-	        	errors.add("半角の文字列であれば255文字、全角の文字列ならば127文字を超えるパスワードを登録することができません");
+	        	errors.add("半角の文字列であれば255文字、全角の文字列ならば85文字を超えるパスワードを登録することができません");
 	        } else if(admin.getPassword().length() > 255) {
 				errors.add("255文字を超えるパスワードを登録することができません");
 			}
@@ -111,7 +111,7 @@ public class AdminErrorCheckService {
 			errors = errorCheck(admin, confirmPassword);
 			
 			if(admin.getEmail().getBytes(StandardCharsets.UTF_8).length > 255) {
-	        	errors.add("半角の文字列であれば255文字、全角の文字列ならば127文字を超えるパスワードを登録することができません");
+	        	errors.add("半角の文字列であれば255文字、全角の文字列ならば85文字を超えるパスワードを登録することができません");
 	        } else if(admin.getPassword().length() > 255) {
 				errors.add("255文字を超えるパスワードを登録することができません");
 			}
