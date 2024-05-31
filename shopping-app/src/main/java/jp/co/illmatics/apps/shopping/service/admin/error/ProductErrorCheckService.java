@@ -34,21 +34,17 @@ public class ProductErrorCheckService {
 		if (!StringUtils.hasLength(formPrice)) {
 			errors.add("価格を入力してください");
 		}
+		Pattern pattern = Pattern.compile("^[-1-9][0-9]*$");
+		Matcher matcher = pattern.matcher(formPrice);
 		
-		// 価格の桁数が11以内であるか
-		if(formPrice.length() > 11) {
-			errors.add("価格は11桁までしか登録することができません");
-		}
-		
-		if (StringUtils.hasLength(formPrice) && Objects.isNull(product.getPrice())) {
-			// 数値であるかどうか
-			Pattern pattern = Pattern.compile("^[-1-9][0-9]*$");
-			Matcher matcher = pattern.matcher(formPrice);
-			
-			if(!matcher.find()) {
-				// 入力された値が数値でない
-				errors.add("価格は整数でしか登録することができません");
+		if(matcher.find()) {
+			// 価格の桁数が11以内であるか
+			if(formPrice.length() > 11) {
+				errors.add("価格は11桁までしか登録することができません");
 			}
+		} else {
+			// 入力された並び順が数値であるかの判定
+			errors.add("価格は整数でしか登録することができません");
 		}
 		
 		if (StringUtils.hasLength(formPrice) && Objects.nonNull(product.getPrice()) && product.getPrice() < 0) {

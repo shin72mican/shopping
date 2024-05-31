@@ -4,6 +4,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,9 +36,17 @@ public class CategoryErrorCheckService {
 			errors.add("並び順番号を入力してください");
 		}
 		
-		// 入力された並び順が数値であるかの判定
-		if(StringUtils.hasLength(formOrderNo) && Objects.isNull(category.getOrderNo())) {
-			
+		Pattern pattern = Pattern.compile("^[-1-9][0-9]*$");
+		Matcher matcher = pattern.matcher(formOrderNo);
+		
+		// 数値であるかどうか
+		if(matcher.find()) {
+			// 価格の桁数が11以内であるか
+			if(formOrderNo.length() > 11) {
+				errors.add("価格は11桁までしか登録することができません");
+			}
+		} else {
+			// 入力された並び順が数値であるかの判定
 			errors.add("並び順番号は整数でしか登録することができません");
 		}
 		
