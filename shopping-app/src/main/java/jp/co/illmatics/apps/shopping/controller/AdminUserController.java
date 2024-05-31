@@ -146,7 +146,9 @@ public class AdminUserController {
 		} else {
 			user.setPassword(passwordEncoder.encode(password));
 			usersMapper.insert(user);
-			return "redirect:/admin/users";
+			List<Users> users = usersMapper.findAll();
+			user = users.get(users.size() - 1);
+			return "redirect:/admin/users/" + user.getId();
 		}
 	}
 	
