@@ -1,6 +1,7 @@
 package jp.co.illmatics.apps.shopping.service.admin.error;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,8 +63,11 @@ public class UserLoginErrorCheckService {
 			// メールアドレスがすでに登録されるかチェック
 			errors.add("メールアドレスは既に使われています");
 		} else {
-			// ユーザー名入力チェック
-			if (!StringUtils.hasLength(user.getName())) {
+			// name - byte数255以下であるかの判定
+			if(user.getName().getBytes(StandardCharsets.UTF_8).length > 255) {
+	        	errors.add("半角の文字列であれば255文字、全角の文字列ならば127文字を超えるユーザー名を登録することができません");
+	        } else if (!StringUtils.hasLength(user.getName())) {
+	        	// ユーザー名入力チェック
 				errors.add("ユーザー名を入力してください");
 			}
 			
@@ -89,8 +93,11 @@ public class UserLoginErrorCheckService {
 				errors.add("パスワードを入力してください");
 			}
 			
-			// メールアドレス、255文字以内であるかチェック
-			if (user.getPassword().length() > 255) {
+			// password - byte数255以下であるかの判定
+			if(user.getEmail().getBytes(StandardCharsets.UTF_8).length > 255) {
+	        	errors.add("半角の文字列であれば255文字、全角の文字列ならば127文字を超えるパスワードを登録することができません");
+	        } else if (user.getPassword().length() > 255) {
+	        	// パスワード、255文字以内であるかチェック
 				errors.add("255文字を超えるパスワードを登録することができません");
 			}
 			
