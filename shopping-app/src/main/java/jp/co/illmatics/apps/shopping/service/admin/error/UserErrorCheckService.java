@@ -106,11 +106,15 @@ public class UserErrorCheckService {
 			// 新規・編集共通エラー
 			errors = errorCheck(user, confirmPassword, userImage);
 			
-			if(StringUtils.hasLength(user.getPassword()) && StringUtils.hasLength(confirmPassword)) {
-				if(!ObjectUtils.nullSafeEquals(user.getPassword(), confirmPassword)) {
-					errors.add("パスワードが一致しません");	
-				}
-			}
+//			if(StringUtils.hasLength(user.getPassword()) && StringUtils.hasLength(confirmPassword)) {
+//				if(!ObjectUtils.nullSafeEquals(user.getPassword(), confirmPassword)) {
+//					errors.add("パスワードが一致しません");	
+//				}
+//				
+//				if(user.getPassword().length() < 4) {
+//					errors.add("パスワードは4文字以上で設定してください");
+//				}
+//			}
 			
 		}
 		
