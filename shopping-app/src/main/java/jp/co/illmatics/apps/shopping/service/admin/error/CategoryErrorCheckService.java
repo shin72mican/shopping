@@ -4,6 +4,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +26,7 @@ public class CategoryErrorCheckService {
 		List<String> errors = new ArrayList<String>();
 		
 		if(category.getName().getBytes(StandardCharsets.UTF_8).length > 255) {
-        	errors.add("半角の文字列であれば255文字、全角の文字列ならば127文字を超える名前を登録することができません");
+        	errors.add("半角の文字列であれば255文字、全角の文字列ならば85文字を超える名前を登録することができません");
         } else if (!StringUtils.hasLength(category.getName())){
 			errors.add("名前を入力してください");
 		}
@@ -34,9 +36,17 @@ public class CategoryErrorCheckService {
 			errors.add("並び順番号を入力してください");
 		}
 		
-		// 入力された並び順が数値であるかの判定
-		if(StringUtils.hasLength(formOrderNo) && Objects.isNull(category.getOrderNo())) {
-			
+		Pattern pattern = Pattern.compile("^[-1-9][0-9]*$");
+		Matcher matcher = pattern.matcher(formOrderNo);
+		
+		// 数値であるかどうか
+		if(matcher.find()) {
+			// 価格の桁数が11以内であるか
+			if(formOrderNo.length() > 11) {
+				errors.add("価格は11桁までしか登録することができません");
+			}
+		} else {
+			// 入力された並び順が数値であるかの判定
 			errors.add("並び順番号は整数でしか登録することができません");
 		}
 		

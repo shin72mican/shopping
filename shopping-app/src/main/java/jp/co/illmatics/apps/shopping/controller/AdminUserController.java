@@ -2,6 +2,7 @@ package jp.co.illmatics.apps.shopping.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -145,7 +146,9 @@ public class AdminUserController {
 		} else {
 			user.setPassword(passwordEncoder.encode(password));
 			usersMapper.insert(user);
-			return "redirect:/admin/users";
+			List<Users> users = usersMapper.findAll();
+			user = users.get(users.size() - 1);
+			return "redirect:/admin/users/" + user.getId();
 		}
 	}
 	
@@ -185,13 +188,17 @@ public class AdminUserController {
 			
 
 			if(!userImage.isEmpty() && errors.size() == 0) {
+				// 画像が登録されたとき
 				// 画像の削除
 				imageService.delete(users.get(0));
 				
 				users.get(0).setImagePath(imageService.saveImage(userImage));
 			} else if(deleteCheck) {
+				// image_deleteのチェックがされているとき
 				// 画像の削除
 				imageService.delete(users.get(0));
+				users.get(0).setImagePath("");
+			} else if(Objects.isNull(users.get(0).getImagePath())) {
 				users.get(0).setImagePath("");
 			}
 			
