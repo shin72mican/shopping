@@ -182,24 +182,24 @@ public class AdminUserController {
 			Model model) throws IOException {
 		Users user = new Users(id, name, email, password);
 		List<Users> users = usersMapper.find(user);
-		
 		if(users.size() > 0) {
+			Users indexUser = users.get(0);
 			List<String> errors = errorCheckService.editErrorCheck(user, confirmPassword, userImage);
 			
 
 			if(!userImage.isEmpty() && errors.size() == 0) {
 				// 画像が登録されたとき
 				// 画像の削除
-				imageService.delete(users.get(0));
+				imageService.delete(indexUser);
 				
-				users.get(0).setImagePath(imageService.saveImage(userImage));
+				indexUser.setImagePath(imageService.saveImage(userImage));
 			} else if(deleteCheck) {
 				// image_deleteのチェックがされているとき
 				// 画像の削除
-				imageService.delete(users.get(0));
-				users.get(0).setImagePath("");
-			} else if(Objects.isNull(users.get(0).getImagePath())) {
-				users.get(0).setImagePath("");
+				imageService.delete(indexUser);
+				indexUser.setImagePath("");
+			} else if(Objects.isNull(indexUser.getImagePath())) {
+				indexUser.setImagePath("");
 			}
 			
 			if(errors.size() > 0) {
@@ -209,13 +209,13 @@ public class AdminUserController {
 				model.addAttribute("errors", errors);
 				return "admin/users/edit";
 			} else {
-				users.get(0).setName(name);
-				users.get(0).setEmail(email);
+				indexUser.setName(name);
+				indexUser.setEmail(email);
 				// パスワードハッシュ化
 				BCryptPasswordEncoder hashPassword = new BCryptPasswordEncoder();
-				users.get(0).setPassword(hashPassword.encode(password));
+				indexUser.setPassword(hashPassword.encode(password));
 				
-				usersMapper.update(users.get(0));
+				usersMapper.update(indexUser);
 				return "redirect:/admin/users/" + user.getId();
 			}
 		} else {
@@ -231,17 +231,18 @@ public class AdminUserController {
 		List<Users> users = usersMapper.find(user);
 		
 		if(users.size() > 0) {
+			Users indexUser = users.get(0);
 			// 画像削除
-			imageService.delete(users.get(0));
+			imageService.delete(indexUser);
 			
 			// 顧客関連レビュー削除
-			productReviewsMapper.usersDelete(users.get(0));
+			productReviewsMapper.usersDelete(indexUser);
 			
 			// 顧客関連評価削除
-			wishProductsMapper.usersDelete(users.get(0));
+			wishProductsMapper.usersDelete(indexUser);
 			
 			// 顧客情報削除
-			usersMapper.delete(users.get(0));
+			usersMapper.delete(indexUser);
 			
 			return "redirect:/admin/users";
 		} else {
