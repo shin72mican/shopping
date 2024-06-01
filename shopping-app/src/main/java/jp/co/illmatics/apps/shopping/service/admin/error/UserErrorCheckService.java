@@ -110,10 +110,6 @@ public class UserErrorCheckService {
 				if(!ObjectUtils.nullSafeEquals(user.getPassword(), confirmPassword)) {
 					errors.add("パスワードが一致しません");	
 				}
-				
-				if(user.getPassword().length() < 4) {
-					errors.add("パスワードは4文字以上で設定してください");
-				}
 			}
 			
 		}
