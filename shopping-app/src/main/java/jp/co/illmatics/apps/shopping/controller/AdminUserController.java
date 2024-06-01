@@ -116,6 +116,7 @@ public class AdminUserController {
 		return "/admin/users/create";
 	}
 	
+	// 
 	@PostMapping("/admin/users")
 	public String store(
 			@RequestParam(name="name", defaultValue="") String name,
@@ -146,7 +147,7 @@ public class AdminUserController {
 		} else {
 			user.setPassword(passwordEncoder.encode(password));
 			usersMapper.insert(user);
-			List<Users> users = usersMapper.findAll();
+			List<Users> users = usersMapper.findEmail(user);
 			user = users.get(users.size() - 1);
 			return "redirect:/admin/users/" + user.getId();
 		}
